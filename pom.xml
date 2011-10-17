@@ -79,6 +79,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
+    <gpg.useagent>true</gpg.useagent>
   </properties>
 
   <build>
@@ -124,6 +126,13 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <version>2.2.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.apache.resources</groupId>
+              <artifactId>apache-source-release-assembly-descriptor</artifactId>
+              <version>1.0.3</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
@@ -153,6 +162,32 @@
   <profiles>
     <profile>
       <id>tobar-segais-release</id>
+      <build>
+        <plugins>
+          <!-- Create a source-release artifact that contains the fully buildable
+               project directory source structure. This is the artifact which is
+               the official subject of any release vote. -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>source-release-assembly</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                  <descriptorRefs>
+                    <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
+                  </descriptorRefs>
+                  <tarLongFileMode>tarLongFileFormat>gnu</tarLongFileMode>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
