@@ -29,8 +29,9 @@
   <groupId>org.tobarsegais</groupId>
   <artifactId>tobarsegais-parent</artifactId>
   <version>0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <name>Tobar Segais Parent POM</name>
+  <name>Tobar Segais: Parent POM</name>
   <description>Tobar Segais is the well of knowlegde, a Java WAR container for Eclipse InfoCenter plugins</description>
   <url>http://tobarsegais.org</url>
   <inceptionYear>2011</inceptionYear>
@@ -58,6 +59,10 @@
       </roles>
     </developer>
   </developers>
+
+  <modules>
+    <module>tobar-segais-webapp</module>
+  </modules>
 
   <scm>
     <connection>scm:git:git://github.com/tobar-segais/tobar-segais.git</connection>
@@ -116,6 +121,10 @@
           <version>2.7</version>
         </plugin>
         <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.10</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.3.1</version>
         </plugin>
@@ -145,6 +154,15 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.10</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>8.0.1.v20110908</version>
         </plugin>
       </plugins>
     </pluginManagement>
