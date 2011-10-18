@@ -179,7 +179,7 @@
 
   <profiles>
     <profile>
-      <id>tobar-segais-release</id>
+      <id>sonatype-oss-release</id>
       <build>
         <plugins>
           <!-- Create a source-release artifact that contains the fully buildable
