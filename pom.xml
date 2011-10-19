@@ -109,6 +109,17 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.2.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.apache.resources</groupId>
+              <artifactId>apache-source-release-assembly-descriptor</artifactId>
+              <version>1.0.3</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.4.1</version>
         </plugin>
@@ -135,13 +146,6 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <version>2.2.1</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.apache.resources</groupId>
-              <artifactId>apache-source-release-assembly-descriptor</artifactId>
-              <version>1.0.3</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
