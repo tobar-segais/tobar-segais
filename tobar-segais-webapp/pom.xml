@@ -54,6 +54,20 @@
       <version>2.0.1</version>
     </dependency>
 
+    <!-- lucene -->
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>3.4.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+
     <!-- Test framework -->
 
     <dependency>
