@@ -81,15 +81,4 @@ public class Toc extends Entry {
         writer.writeEndElement();
     }
 
-    public static void register(XStream xstream) {
-        xstream.aliasAttribute(Toc.class, "href", "topic");
-        xstream.useAttributeFor("label", String.class);
-        xstream.useAttributeFor(Topic.class, "href");
-        xstream.alias("toc", Toc.class);
-        xstream.addImplicitCollection(Toc.class, "children", "topic", Topic.class);
-        xstream.addImplicitCollection(Topic.class, "children", "topic", Topic.class);
-        xstream.addDefaultImplementation(ArrayList.class, List.class);
-    }
-
-
 }
