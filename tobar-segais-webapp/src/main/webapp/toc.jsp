@@ -34,33 +34,41 @@
         <a target="content" href="/content/<%=bundle+"/"+entry.getHref()%>">
             <%}%>
         <span
-            class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span>
+                class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span>
             <%if (entry.getHref() != null) {%>
-            </a>
-                <%}%>
-            <%
-        Stack<Iterator<? extends Entry>> stack = new Stack<Iterator<? extends Entry>>();
-        if (!entry.getChildren().isEmpty()) {
-            out.print("<ul>");
-            stack.push(entry.getChildren().iterator());
-            while (!stack.empty()) {
-                Iterator<? extends Entry> cur = stack.pop();
-                if (cur.hasNext()) {
-                    entry = cur.next();
-                    stack.push(cur);
-                    out.print("<li>");
-    %><a target="content" href="/content/<%=bundle+"/"+entry.getHref()%>"><span
-            class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span></a><%
-                    if (!entry.getChildren().isEmpty()) {
-                        out.print("<ul>");
-                        stack.push(entry.getChildren().iterator());
+        </a>
+        <%}%>
+        <%
+            Stack<Iterator<? extends Entry>> stack = new Stack<Iterator<? extends Entry>>();
+            if (!entry.getChildren().isEmpty()) {
+                out.print("<ul>");
+                stack.push(entry.getChildren().iterator());
+                while (!stack.empty()) {
+                    Iterator<? extends Entry> cur = stack.pop();
+                    if (cur.hasNext()) {
+                        entry = cur.next();
+                        stack.push(cur);
+                        out.print("<li>");
+        %>
+        <%if (entry.getHref() != null) {%>
+        <a target="content" href="/content/<%=bundle+"/"+entry.getHref()%>">
+            <%}%>
+        <span
+                class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span>
+            <%if (entry.getHref() != null) {%>
+        </a>
+        <%}%>
+        <%
+                        if (!entry.getChildren().isEmpty()) {
+                            out.print("<ul>");
+                            stack.push(entry.getChildren().iterator());
+                        }
+                    } else {
+                        out.print("</ul></li>");
                     }
-                } else {
-                    out.print("</ul></li>");
                 }
             }
-        }
-    %></li>
+        %></li>
     <%
         }
     %>
