@@ -1,6 +1,7 @@
 package org.tobarsegais.webapp.data;
 
 import com.thoughtworks.xstream.XStream;
+import org.apache.commons.io.IOUtils;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -27,21 +28,11 @@ public class Toc extends Entry {
         super(label, topic, children);
     }
 
-    public static Toc read(URL url) throws XMLStreamException {
-        InputStream is = null;
+    public static Toc read(InputStream inputStream) throws XMLStreamException {
         try {
-            is = url.openStream();
-            return read(XMLInputFactory.newInstance().createXMLStreamReader(is));
-        } catch (IOException e) {
-            throw new XMLStreamException(e);
+            return read(XMLInputFactory.newInstance().createXMLStreamReader(inputStream));
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            IOUtils.closeQuietly(inputStream);
         }
     }
 

@@ -6,11 +6,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,27 +26,36 @@ public class ContentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
-        int index = path.indexOf('/');
-        while (index != -1) {
-            String realPath = getServletContext().getRealPath("/WEB-INF/bundles" + path.substring(0, index) + ".jar");
-            File file = new File(realPath);
-            if (file.isFile()) {
-                int eofn = path.indexOf('#', index);
-                eofn = eofn == -1 ? path.length() : eofn;
-                String fileName = path.substring(index, eofn);
-                URL url = new URL("jar:file://" + file + "!" + fileName);
-                InputStream in = null;
-                OutputStream out = resp.getOutputStream();
-                try {
-                    in = url.openStream();
-                    IOUtils.copy(in, out);
-                } finally {
-                    IOUtils.closeQuietly(in);
-                    out.close();
-                }
-                return;
+        for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+            URL resource = getServletContext().getResource("/WEB-INF/bundles" + path.substring(0, index) + ".jar");
+            if (resource == null) {
+                continue;
             }
-            index = path.indexOf('/', index + 1);
+            URL jarResource = new URL("jar:" + resource + "!/");
+            URLConnection connection = jarResource.openConnection();
+            if (!(connection instanceof JarURLConnection)) {
+                continue;
+            }
+            JarURLConnection jarConnection = (JarURLConnection) connection;
+            JarFile jarFile = jarConnection.getJarFile();
+
+            int endOfFileName = path.indexOf('#', index);
+            endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
+            String fileName = path.substring(index+1, endOfFileName);
+            JarEntry jarEntry = jarFile.getJarEntry(fileName);
+            if (jarEntry == null) {
+                continue;
+            }
+            InputStream in = null;
+            OutputStream out = resp.getOutputStream();
+            try {
+                in = jarFile.getInputStream(jarEntry);
+                IOUtils.copy(in, out);
+            } finally {
+                IOUtils.closeQuietly(in);
+                out.close();
+            }
+            return;
         }
         resp.sendError(404);
     }
