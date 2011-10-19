@@ -1,0 +1,8 @@
+# this is the location where jar bundles get stored
+# the distribution is not supposed to include any bundles as
+# users of the distribution will use it as a war overlay
+# so ensure that any bundles used for local testing do not end
+# up in SCM
+# 
+# also has the side-effect of ensuring that git creates this folder
+*.jar
