@@ -84,7 +84,13 @@ public class ServletContextListenerImpl implements ServletContextListener {
                                 + ", ignoring");
                         continue;
                     }
-                    Toc toc = Toc.read(jarFile.getInputStream(tocEntry));
+                    Toc toc;
+                    try {
+                        toc = Toc.read(jarFile.getInputStream(tocEntry));
+                    } catch (IllegalStateException e) {
+                        application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                        continue;
+                    }
                     contents.put(key, toc);
                     application.log(path + " successfully parsed and added as " + key);
                     if (indexWriter != null) {
@@ -101,6 +107,9 @@ public class ServletContextListenerImpl implements ServletContextListener {
                                     stack.push(entry.getChildren().iterator());
                                 }
                                 String file = entry.getHref();
+                                if (file == null) {
+                                    continue;
+                                }
                                 int hashIndex = file.indexOf('#');
                                 if (hashIndex != -1) {
                                     file = file.substring(0, hashIndex);
@@ -111,7 +120,8 @@ public class ServletContextListenerImpl implements ServletContextListener {
                                     continue;
                                 }
                                 Document document = new Document();
-                                document.add(new Field("title", entry.getLabel(), Field.Store.YES, Field.Index.ANALYZED));
+                                document.add(
+                                        new Field("title", entry.getLabel(), Field.Store.YES, Field.Index.ANALYZED));
                                 document.add(new Field("href", entry.getHref(), Field.Store.YES, Field.Index.NO));
                                 JarEntry docEntry = jarFile.getJarEntry(file);
                                 if (docEntry == null) {
@@ -122,7 +132,8 @@ public class ServletContextListenerImpl implements ServletContextListener {
                                 try {
                                     inputStream = jarFile.getInputStream(docEntry);
                                     org.jsoup.nodes.Document docDoc = Jsoup.parse(IOUtils.toString(inputStream));
-                                    document.add(new Field("contents", docDoc.body().text(), Field.Store.NO, Field.Index.ANALYZED));
+                                    document.add(new Field("contents", docDoc.body().text(), Field.Store.NO,
+                                            Field.Index.ANALYZED));
                                     indexWriter.addDocument(document);
                                 } finally {
                                     IOUtils.closeQuietly(inputStream);

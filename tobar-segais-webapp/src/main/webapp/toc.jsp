@@ -29,8 +29,16 @@
             Entry entry = bundleEntry.getValue();
             String bundle = bundleEntry.getKey();
     %>
-    <li><a target="content" href="/content/<%=bundle+"/"+entry.getHref()%>"><span
-            class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span></a><%
+    <li>
+        <%if (entry.getHref() != null) {%>
+        <a target="content" href="/content/<%=bundle+"/"+entry.getHref()%>">
+            <%}%>
+        <span
+            class="<%=entry.getChildren().isEmpty()?"file":"folder"%>"><%=entry.getLabel()%></span>
+            <%if (entry.getHref() != null) {%>
+            </a>
+                <%}%>
+            <%
         Stack<Iterator<? extends Entry>> stack = new Stack<Iterator<? extends Entry>>();
         if (!entry.getChildren().isEmpty()) {
             out.print("<ul>");

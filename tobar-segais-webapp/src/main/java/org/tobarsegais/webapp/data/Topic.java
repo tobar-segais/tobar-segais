@@ -26,19 +26,23 @@ public class Topic extends Entry {
             throw new IllegalStateException("Expecting a start element");
         }
         if (!"topic".equals(reader.getLocalName())) {
-            throw new IllegalStateException("Expecting a <topic> element");
+            throw new IllegalStateException("Expecting a <topic> element, got a <" + reader.getLocalName() + ">");
         }
         String label = reader.getAttributeValue(null, "label");
         String href = reader.getAttributeValue(null, "href");
         List<Topic> topics = new ArrayList<Topic>();
-        outer:
-        while (reader.hasNext()) {
+        int depth = 0;
+        while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    topics.add(Topic.read(reader));
+                    if (depth == 0 && "topic".equals(reader.getLocalName())) {
+                        topics.add(Topic.read(reader));
+                    }
+                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
-                    break outer;
+                    depth--;
+                    break;
             }
         }
         return new Topic(label, href, topics);

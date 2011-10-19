@@ -66,14 +66,18 @@ public class Plugin {
         String version = reader.getAttributeValue(null, "version");
         String providerName = reader.getAttributeValue(null, "provider-name");
         List<Extension> extensions = new ArrayList<Extension>();
-        outer:
-        while (reader.hasNext()) {
+        int depth = 0;
+        while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    extensions.add(Extension.read(reader));
+                    if (depth == 0 && "extension".equals(reader.getLocalName())) {
+                        extensions.add(Extension.read(reader));
+                    }
+                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
-                    break outer;
+                    depth--;
+                    break;
             }
         }
         return new Plugin(name, id, version, providerName, extensions);

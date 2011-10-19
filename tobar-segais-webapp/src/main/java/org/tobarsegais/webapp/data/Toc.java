@@ -49,14 +49,18 @@ public class Toc extends Entry {
         String label = reader.getAttributeValue(null, "label");
         String topic = reader.getAttributeValue(null, "topic");
         List<Topic> topics = new ArrayList<Topic>();
-        outer:
-        while (reader.hasNext()) {
+        int depth = 0;
+        while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    topics.add(Topic.read(reader));
+                    if (depth == 0 && "topic".equals(reader.getLocalName())) {
+                        topics.add(Topic.read(reader));
+                    }
+                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
-                    break outer;
+                    depth--;
+                    break;
             }
         }
         return new Toc(label, topic, topics);
