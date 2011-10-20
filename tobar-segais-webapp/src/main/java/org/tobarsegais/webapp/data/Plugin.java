@@ -72,8 +72,9 @@ public class Plugin {
                 case XMLStreamConstants.START_ELEMENT:
                     if (depth == 0 && "extension".equals(reader.getLocalName())) {
                         extensions.add(Extension.read(reader));
+                    } else {
+                        depth++;
                     }
-                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
                     depth--;

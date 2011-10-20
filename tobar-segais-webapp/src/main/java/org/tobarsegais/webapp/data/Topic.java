@@ -37,8 +37,9 @@ public class Topic extends Entry {
                 case XMLStreamConstants.START_ELEMENT:
                     if (depth == 0 && "topic".equals(reader.getLocalName())) {
                         topics.add(Topic.read(reader));
+                    } else {
+                        depth++;
                     }
-                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
                     depth--;
