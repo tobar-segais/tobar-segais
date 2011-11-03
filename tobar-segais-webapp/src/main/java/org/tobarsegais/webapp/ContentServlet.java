@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -35,8 +36,14 @@ public class ContentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
+        Map<String,String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
         for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
-            URL resource = getServletContext().getResource("/WEB-INF/bundles" + path.substring(0, index) + ".jar");
+            String key = path.substring(0, index);
+            if (key.startsWith("/")) key = key.substring(1);
+            if (bundles.containsKey(key)) {
+                key = bundles.get(key);
+            }
+            URL resource = getServletContext().getResource("/WEB-INF/bundles/" + key + ".jar");
             if (resource == null) {
                 continue;
             }

@@ -43,6 +43,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -51,6 +52,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * Loads all the bundles.
@@ -58,6 +60,7 @@ import java.util.jar.JarFile;
 public class ServletContextListenerImpl implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext application = sce.getServletContext();
+        Map<String, String> bundles = new HashMap<String, String>();
         Map<String, Toc> contents = new LinkedHashMap<String, Toc>();
         Directory index = new RAMDirectory();
         IndexWriterConfig indexWriterConfig =
@@ -83,6 +86,19 @@ public class ServletContextListenerImpl implements ServletContextListener {
                     }
                     JarURLConnection jarConnection = (JarURLConnection) connection;
                     JarFile jarFile = jarConnection.getJarFile();
+                    Manifest manifest = jarFile.getManifest();
+                    if (manifest != null) {
+                        String symbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+                        if (symbolicName != null) {
+                            int i = symbolicName.indexOf(';');
+                            if (i != -1) {
+                                symbolicName = symbolicName.substring(0, i);
+                            }
+                            bundles.put(symbolicName, key);
+                            key = symbolicName;
+                        }
+                    }
+
                     JarEntry pluginEntry = jarFile.getJarEntry("plugin.xml");
                     if (pluginEntry == null) {
                         application.log(path + " does not contain a plugin.xml file, ignoring");
@@ -172,6 +188,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
             }
         }
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
+        application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
         application.setAttribute("index", index);
     }
 
