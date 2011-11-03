@@ -33,24 +33,32 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ContentServlet extends HttpServlet {
+
+    /**
+     * Some bundles can use links that are relative to {@code PLUGINS_ROOT} while others use relative links.
+     */
+    public static final String PLUGINS_ROOT = "/PLUGINS_ROOT/";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
         if (path == null) {
             path = req.getServletPath();
         }
-        int index = path.indexOf("/PLUGINS_ROOT/");
+        int index = path.indexOf(PLUGINS_ROOT);
         if (index != -1) {
-            path = path.substring(index + "/PLUGINS_ROOT".length());
+            path = path.substring(index + PLUGINS_ROOT.length() - 1);
         }
-        Map<String,String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
+        Map<String, String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
         for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
             String key = path.substring(0, index);
-            if (key.startsWith("/")) key = key.substring(1);
+            if (key.startsWith("/")) {
+                key = key.substring(1);
+            }
             if (bundles.containsKey(key)) {
                 key = bundles.get(key);
             }
-            URL resource = getServletContext().getResource("/WEB-INF/bundles/" + key + ".jar");
+            URL resource = getServletContext().getResource(ServletContextListenerImpl.BUNDLE_PATH + "/" + key + ".jar");
             if (resource == null) {
                 continue;
             }
@@ -64,7 +72,7 @@ public class ContentServlet extends HttpServlet {
 
             int endOfFileName = path.indexOf('#', index);
             endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
-            String fileName = path.substring(index+1, endOfFileName);
+            String fileName = path.substring(index + 1, endOfFileName);
             JarEntry jarEntry = jarFile.getJarEntry(fileName);
             if (jarEntry == null) {
                 continue;

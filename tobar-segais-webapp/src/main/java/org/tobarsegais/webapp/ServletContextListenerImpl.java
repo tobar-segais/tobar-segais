@@ -58,6 +58,9 @@ import java.util.jar.Manifest;
  * Loads all the bundles.
  */
 public class ServletContextListenerImpl implements ServletContextListener {
+
+    public static final String BUNDLE_PATH = "/WEB-INF/bundles";
+
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext application = sce.getServletContext();
         Map<String, String> bundles = new HashMap<String, String>();
@@ -72,7 +75,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
             application.log("Cannot create indexes. Search will be unavailable.", e);
             indexWriter = null;
         }
-        for (String path : (Set<String>) application.getResourcePaths("/WEB-INF/bundles")) {
+        for (String path : (Set<String>) application.getResourcePaths(BUNDLE_PATH)) {
             if (path.endsWith(".jar")) {
                 String key = path.substring("/WEB-INF/bundles/".length(), path.lastIndexOf(".jar"));
                 application.log("Parsing " + path);
