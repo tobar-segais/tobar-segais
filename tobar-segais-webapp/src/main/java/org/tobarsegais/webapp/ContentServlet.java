@@ -69,6 +69,11 @@ public class ContentServlet extends HttpServlet {
             if (jarEntry == null) {
                 continue;
             }
+            long size = jarEntry.getSize();
+            if (size > 0 && size < Integer.MAX_VALUE) {
+                resp.setContentLength((int) size);
+            }
+            resp.setContentType(getServletContext().getMimeType(fileName));
             InputStream in = null;
             OutputStream out = resp.getOutputStream();
             try {
