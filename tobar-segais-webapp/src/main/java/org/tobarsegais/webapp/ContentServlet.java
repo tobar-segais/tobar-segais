@@ -36,8 +36,15 @@ public class ContentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
+        if (path == null) {
+            path = req.getServletPath();
+        }
+        int index = path.indexOf("/PLUGINS_ROOT/");
+        if (index != -1) {
+            path = path.substring(index + "/PLUGINS_ROOT".length());
+        }
         Map<String,String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
-        for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+        for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
             String key = path.substring(0, index);
             if (key.startsWith("/")) key = key.substring(1);
             if (bundles.containsKey(key)) {
