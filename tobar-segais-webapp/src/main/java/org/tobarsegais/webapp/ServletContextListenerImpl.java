@@ -26,8 +26,9 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
-import org.tobarsegais.webapp.data.Entry;
+import org.tobarsegais.webapp.data.TocEntry;
 import org.tobarsegais.webapp.data.Extension;
+import org.tobarsegais.webapp.data.Index;
 import org.tobarsegais.webapp.data.Plugin;
 import org.tobarsegais.webapp.data.Toc;
 
@@ -65,6 +66,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
         ServletContext application = sce.getServletContext();
         Map<String, String> bundles = new HashMap<String, String>();
         Map<String, Toc> contents = new LinkedHashMap<String, Toc>();
+        Map<String, Index> indices = new LinkedHashMap<String, Index>();
         Directory index = new RAMDirectory();
         IndexWriterConfig indexWriterConfig =
                 new IndexWriterConfig(Version.LUCENE_34, new StandardAnalyzer(Version.LUCENE_34));
@@ -72,7 +74,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
         try {
             indexWriter = new IndexWriter(index, indexWriterConfig);
         } catch (IOException e) {
-            application.log("Cannot create indexes. Search will be unavailable.", e);
+            application.log("Cannot create search index. Search will be unavailable.", e);
             indexWriter = null;
         }
         for (String path : (Set<String>) application.getResourcePaths(BUNDLE_PATH)) {
@@ -108,6 +110,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
                         continue;
                     }
                     Plugin plugin = Plugin.read(jarFile.getInputStream(pluginEntry));
+
                     Extension tocExtension = plugin.getExtension("org.eclipse.help.toc");
                     if (tocExtension == null || tocExtension.getFile("toc") == null) {
                         application.log(path + " does not contain a 'org.eclipse.help.toc' extension, ignoring");
@@ -127,16 +130,31 @@ public class ServletContextListenerImpl implements ServletContextListener {
                         continue;
                     }
                     contents.put(key, toc);
+
+                    Extension indexExtension = plugin.getExtension("org.eclipse.help.index");
+                    if (indexExtension != null && indexExtension.getFile("index") != null) {
+                        JarEntry indexEntry = jarFile.getJarEntry(indexExtension.getFile("index"));
+                        if (indexEntry != null) {
+                            try {
+                                indices.put(key, Index.read(jarFile.getInputStream(indexEntry)));
+                            } catch (IllegalStateException e) {
+                                application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                            }
+                        } else {
+                            application.log(path + " is missing the referenced index: " + indexExtension.getFile("index"));
+                        }
+
+                    }
                     application.log(path + " successfully parsed and added as " + key);
                     if (indexWriter != null) {
                         application.log("Indexing content of " + path);
                         Set<String> files = new HashSet<String>();
-                        Stack<Iterator<? extends Entry>> stack = new Stack<Iterator<? extends Entry>>();
+                        Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
                         stack.push(Collections.singleton(toc).iterator());
                         while (!stack.empty()) {
-                            Iterator<? extends Entry> cur = stack.pop();
+                            Iterator<? extends TocEntry> cur = stack.pop();
                             if (cur.hasNext()) {
-                                Entry entry = cur.next();
+                                TocEntry entry = cur.next();
                                 stack.push(cur);
                                 if (!entry.getChildren().isEmpty()) {
                                     stack.push(entry.getChildren().iterator());
@@ -194,11 +212,12 @@ public class ServletContextListenerImpl implements ServletContextListener {
             try {
                 indexWriter.close();
             } catch (IOException e) {
-                application.log("Cannot create indexes. Search will be unavailable.", e);
+                application.log("Cannot create search index. Search will be unavailable.", e);
             }
             application.setAttribute("index", index);
         }
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
+        application.setAttribute("indices", Collections.unmodifiableMap(indices));
         application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
     }
 

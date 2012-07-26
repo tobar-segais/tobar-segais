@@ -19,7 +19,7 @@
 <%@ page import="org.jsoup.Jsoup" %>
 <%@ page import="org.jsoup.nodes.Document" %>
 <%@ page import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
-<%@ page import="org.tobarsegais.webapp.data.Entry" %>
+<%@ page import="org.tobarsegais.webapp.data.TocEntry" %>
 <%@ page import="org.tobarsegais.webapp.data.Toc" %>
 <%@ page import="java.io.InputStream" %>
 <%@ page import="java.net.JarURLConnection" %>
@@ -126,7 +126,7 @@
                         <ul class="filetree" id="toc">
                                 <%
                               for (Map.Entry<String, Toc> bundleEntry : contents.entrySet()) {
-                                  Entry entry = bundleEntry.getValue();
+                                  TocEntry entry = bundleEntry.getValue();
                                   String bundle = bundleEntry.getKey();
                           %>
                             <li>
@@ -140,13 +140,13 @@
                                 </a>
                                     <%}%>
                                     <%
-                                  Stack<Iterator<? extends Entry>> stack = new Stack<Iterator<? extends Entry>>();
+                                  Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
                                   if (!entry.getChildren().isEmpty()) {
                                       %>
                                 <ul><%
                                     stack.push(entry.getChildren().iterator());
                                     while (!stack.empty()) {
-                                        Iterator<? extends Entry> cur = stack.pop();
+                                        Iterator<? extends TocEntry> cur = stack.pop();
                                         if (cur.hasNext()) {
                                             entry = cur.next();
                                             stack.push(cur);

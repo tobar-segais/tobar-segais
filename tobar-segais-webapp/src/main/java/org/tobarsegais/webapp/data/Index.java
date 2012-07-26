@@ -24,24 +24,30 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-public class Toc extends TocEntry {
+public class Index implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Toc(String label, String topic, Topic... children) {
-        this(label, topic, Arrays.asList(children));
+    private final List<IndexEntry> children;
+
+    public Index(IndexEntry... children) {
+        this(Arrays.asList(children));
     }
 
-    public Toc(String label, String topic, Collection<Topic> children) {
-        super(label, topic, children);
+    public Index(Collection<IndexEntry> children) {
+        this.children = children == null || children.isEmpty()
+                ? Collections.<IndexEntry>emptyList()
+                : Collections.unmodifiableList(new ArrayList<IndexEntry>(children));
     }
 
-    public static Toc read(InputStream inputStream) throws XMLStreamException {
+    public static Index read(InputStream inputStream) throws XMLStreamException {
         try {
             return read(XMLInputFactory.newInstance().createXMLStreamReader(inputStream));
         } finally {
@@ -49,25 +55,23 @@ public class Toc extends TocEntry {
         }
     }
 
-    public static Toc read(XMLStreamReader reader) throws XMLStreamException {
+    public static Index read(XMLStreamReader reader) throws XMLStreamException {
         while (reader.hasNext() && !reader.isStartElement()) {
             reader.next();
         }
         if (reader.getEventType() != XMLStreamConstants.START_ELEMENT) {
             throw new IllegalStateException("Expecting a start element");
         }
-        if (!"toc".equals(reader.getLocalName())) {
-            throw new IllegalStateException("Expecting a <toc> element");
+        if (!"index".equals(reader.getLocalName())) {
+            throw new IllegalStateException("Expecting a <index> element, found a <" + reader.getLocalName() + ">");
         }
-        String label = reader.getAttributeValue(null, "label");
-        String topic = reader.getAttributeValue(null, "topic");
-        List<Topic> topics = new ArrayList<Topic>();
+        List<IndexEntry> entries = new ArrayList<IndexEntry>();
         int depth = 0;
         while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    if (depth == 0 && "topic".equals(reader.getLocalName())) {
-                        topics.add(Topic.read(reader));
+                    if (depth == 0 && "entry".equals(reader.getLocalName())) {
+                        entries.add(IndexEntry.read(reader));
                     } else {
                         depth++;
                     }
@@ -77,17 +81,27 @@ public class Toc extends TocEntry {
                     break;
             }
         }
-        return new Toc(label, topic, topics);
+        return new Index(entries);
     }
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
-        writer.writeStartElement("toc");
-        writer.writeAttribute("label", getLabel());
-        writer.writeAttribute("topic", getHref());
-        for (Topic topic: getChildren()) {
+        writer.writeStartElement("index");
+        for (IndexEntry topic: getChildren()) {
            topic.write(writer);
         }
         writer.writeEndElement();
     }
 
+    public List<IndexEntry> getChildren() {
+        return children == null ? Collections.<IndexEntry>emptyList() : children;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Index");
+        sb.append("{children=").append(children);
+        sb.append('}');
+        return sb.toString();
+    }
 }

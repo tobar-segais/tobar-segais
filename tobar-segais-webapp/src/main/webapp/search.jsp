@@ -1,13 +1,12 @@
-<%@ page import="org.apache.lucene.store.Directory" %>
-<%@ page import="org.apache.lucene.search.Query" %>
-<%@ page import="org.apache.lucene.queryParser.QueryParser" %>
-<%@ page import="org.apache.lucene.util.Version" %>
-<%@ page import="org.apache.lucene.analysis.standard.StandardAnalyzer" %>
-<%@ page import="org.apache.lucene.index.IndexReader" %>
-<%@ page import="org.apache.lucene.search.IndexSearcher" %>
-<%@ page import="org.apache.lucene.search.TopScoreDocCollector" %>
-<%@ page import="org.apache.lucene.search.ScoreDoc" %>
-<%@ page import="org.apache.lucene.document.Document" %>
+<%@ page import="org.tobarsegais.webapp.data.Index" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexChild" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexEntry" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexTopic" %>
+<%@ page import="org.tobarsegais.webapp.data.Toc" %>
+<%@ page import="org.tobarsegais.webapp.data.Topic" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Stack" %>
 <%--
   Created by IntelliJ IDEA.
   User: stephenc
@@ -21,37 +20,63 @@
     <title></title>
 </head>
 <body>
-   <%
-       String query = request.getParameter("query");
-       if (query == null || query.isEmpty()) {
-          %>
-   <form action="search.jsp" method="GET">
-       <input name="query">
-       <input type="submit" value="submit">
-   </form>
-          <%
-       } else {
-           Directory index = (Directory) application.getAttribute("index");
-           Query q = new QueryParser(Version.LUCENE_34, "contents", new StandardAnalyzer(Version.LUCENE_34)).parse(query);
-           int hitsPerPage = 10;
-               IndexReader reader = IndexReader.open(index);
-               IndexSearcher searcher = new IndexSearcher(reader);
-               TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
-               searcher.search(q, collector);
-               ScoreDoc[] hits = collector.topDocs().scoreDocs;
+<%
+    Map<String, Toc> tocs = (Map<String, Toc>) application.getAttribute("toc");
+    Map<String, Index> contents = (Map<String, Index>) application.getAttribute("indices");
+    Stack<Iterator<? extends IndexChild>> stack = new Stack<Iterator<? extends IndexChild>>();
+    Iterator<String> iterator = contents.keySet().iterator();
+    String key = iterator.next();
+    key = iterator.next();
 
-               // 4. display results
-               out.println("Found " + hits.length + " hits.");
-               for(int i=0;i<hits.length;++i) {
-                 int docId = hits[i].doc;
-                 Document d = searcher.doc(docId);
-                 out.println((i + 1) + ". " + d.get("title"));
-               }
-
-               // searcher can only be closed when there
-               // is no need to access the documents any more.
-               searcher.close();
-       }
-   %>
+    Toc toc = tocs.get(key);
+    Index index = contents.get(key);
+    if (!index.getChildren().isEmpty()) {
+%>
+<ul><%
+    stack.push(index.getChildren().iterator());
+    IndexChild entry;
+    int dept = 1;
+    while (!stack.empty()) {
+        Iterator<? extends IndexChild> cur = stack.pop();
+        if (!cur.hasNext()) {
+            if (dept > 1) {
+                out.print("</ul></li>");
+            }
+            dept--;
+        } else {
+            entry = cur.next();
+            stack.push(cur);
+            if (entry instanceof IndexEntry) {
+                IndexEntry indexEntry = (IndexEntry) entry;
+                out.print("<li>" + indexEntry.getKeyword());
+                if (indexEntry.getChildren() != null) {
+                    if (!indexEntry.getChildren().isEmpty()) {
+                        stack.push(indexEntry.getChildren().iterator());
+                        dept++;
+                        out.print("<ul>");
+                    }
+                } else {
+                    out.print("</li>");
+                }
+            } else if (entry instanceof IndexTopic) {
+                IndexTopic topicEntry = (IndexTopic) entry;
+                String href = topicEntry.getHref();
+                int i = href.indexOf('#');
+                href = i == -1 ? href : href.substring(0, i);
+                Topic topic = toc.lookupTopic(href);
+%>
+    <li><a href="<%=topicEntry.getHref()%>"><%=topicEntry.getTitle() == null ? (topic != null
+            ? topic.getLabel()
+            : "null") : topicEntry.getTitle()%>
+    </a></li>
+    <%
+                }
+            }
+        }
+    %>
+</ul>
+<%
+    }
+%>
 </body>
 </html>

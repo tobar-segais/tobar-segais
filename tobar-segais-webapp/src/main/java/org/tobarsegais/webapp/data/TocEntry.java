@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Entry implements Serializable {
+public class TocEntry implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class Entry implements Serializable {
     private final List<Topic> children;
     private final String href;
 
-    public Entry(String label, String href, Collection<Topic> children) {
+    public TocEntry(String label, String href, Collection<Topic> children) {
         this.label = label;
         this.children = children == null || children.isEmpty()
                 ? Collections.<Topic>emptyList()
@@ -53,7 +53,7 @@ public class Entry implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("Entry");
+        sb.append("TocEntry");
         sb.append("{label='").append(getLabel()).append('\'');
         sb.append(", href='").append(getHref()).append('\'');
         sb.append(", children=").append(getChildren());
@@ -61,4 +61,12 @@ public class Entry implements Serializable {
         return sb.toString();
     }
 
+    public Topic lookupTopic(String href) {
+        for (Topic topic: getChildren()) {
+            if (href.equals(topic.getHref())) return topic;
+            Topic r = topic.lookupTopic(href);
+            if (r != null) return r;
+        }
+        return null;
+    }
 }

@@ -20,59 +20,56 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.io.Serializable;
 
-public class Topic extends TocEntry {
+public class IndexSubpath implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Topic(String label, String href, Topic... children) {
-        this(label, href, Arrays.asList(children));
+    private final String keyword;
+
+    public IndexSubpath(String keyword) {
+        this.keyword = keyword;
     }
 
-    public Topic(String label, String href, Collection<Topic> children) {
-        super(label, href, children);
-    }
-
-    public static Topic read(XMLStreamReader reader) throws XMLStreamException {
+    public static IndexSubpath read(XMLStreamReader reader) throws XMLStreamException {
         if (reader.getEventType() != XMLStreamConstants.START_ELEMENT) {
             throw new IllegalStateException("Expecting a start element");
         }
-        if (!"topic".equals(reader.getLocalName())) {
-            throw new IllegalStateException("Expecting a <topic> element, got a <" + reader.getLocalName() + ">");
+        if (!"subpath".equals(reader.getLocalName())) {
+            throw new IllegalStateException("Expecting a <subpath> element, got a <" + reader.getLocalName() + ">");
         }
-        String label = reader.getAttributeValue(null, "label");
-        String href = reader.getAttributeValue(null, "href");
-        List<Topic> topics = new ArrayList<Topic>();
+        String keyword = reader.getAttributeValue(null, "keyword");
         int depth = 0;
         while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    if (depth == 0 && "topic".equals(reader.getLocalName())) {
-                        topics.add(Topic.read(reader));
-                    } else {
-                        depth++;
-                    }
+                    depth++;
                     break;
                 case XMLStreamConstants.END_ELEMENT:
                     depth--;
                     break;
             }
         }
-        return new Topic(label, href, topics);
+        return new IndexSubpath(keyword);
     }
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
-        writer.writeStartElement("topic");
-        writer.writeAttribute("label", getLabel());
-        writer.writeAttribute("href", getHref());
-        for (Topic topic : getChildren()) {
-            topic.write(writer);
-        }
+        writer.writeStartElement("subpath");
+        writer.writeAttribute("keyword", getKeyword());
         writer.writeEndElement();
     }
 
+    public String getKeyword() {
+        return keyword;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Subpath");
+        sb.append("{keyword='").append(keyword).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
