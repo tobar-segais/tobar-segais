@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2011 Stephen Connolly
+  ~ Copyright 2011-12 Stephen Connolly
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
   </session-config>
 
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
   <listener>
@@ -41,6 +41,16 @@
   <servlet-mapping>
     <servlet-name>content</servlet-name>
     <url-pattern>/content/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>docs-servlet</servlet-name>
+    <servlet-class>org.tobarsegais.webapp.DocsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>docs-servlet</servlet-name>
+    <url-pattern>/docs/*</url-pattern>
   </servlet-mapping>
 
 </web-app>

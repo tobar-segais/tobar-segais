@@ -157,7 +157,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
                                 Document document = new Document();
                                 document.add(
                                         new Field("title", entry.getLabel(), Field.Store.YES, Field.Index.ANALYZED));
-                                document.add(new Field("href", entry.getHref(), Field.Store.YES, Field.Index.NO));
+                                document.add(new Field("href", key+"/"+entry.getHref(), Field.Store.YES, Field.Index.NO));
                                 JarEntry docEntry = jarFile.getJarEntry(file);
                                 if (docEntry == null) {
                                     // ignore missing file
@@ -190,9 +190,16 @@ public class ServletContextListenerImpl implements ServletContextListener {
                 }
             }
         }
+        if (indexWriter != null) {
+            try {
+                indexWriter.close();
+            } catch (IOException e) {
+                application.log("Cannot create indexes. Search will be unavailable.", e);
+            }
+            application.setAttribute("index", index);
+        }
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
         application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
-        application.setAttribute("index", index);
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
