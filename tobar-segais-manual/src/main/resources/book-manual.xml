@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xsi:schemaLocation="http://docbook.org/ns/docbook http://docbook.org/xml/5.0/xsd/docbook.xsd"
+      xml:lang="en"
+      version="5.0"
+      xml:id="book-manual">
+  <title>${project.name}</title>
+  <info>
+    <edition>${project.version}</edition>
+    <authorgroup>
+      <author>
+        <personname>Stephen Connolly</personname>
+      </author>
+    </authorgroup>
+    <abstract role="description-short">
+      <para>${project.description}</para>
+    </abstract>
+  </info>
+  <preface xml:id="copyright" role="copyrightpg">
+    <title>Copyright</title>
+
+    <para>Copyright © 2012 Stephen Connolly</para>
+
+    <para>Oracle and Java are registered trademarks of Oracle and/or its affiliates.
+    </para>
+
+    <para>Apache, Apache Ant, Apache Maven, Ant and Maven are trademarks of
+      The Apache Software Foundation. Used with permission. No endorsement by
+      The Apache Software Foundation is implied by the use of these marks.
+    </para>
+
+    <para>Other names may be trademarks of their respective owners.
+      Many of the designations used by manufacturers and sellers
+      to distinguish their products are claimed as trademarks. Where those
+      designations appear in this book, and the author(s) were aware
+      of a trademark claim, the designations have been printed in caps or initial
+      caps.
+    </para>
+
+    <para>While every precaution has been taken in the preparation of this book,
+      the publisher and authors assume no responsibility for errors or omissions,
+      or for damages resulting from the use of the information contained
+      herein.
+    </para>
+  </preface>
+  
+  <chapter>
+    <title>Introduction</title>
+    <section>
+      <title>Introduction</title>
+      <para>
+        <indexterm><primary>sob</primary><seealso>insults</seealso><seealso>crying</seealso></indexterm>
+        Blah
+      </para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Installation</title>
+    <section>
+      <title>Introduction</title>
+      <para>
+        <indexterm><primary>boo</primary></indexterm>
+        <indexterm><primary>boo</primary><see>ghosts</see></indexterm>
+        <indexterm><primary>boo</primary><secondary>hoo</secondary><see>sob</see></indexterm>
+        Blah
+      </para>
+    </section>
+  </chapter>
+
+  <index></index>
+</book>
