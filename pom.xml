@@ -182,6 +182,17 @@
   </build>
 
   <profiles>
+
+    <profile>
+      <id>run</id>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
+      <build>
+        <defaultGoal>verify</defaultGoal>
+      </build>
+    </profile>
+
     <profile>
       <id>sonatype-oss-release</id>
       <build>
