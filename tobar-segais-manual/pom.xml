@@ -73,7 +73,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/book-manual.pdf</file>
+                  <file>${project.build.directory}/${project.build.finalName}.pdf</file>
                   <type>pdf</type>
                 </artifact>
               </artifacts>
@@ -133,9 +133,13 @@
             </goals>
             <configuration>
               <target>
-                <copy todir="${project.build.outputDirectory}">
+                <move todir="${project.build.outputDirectory}">
                   <fileset dir="${project.build.directory}/docbook/book-manual"/>
-                  <fileset dir="${project.build.directory}/docbook">
+                </move>
+                <move file="${project.build.directory}/docbook/book-manual.pdf"
+                      tofile="${project.build.directory}/${project.build.finalName}.pdf"/>
+                <copy todir="${project.build.outputDirectory}">
+                    <fileset dir="${project.build.directory}/docbook">
                     <include name="**/*.png"/>
                     <include name="**/*.jpeg"/>
                     <include name="**/*.jpg"/>
