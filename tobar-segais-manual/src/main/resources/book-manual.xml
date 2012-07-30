@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <book xmlns="http://docbook.org/ns/docbook"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:xi="http://www.w3.org/2001/XInclude"
       xsi:schemaLocation="http://docbook.org/ns/docbook http://docbook.org/xml/5.0/xsd/docbook.xsd"
       xml:lang="en"
       version="5.0"
@@ -23,15 +22,23 @@
 
     <para>Copyright © 2012 Stephen Connolly</para>
 
-    <para>Oracle and Java are registered trademarks of Oracle and/or its affiliates.
+    <para>
+      ‘Oracle’ and ‘Java’ are registered trademarks of Oracle and/or its affiliates.
     </para>
 
-    <para>Apache, Apache Ant, Apache Maven, Ant and Maven are trademarks of
-      The Apache Software Foundation. Used with permission. No endorsement by
-      The Apache Software Foundation is implied by the use of these marks.
+    <para>
+      ‘Apache’, ‘Apache Ant’, ‘Apache Lucene’, ‘Apache Maven’, ‘Ant’, ‘Lucene’ and ‘Maven’ are trademarks of
+      The Apache Software Foundation. Used with permission. No endorsement by The Apache Software Foundation is
+      implied by the use of these marks.
     </para>
 
-    <para>Other names may be trademarks of their respective owners.
+    <para>
+      ‘Eclipse’ is a trademark of the Eclipse Foundation, Inc. No endorsement by the Eclipse Foundation is
+      implied by the use of these marks.
+    </para>
+
+    <para>
+      Other names may be trademarks of their respective owners.
       Many of the designations used by manufacturers and sellers
       to distinguish their products are claimed as trademarks. Where those
       designations appear in this book, and the author(s) were aware
@@ -39,34 +46,230 @@
       caps.
     </para>
 
-    <para>While every precaution has been taken in the preparation of this book,
+    <para>
+      While every precaution has been taken in the preparation of this book,
       the publisher and authors assume no responsibility for errors or omissions,
       or for damages resulting from the use of the information contained
       herein.
     </para>
   </preface>
-  
+
   <chapter>
     <title>Introduction</title>
-    <section>
-      <title>Introduction</title>
+    <blockquote>
+      <attribution>Irish mythology</attribution>
       <para>
-        <indexterm><primary>sob</primary><seealso>insults</seealso><seealso>crying</seealso></indexterm>
-        Blah
+        An ordinary salmon ate nine hazelnuts that fell into Tobar Segais - the Well of Wisdom - from
+        the nine hazel trees that surrounded the well, and gained all the world's knowledge.
       </para>
-    </section>
+    </blockquote>
+    <para>
+      Tobar Segais is a web application for hosting documentation in the Eclipse InfoCenter plugin format.
+      It is built on the following technologies:
+      <itemizedlist>
+        <listitem>
+          <para>Java 1.6</para>
+        </listitem>
+        <listitem>
+          <para>Java Servlet Specification 2.5</para>
+        </listitem>
+        <listitem>
+          <para>Twitter Bootstrap</para>
+        </listitem>
+        <listitem>
+          <para>JQuery</para>
+        </listitem>
+        <listitem>
+          <para>Apache Lucene</para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <figure>
+        <title>Screenshot of the Tobar Segais web application
+           <indexterm>
+              <primary>Screenshot</primary>
+           </indexterm>
+        </title>
+        <screenshot>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="screenshot.png" format="PNG" width="100%"/>
+                </imageobject>
+            </mediaobject>
+        </screenshot>
+    </figure>
+  </chapter>
+
+  <chapter xml:id="building">
+    <title>Building</title>
+    <para>
+      By default the Tobar Segais web application does not bundle any documentation, so in order to have a useful
+      web application you must build a custom version that includes the desired InfoCenter plugin bundles.
+    </para>
+    <para>
+      The easiest way to build the Tobar Segais web application is using Apache Maven's WAR Overlays feature.
+      Start by creating a basic <code>pom.xml</code> that depends on the Tobar Segais Web application:
+    </para>
+    <informalexample>
+      <?dbfo pgwide="1"?>
+      <?dbfo wrap-option="wrap"?>
+    <programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+      http://maven.apache.org/maven-v4_0_0.xsd"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;com.mydomain.reversed&lt;/groupId&gt;
+  &lt;artifactId&gt;docs-webapp&lt;/artifactId&gt;
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+  &lt;packaging&gt;war&lt;/packaging&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.tobarsegais&lt;/groupId&gt;
+      &lt;artifactId&gt;tobar-segais-webapp&lt;/artifactId&gt;
+      &lt;version&gt;${project.version}&lt;/version&gt;
+      &lt;type&gt;war&lt;/type&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.mydomain.reversed&lt;/groupId&gt;
+      &lt;artifactId&gt;docs-infocenter-plugin&lt;/artifactId&gt;
+      &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;phase&gt;generate-resources&lt;/phase&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;copy-dependencies&lt;/goal&gt;
+            &lt;/goals&gt;
+            &lt;configuration&gt;
+              &lt;outputDirectory&gt;
+                \${project.build.directory}/\${project.build.finalName}/WEB-INF/bundles
+              &lt;/outputDirectory&gt;
+              &lt;includeScope&gt;provided&lt;/includeScope&gt;
+            &lt;/configuration&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+
+&lt;/project&gt;</programlisting>
+    </informalexample>
+    
+    <para>
+      To build the web application, just invoke Apache Maven with a phase of “package” or later, e.g.
+    </para>
+    
+    <informalexample>
+      <screen><userinput><command>mvn</command> package</userinput></screen>
+    </informalexample>
+
+    <para>
+      The generated <code>.war</code> file can then be deployed in any Servlet container that supports the Servlet 2.5
+      specification.
+    </para>
+
   </chapter>
 
   <chapter>
-    <title>Installation</title>
+    <title>Customization</title>
     <section>
       <title>Introduction</title>
       <para>
-        <indexterm><primary>boo</primary></indexterm>
-        <indexterm><primary>boo</primary><see>ghosts</see></indexterm>
-        <indexterm><primary>boo</primary><secondary>hoo</secondary><see>sob</see></indexterm>
-        Blah
+        Not everyone will be happy with everything about how the Tobar Segais web application looks.
+        However, you will be happy to know that the Tobar Segais web application supports a number of customization
+        points to enable you to get it looking just the way you want.
       </para>
+    </section>
+    <section>
+      <title>Stylesheet customization</title>
+      <para>
+        The core look of Tobar Segais is based on Twitter Bootstrap. Any custom full build of Bootstrap 2.0.x should
+        work as a drop in replacement that offers the customized look and feel.
+      </para>
+      <para>
+        Assuming you are building your Tobar Segais web application using the technique described in
+        <xref linkend="building" xrefstyle="select:label"/> all you need do is create the file 
+        <code>src/main/webapp/css/bootstrap.min.css</code> containing the minified version of your custom build
+        of Twitter Bootstrap.
+      </para>
+      <para>
+        If you have customized versions of the Glyph Icons, these should be put at the paths
+        <code>src/main/webapp/img/glyphicons-halflings.png</code> and
+        <code>src/main/webapp/img/glyphicons-halflings-white.png</code>
+      </para>
+    </section>
+    <section>
+      <title>Navbar customization</title>
+      <para>
+        The Navbar at the top of the page can be easily customized by providing a replacement JSP Fragment.
+      </para>
+      <para>
+        Assuming you are building your Tobar Segais web application using the technique described in
+        <xref linkend="building" xrefstyle="select:label"/> all you need do is create the file 
+        <code>src/main/webapp/WEB-INF/custom-navbar.jspf</code> containing the custom navbar. For example, the
+        default Navbar has the following <code>custom-navbar.jspf</code>:
+      </para>
+      <informalexample>
+        <?dbfo pgwide="1"?>
+        <?dbfo wrap-option="wrap"?>
+        <programlisting>&lt;%@ page contentType="text/html;charset=UTF-8" language="java" %&gt;
+&lt;div class="navbar navbar-fixed-top no-print"&gt;
+  &lt;div class="navbar-inner"&gt;
+    &lt;div class="container-fluid"&gt;
+      &lt;a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"&gt;
+        &lt;span class="icon-bar"&gt;&lt;/span&gt;
+        &lt;span class="icon-bar"&gt;&lt;/span&gt;
+        &lt;span class="icon-bar"&gt;&lt;/span&gt;
+      &lt;/a&gt;
+      &lt;a class="brand" href="http://www.tobarsegais.org/"&gt;
+        &lt;img src="/img/header-logo.png" border="0"/&gt;
+        Tobar Segais
+      &lt;/a&gt;
+      &lt;div class="nav-collapse"&gt;
+       &lt;ul class="nav"&gt;
+         &lt;li class="active"&gt;&lt;a href="${request.contextPath}/docs/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+       &lt;/ul&gt;
+     &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</programlisting>
+      </informalexample>
+    </section>
+    <section>
+      <title>Icon customization</title>
+      <para>
+        There are a number of icons which can be replaced quite simply.
+      </para>
+      <para>
+        The following instructions assume you are building your Tobar Segais web application using the technique
+        described in
+        <xref linkend="building" xrefstyle="select:label"/>.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para><emphasis>Header logo</emphasis> - <code>src/main/webapp/img/header-logo.png</code></para>
+        </listitem>
+        <listitem>
+          <para><emphasis>Favicon</emphasis> - <code>src/main/webapp/img/favicon.ico</code></para>
+        </listitem>
+        <listitem>
+          <para><emphasis>Apple Touch Icons</emphasis> - <code>src/main/webapp/img/apple-touch-icon.png</code>,
+            <code>src/main/webapp/img/apple-touch-icon-72x72.png</code>,
+            <code>src/main/webapp/img/apple-touch-icon-114x114.png</code> and
+            <code>src/main/webapp/img/apple-touch-icon-144x144.png</code>,
+          </para>
+        </listitem>
+      </itemizedlist>
     </section>
   </chapter>
 
