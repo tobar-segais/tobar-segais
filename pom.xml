@@ -27,7 +27,7 @@
 
   <groupId>org.tobarsegais</groupId>
   <artifactId>tobarsegais-parent</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Tobar Segais: Parent POM</name>
