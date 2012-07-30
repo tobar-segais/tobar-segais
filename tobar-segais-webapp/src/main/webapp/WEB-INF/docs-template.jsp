@@ -103,7 +103,7 @@
 <!--/.well -->
 </div>
 <!--/span-->
-<div class="span8 scrollable">
+<div class="span8">
     <div id="content"><tags:contents/></div>
 </div>
 </div>
