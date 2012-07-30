@@ -14,14 +14,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.tobarsegais</groupId>
     <artifactId>tobarsegais-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <artifactId>tobar-segais-manual</artifactId>
@@ -134,17 +133,16 @@
             <configuration>
               <target>
                 <move todir="${project.build.outputDirectory}">
-                  <fileset dir="${project.build.directory}/docbook/book-manual"/>
+                  <fileset dir="${project.build.directory}/docbook/book-manual" />
                 </move>
-                <move file="${project.build.directory}/docbook/book-manual.pdf"
-                      tofile="${project.build.directory}/${project.build.finalName}.pdf"/>
+                <move file="${project.build.directory}/docbook/book-manual.pdf" tofile="${project.build.directory}/${project.build.finalName}.pdf" />
                 <copy todir="${project.build.outputDirectory}">
                     <fileset dir="${project.build.directory}/docbook">
-                    <include name="**/*.png"/>
-                    <include name="**/*.jpeg"/>
-                    <include name="**/*.jpg"/>
-                    <include name="**/*.gif"/>
-                    <include name="**/*.svg"/>
+                    <include name="**/*.png" />
+                    <include name="**/*.jpeg" />
+                    <include name="**/*.jpg" />
+                    <include name="**/*.gif" />
+                    <include name="**/*.svg" />
                   </fileset>
                 </copy>
               </target>
