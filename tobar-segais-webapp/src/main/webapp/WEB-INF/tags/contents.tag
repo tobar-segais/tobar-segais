@@ -69,7 +69,7 @@
         }
     }
     if (!found) {
-        %><jsp:include page="/WEB-INF/default-help.jspf"/><%
+        %><%@include file="/WEB-INF/default-help.jspf"%><%
     }
 
 %></div>

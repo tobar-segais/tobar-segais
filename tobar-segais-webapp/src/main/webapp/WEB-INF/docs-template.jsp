@@ -44,7 +44,7 @@
           href="${pageContext.request.contextPath}/img/apple-touch-icon.png">
 </head>
 <body>
-<jsp:include page="custom-navbar.jspf"/>
+<%@include file="custom-navbar.jspf"%>
 <div class="container-fluid">
 <div class="row-fluid">
 <div class="span4 no-print">

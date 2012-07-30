@@ -237,7 +237,7 @@
       &lt;/a&gt;
       &lt;div class="nav-collapse"&gt;
        &lt;ul class="nav"&gt;
-         &lt;li class="active"&gt;&lt;a href="${request.contextPath}/docs/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+         &lt;li class="active"&gt;&lt;a href="${pageContext.request.contextPath}/docs/"&gt;Home&lt;/a&gt;&lt;/li&gt;
        &lt;/ul&gt;
      &lt;/div&gt;
     &lt;/div&gt;
