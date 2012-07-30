@@ -40,6 +40,16 @@
 <%@ page import="org.apache.lucene.search.Query" %>
 <%@ page import="org.apache.lucene.store.Directory" %>
 <%@ page import="java.net.URLEncoder" %>
+<%@ page import="org.tobarsegais.webapp.data.Index" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexEntry" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexTopic" %>
+<%@ page import="org.tobarsegais.webapp.data.Topic" %>
+<%@ page import="java.util.AbstractMap" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="org.tobarsegais.webapp.data.IndexSee" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -100,11 +110,14 @@
             <div class="well sidebar-nav no-print">
                 <%
                     String query = request.getParameter("query");
+                    String keywordParam = request.getParameter("keywords");
                     String contentsActive = "";
                     String indexActive = "";
                     String searchActive = "";
                     if (query != null && query.length() > 0) {
                         searchActive = "active";
+                    } else if (keywordParam != null) {
+                        indexActive = "active";
                     } else {
                         contentsActive = "active";
                     }
@@ -115,7 +128,7 @@
                     <li class="<%=indexActive%>"><a href="#index-nav" data-toggle="tab"><i class="icon-list"></i>Index</a></li>
                     <li class="<%=searchActive%>"><a href="#search-nav" data-toggle="tab"><i class="icon-search"></i>Search</a></li>
                 </ul>
-                <div class="tab-content">
+                <div class="tab-content" id="sidebar-content">
                     <div class="tab-pane <%=contentsActive%>" id="contents-nav">
                         <%
 
@@ -123,7 +136,7 @@
                             Map<String, Toc> contents = (Map<String, Toc>) application.getAttribute("toc");
 
                         %>
-                        <ul class="filetree" id="toc">
+                        <ul id="toc">
                                 <%
                               for (Map.Entry<String, Toc> bundleEntry : contents.entrySet()) {
                                   TocEntry entry = bundleEntry.getValue();
@@ -179,8 +192,94 @@
                                 </ul>
                     </div>
                     <div class="tab-pane <%=indexActive%>" id="index-nav">
-                        I am index
-                    </div>
+                        <ul>
+                            <%
+                                Index keywords = (Index) application.getAttribute("keywords");
+
+                                Stack<Iterator<IndexEntry>> stack = new Stack<Iterator<IndexEntry>>();
+
+                                if (keywords != null) {
+                                    stack.push(keywords.getEntries().values().iterator());
+                                    while (!stack.isEmpty()) {
+                                        final Iterator<IndexEntry> iterator = stack.pop();
+                                        if (iterator.hasNext()) {
+                                            IndexEntry entry = iterator.next();
+                                            stack.push(iterator);
+                                            out.print("<li id=\"kwdidx-");
+                                            out.print(keywords.getId(entry));
+                                            out.print("\">");
+                            %><%=entry.getKeyword()%><%
+                            if (entry.hasChildren()) {
+                                out.print("<ul>");
+                                List<Map.Entry<String, String>> topics = new ArrayList<Map.Entry<String, String>>(entry.getTopics().size());
+                                for (IndexTopic topic : entry.getTopics()) {
+                                    String title = topic.getTitle();
+                                    if (title == null) {
+                                        String href = topic.getHref().replaceAll("#.*$", "");
+                                        Toc toc = contents.get(topic.getBundle());
+                                        Topic tocTopic = toc.lookupTopic(href);
+                                        if (tocTopic != null) {
+                                            title = tocTopic.getLabel();
+                                        }
+                                    }
+                                    if (title != null) {
+                                        String href = topic.getHref();
+                                        if (href.indexOf('#') == -1) {
+                                            href = href + "?keywords";
+                                        } else {
+                                            href = href.replaceFirst("#", "?keywords#");
+                                        }
+                                        topics.add(new AbstractMap.SimpleImmutableEntry<String, String>(topic.getBundle()+"/"+href, title));
+                                    }
+                                }
+                                Collections.sort(topics, new Comparator<Map.Entry<String, String>>() {
+                                    public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+                                        return o1.getValue().compareToIgnoreCase(o2.getValue());
+                                    }
+                                });
+                                for (Map.Entry<String, String> topic : topics) {
+                        %>
+                            <li><a href="/docs/<%=topic.getKey()%>"><%=topic.getValue()%>
+                            </a></li>
+                            <%
+                                }
+                                for (IndexSee see : entry.getSees()) {
+                                    final IndexEntry indexEntry = keywords.findEntry(see.getKeywordPath());
+                                    if (indexEntry != null) {
+                                        final String id = keywords.getId(indexEntry);
+                                        if (id != null) {
+                                            StringBuilder buf = new StringBuilder();
+                                            boolean first = true;
+                                            for (String keyword : see.getKeywordPath()) {
+                                                if (first) {
+                                                    first = false;
+                                                } else {
+                                                    buf.append(", ");
+                                                }
+                                                buf.append(keyword);
+                                            }
+                            %>
+                            <li>See <a href="#kwdidx-<%=id%>"><%=buf.toString()%>
+                            </a></li>
+                            <%
+                                                        }
+                                                    }
+                                                }
+                                                if (entry.getSubEntries().isEmpty()) {
+                                                    out.print("</ul></li>");
+                                                } else {
+                                                    stack.push(entry.getSubEntries().values().iterator());
+                                                }
+                                            } else {
+                                                out.print("</li>");
+                                            }
+                                        } else if (!stack.isEmpty()) {
+                                            out.print("</ul></li>");
+                                        }
+                                    }
+                                }
+                            %>
+                        </ul>                    </div>
                     <div class="tab-pane <%=searchActive%>" id="search-nav">
                         <form class="form-search" method="get" action=".">
                             <input name="query" type="query" class="input-medium search-query" value="<%=query==null?"":query%>">
@@ -324,7 +423,7 @@
     }
     $(function() {
         TobairSegais.addClickSupport("#content");
-        TobairSegais.addClickSupport("#contents-nav");
+        TobairSegais.addClickSupport("#sidebar-content");
     });
 </script>
 

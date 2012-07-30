@@ -20,10 +20,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 public class IndexTopic implements IndexChild {
 
@@ -31,13 +27,15 @@ public class IndexTopic implements IndexChild {
 
     private final String title;
     private final String href;
+    private final String bundle;
 
-    public IndexTopic(String title, String href) {
+    public IndexTopic(String bundle, String href, String title) {
         this.title = title;
         this.href = href;
+        this.bundle = bundle;
     }
 
-    public static IndexTopic read(XMLStreamReader reader) throws XMLStreamException {
+    public static IndexTopic read(String bundle, XMLStreamReader reader) throws XMLStreamException {
         if (reader.getEventType() != XMLStreamConstants.START_ELEMENT) {
             throw new IllegalStateException("Expecting a start element");
         }
@@ -59,7 +57,7 @@ public class IndexTopic implements IndexChild {
                     break;
             }
         }
-        return new IndexTopic(title, href);
+        return new IndexTopic(bundle, href, title);
     }
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
@@ -77,12 +75,17 @@ public class IndexTopic implements IndexChild {
         return title;
     }
 
+    public String getBundle() {
+        return bundle;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("IndexTopic");
-        sb.append("{title='").append(title).append('\'');
+        sb.append("{bundle='").append(bundle).append('\'');
         sb.append(", href='").append(href).append('\'');
+        sb.append(", title='").append(title).append('\'');
         sb.append('}');
         return sb.toString();
     }

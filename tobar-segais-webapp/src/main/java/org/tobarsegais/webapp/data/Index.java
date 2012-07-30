@@ -29,13 +29,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.Stack;
+import java.util.TreeMap;
 
 public class Index implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     private final List<IndexEntry> children;
+    private final SortedMap<String, IndexEntry> entries;
+    private final Map<IndexEntry, String> ids;
 
     public Index(IndexEntry... children) {
         this(Arrays.asList(children));
@@ -45,17 +52,43 @@ public class Index implements Serializable {
         this.children = children == null || children.isEmpty()
                 ? Collections.<IndexEntry>emptyList()
                 : Collections.unmodifiableList(new ArrayList<IndexEntry>(children));
+        TreeMap<String,IndexEntry> entryTreeMap = new TreeMap<String, IndexEntry>();
+        for (IndexEntry entry: getChildren()) {
+            final IndexEntry existing = entryTreeMap.get(entry.getKeyword());
+            if (existing != null) {
+                entryTreeMap.put(entry.getKeyword(), IndexEntry.merge(existing, entry));
+            } else {
+                entryTreeMap.put(entry.getKeyword(), entry);
+            }
+        }
+        this.entries = Collections.unmodifiableSortedMap(entryTreeMap);
+        Map<IndexEntry, String> ids = new HashMap<IndexEntry, String>();
+        int id = 0;
+        Stack<Iterator<IndexEntry>> stack = new Stack<Iterator<IndexEntry>>();
+        stack.push(entries.values().iterator());
+        while (!stack.isEmpty()) {
+            Iterator<IndexEntry> iterator = stack.pop();
+            while (iterator.hasNext()) {
+                IndexEntry indexEntry = iterator.next();
+                stack.push(iterator);
+                ids.put(indexEntry, Integer.toHexString(id++));
+                if (!indexEntry.getSubEntries().isEmpty()) {
+                    stack.push(indexEntry.getSubEntries().values().iterator());
+                }
+            }
+        }
+        this.ids = Collections.unmodifiableMap(ids);
     }
 
-    public static Index read(InputStream inputStream) throws XMLStreamException {
+    public static Index read(String bundle, InputStream inputStream) throws XMLStreamException {
         try {
-            return read(XMLInputFactory.newInstance().createXMLStreamReader(inputStream));
+            return read(bundle, XMLInputFactory.newInstance().createXMLStreamReader(inputStream));
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
     }
 
-    public static Index read(XMLStreamReader reader) throws XMLStreamException {
+    public static Index read(String bundle, XMLStreamReader reader) throws XMLStreamException {
         while (reader.hasNext() && !reader.isStartElement()) {
             reader.next();
         }
@@ -71,7 +104,7 @@ public class Index implements Serializable {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
                     if (depth == 0 && "entry".equals(reader.getLocalName())) {
-                        entries.add(IndexEntry.read(reader));
+                        entries.add(IndexEntry.read(bundle, Collections.<String>emptyList(), reader));
                     } else {
                         depth++;
                     }
@@ -92,16 +125,46 @@ public class Index implements Serializable {
         writer.writeEndElement();
     }
 
-    public List<IndexEntry> getChildren() {
-        return children == null ? Collections.<IndexEntry>emptyList() : children;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Index");
-        sb.append("{children=").append(children);
+        sb.append("{children=").append(getChildren());
         sb.append('}');
         return sb.toString();
     }
+
+    public List<IndexEntry> getChildren() {
+        return children == null ? Collections.<IndexEntry>emptyList() : children;
+    }
+
+    public SortedMap<String, IndexEntry> getEntries() {
+        return entries;
+    }
+
+    public boolean hasChildren() {
+        return children != null && !children.isEmpty();
+    }
+
+    public IndexEntry findEntry(List<String> keywordPath) {
+        return findEntry(keywordPath.iterator());
+    }
+
+    private IndexEntry findEntry(Iterator<String> iterator) {
+        if (iterator.hasNext()) {
+            String keyword = iterator.next();
+            IndexEntry indexEntry = getEntries().get(keyword);
+            while (indexEntry != null && iterator.hasNext()) {
+                keyword = iterator.next();
+                indexEntry = indexEntry.getSubEntries().get(keyword);
+            }
+            return indexEntry;
+        }
+        return null;
+    }
+
+    public String getId(IndexEntry indexEntry) {
+        return ids.get(indexEntry);
+    }
+
 }

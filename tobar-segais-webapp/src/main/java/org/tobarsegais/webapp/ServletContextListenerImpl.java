@@ -26,6 +26,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
+import org.tobarsegais.webapp.data.IndexEntry;
 import org.tobarsegais.webapp.data.TocEntry;
 import org.tobarsegais.webapp.data.Extension;
 import org.tobarsegais.webapp.data.Index;
@@ -43,11 +44,13 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -66,7 +69,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
         ServletContext application = sce.getServletContext();
         Map<String, String> bundles = new HashMap<String, String>();
         Map<String, Toc> contents = new LinkedHashMap<String, Toc>();
-        Map<String, Index> indices = new LinkedHashMap<String, Index>();
+        List<IndexEntry> keywords = new ArrayList<IndexEntry>();
         Directory index = new RAMDirectory();
         IndexWriterConfig indexWriterConfig =
                 new IndexWriterConfig(Version.LUCENE_34, new StandardAnalyzer(Version.LUCENE_34));
@@ -136,7 +139,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
                         JarEntry indexEntry = jarFile.getJarEntry(indexExtension.getFile("index"));
                         if (indexEntry != null) {
                             try {
-                                indices.put(key, Index.read(jarFile.getInputStream(indexEntry)));
+                                keywords.addAll(Index.read(key, jarFile.getInputStream(indexEntry)).getChildren());
                             } catch (IllegalStateException e) {
                                 application.log("Could not parse " + path + " due to " + e.getMessage(), e);
                             }
@@ -216,8 +219,9 @@ public class ServletContextListenerImpl implements ServletContextListener {
             }
             application.setAttribute("index", index);
         }
+
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
-        application.setAttribute("indices", Collections.unmodifiableMap(indices));
+        application.setAttribute("keywords", new Index(keywords));
         application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
     }
 

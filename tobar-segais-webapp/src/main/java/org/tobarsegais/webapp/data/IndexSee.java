@@ -21,22 +21,23 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class IndexSee implements IndexChild {
 
     private static final long serialVersionUID = 1L;
 
-    private final String keyword;
-    private final List<IndexSubpath> children;
+    private final List<String> keywordPath;
 
-    public IndexSee(String keyword, Collection<IndexSubpath> children) {
-        this.keyword = keyword;
-        this.children = children == null || children.isEmpty()
-                ? Collections.<IndexSubpath>emptyList()
-                : Collections.unmodifiableList(new ArrayList<IndexSubpath>(children));
+    public IndexSee(String... keywordPath) {
+        this(Arrays.asList(keywordPath));
+    }
+    public IndexSee(List<String> keywordPath) {
+        this.keywordPath = Collections.unmodifiableList(keywordPath == null ? Collections.<String>emptyList() : keywordPath);
     }
 
     public static IndexSee read(XMLStreamReader reader) throws XMLStreamException {
@@ -46,14 +47,14 @@ public class IndexSee implements IndexChild {
         if (!"see".equals(reader.getLocalName())) {
             throw new IllegalStateException("Expecting a <see> element, got a <" + reader.getLocalName() + ">");
         }
-        String keyword = reader.getAttributeValue(null, "keyword");
-        List<IndexSubpath> children = new ArrayList<IndexSubpath>();
+        List<String> keywordPath = new ArrayList<String>();
+        keywordPath.add(reader.getAttributeValue(null, "keyword"));
         int depth = 0;
         while (reader.hasNext() && depth >= 0) {
             switch (reader.next()) {
                 case XMLStreamConstants.START_ELEMENT:
                     if (depth == 0 && "subpath".equals(reader.getLocalName())) {
-                        children.add(IndexSubpath.read(reader));
+                        keywordPath.add(IndexSubpath.read(reader).getKeyword());
                     } else {
                         depth++;
                     }
@@ -63,32 +64,30 @@ public class IndexSee implements IndexChild {
                     break;
             }
         }
-        return new IndexSee(keyword, children);
+        return new IndexSee(keywordPath);
     }
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartElement("see");
-        writer.writeAttribute("keyword", getKeyword());
-        for (IndexSubpath topic : getChildren()) {
-            topic.write(writer);
+        Iterator<String> keywordIterator = keywordPath.iterator();
+        if (keywordIterator.hasNext()) {
+        writer.writeAttribute("keyword", keywordIterator.next());
+        }
+        while (keywordIterator.hasNext()) {
+            new IndexSubpath(keywordIterator.next()).write(writer);
         }
         writer.writeEndElement();
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public List<IndexSubpath> getChildren() {
-        return children == null ? Collections.<IndexSubpath>emptyList() : children;
+    public List<String> getKeywordPath() {
+        return keywordPath;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("IndexSee");
-        sb.append("{keyword='").append(getKeyword()).append('\'');
-        sb.append(", children=").append(getChildren());
+        sb.append("{keywordPath='").append(getKeywordPath()).append('\'');
         sb.append('}');
         return sb.toString();
     }
