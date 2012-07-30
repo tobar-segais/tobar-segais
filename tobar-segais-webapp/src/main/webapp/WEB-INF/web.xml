@@ -21,6 +21,12 @@
   <display-name>Tobar-Segais-WebApp</display-name>
   <description>Tobar Segais InfoCenter Container</description>
 
+  <context-param>
+    <description>The default page title to be used when the page title cannot be inferred.</description>
+    <param-name>default.page.title</param-name>
+    <param-value>Help</param-value>
+  </context-param>
+
   <session-config>
     <session-timeout>10</session-timeout>
   </session-config>

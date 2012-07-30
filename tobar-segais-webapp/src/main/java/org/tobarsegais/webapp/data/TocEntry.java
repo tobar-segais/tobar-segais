@@ -61,10 +61,13 @@ public class TocEntry implements Serializable {
         return sb.toString();
     }
 
-    public Topic lookupTopic(String href) {
+    public TocEntry lookupTopic(String href) {
+        if (href.equals(getHref())) {
+            return this;
+        }
         for (Topic topic: getChildren()) {
             if (href.equals(topic.getHref())) return topic;
-            Topic r = topic.lookupTopic(href);
+            TocEntry r = topic.lookupTopic(href);
             if (r != null) return r;
         }
         return null;

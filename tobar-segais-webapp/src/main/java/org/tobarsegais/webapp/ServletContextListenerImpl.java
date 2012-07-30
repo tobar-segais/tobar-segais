@@ -17,11 +17,13 @@
 package org.tobarsegais.webapp;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
@@ -65,14 +67,16 @@ public class ServletContextListenerImpl implements ServletContextListener {
 
     public static final String BUNDLE_PATH = "/WEB-INF/bundles";
 
+    public static final Version LUCENE_VERSON = Version.LUCENE_36;
+
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext application = sce.getServletContext();
         Map<String, String> bundles = new HashMap<String, String>();
         Map<String, Toc> contents = new LinkedHashMap<String, Toc>();
         List<IndexEntry> keywords = new ArrayList<IndexEntry>();
         Directory index = new RAMDirectory();
-        IndexWriterConfig indexWriterConfig =
-                new IndexWriterConfig(Version.LUCENE_34, new StandardAnalyzer(Version.LUCENE_34));
+        Analyzer analyzer = new StandardAnalyzer(LUCENE_VERSON);
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(LUCENE_VERSON, analyzer);
         IndexWriter indexWriter;
         try {
             indexWriter = new IndexWriter(index, indexWriterConfig);
@@ -223,6 +227,38 @@ public class ServletContextListenerImpl implements ServletContextListener {
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
         application.setAttribute("keywords", new Index(keywords));
         application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
+        application.setAttribute("analyzer", analyzer);
+        application.setAttribute("contentsQueryParser", new QueryParser(LUCENE_VERSON, "contents", analyzer));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Toc> getTablesOfContents(ServletContext application) {
+        return (Map<String, Toc>) application.getAttribute("toc");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, String> getBundles(ServletContext application) {
+        return (Map<String, String>) application.getAttribute("bundles");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Index getKeywordsIndex(ServletContext application) {
+        return (Index) application.getAttribute("keywords");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Directory getDirectory(ServletContext application) {
+        return (Directory) application.getAttribute("index");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Analyzer getAnalyzer(ServletContext application) {
+        return (Analyzer) application.getAttribute("analyzer");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static QueryParser getContentsQueryParser(ServletContext application) {
+        return (QueryParser) application.getAttribute("contentsQueryParser");
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
