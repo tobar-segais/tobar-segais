@@ -12,7 +12,7 @@
             </a>
             <div class="nav-collapse">
              <ul class="nav">
-               <li class="active"><a href="${request.contextPath}/docs/">Home</a></li>
+               <li class="active"><a href="${pageContext.request.contextPath}/docs/">Home</a></li>
              </ul>
            </div>
         </div>
