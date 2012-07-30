@@ -62,6 +62,8 @@
 
   <modules>
     <module>tobar-segais-webapp</module>
+    <module>tobar-segais-manual</module>
+    <module>tobar-segais-manual-webapp</module>
   </modules>
 
   <scm>
@@ -185,6 +187,16 @@
 
     <profile>
       <id>run</id>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
+      <build>
+        <defaultGoal>verify</defaultGoal>
+      </build>
+    </profile>
+
+    <profile>
+      <id>demo</id>
       <properties>
         <skipTests>true</skipTests>
       </properties>
