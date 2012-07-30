@@ -48,7 +48,6 @@ var TobairSegais = {
                 } else {
                     window.location.href = "#";
                 }
-                console.log(url + "->" + $("#contents-nav a[href='"+(i == -1 ? url : url.substring(0,i))+"']").length);
                 document.title = $("#contents-nav a[href='"+(i == -1 ? url : url.substring(0,i))+"']").text();
             });
             return false;
