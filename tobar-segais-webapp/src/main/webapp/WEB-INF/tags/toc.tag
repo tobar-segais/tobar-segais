@@ -21,7 +21,8 @@
 <%@ tag import="java.util.Stack" %>
 <%@ tag import="java.util.Iterator" %>
 <%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
-<ul id="toc"><%
+<%@attribute name="id" required="true" %>
+<ul id="${id}"><%
     final String contextPath = request.getContextPath();
     Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
         for (Map.Entry<String, Toc> bundleEntry : contents.entrySet()) {

@@ -1,0 +1,8 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<h1>Using the help system</h1>
+<p>Browse topics in the <i class="icon-book"></i>Contents tab on the left. Click on a topic to have it displayed.</p>
+<h2>Searching</h2>
+<p>To quickly locate topics on a particular subject in the documentation, enter a query in the Search field on the
+<i class="icon-search"></i>Search tab.</p>
+<h2>Keyword index</h2>
+<p>To show an alphabetically sorted index of keywords select the <i class="icon-list"></i>Index tab. Not all products contain an index.</p>

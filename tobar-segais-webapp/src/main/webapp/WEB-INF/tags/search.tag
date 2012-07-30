@@ -1,18 +1,3 @@
-<%--
-  ~ Copyright 2012 Stephen Connolly
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  --%>
 
 <%@ tag import="org.apache.commons.lang3.StringEscapeUtils" %>
 <%@ tag import="org.apache.lucene.store.Directory" %>
@@ -27,9 +12,10 @@
 <%@ tag import="java.net.URLEncoder" %>
 <%@ tag import="org.apache.lucene.queryParser.ParseException" %>
 <form class="form-search" method="get" action=".">
-        <input name="query" type="query" class="input-medium search-query"
-               value="<%=request.getParameter("query")==null?"":StringEscapeUtils.escapeHtml4(request.getParameter("query"))%>">
-        <button type="submit" class="btn">Search</button>
+        <input name="query" type="search" class="input-large search-query"
+               value="<%=request.getParameter("query")==null?"":StringEscapeUtils.escapeHtml4(request.getParameter("query"))%>"
+                placeholder="Search">
+        <button type="submit" class="btn"><i class="icon-search"></i></button>
     </form>
     <%
         String query = request.getParameter("query");

@@ -1,18 +1,19 @@
+<%@ attribute name="id" required="true" %>
 <%--
-  ~ Copyright 2012 Stephen Connolly
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  --%>
+~ Copyright 2012 Stephen Connolly
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~     http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+--%>
 
 <%@ tag import="org.apache.commons.io.IOUtils" %>
 <%@ tag import="org.jsoup.Jsoup" %>
@@ -25,9 +26,10 @@
 <%@ tag import="java.util.Map" %>
 <%@ tag import="java.util.jar.JarEntry" %>
 <%@ tag import="java.util.jar.JarFile" %>
-<%
+<div id="${id}"><%
     String path = (String) request.getAttribute("content");
     Map<String, String> bundles = ServletContextListenerImpl.getBundles(application);
+    boolean found = false;
     for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
         String key = path.substring(0, index);
         if (key.startsWith("/")) {
@@ -60,9 +62,14 @@
             in = jarFile.getInputStream(jarEntry);
             Document document = Jsoup.parse(in, "UTF-8", request.getRequestURI());
             out.print(document.body());
+            found = true;
+            break;
         } finally {
             IOUtils.closeQuietly(in);
         }
     }
+    if (!found) {
+        %><jsp:include page="/WEB-INF/default-help.jspf"/><%
+    }
 
-%>
+%></div>

@@ -15,38 +15,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
-
-<%@ page import="java.util.Map" %>
-<%@ page import="org.tobarsegais.webapp.data.Toc" %>
-<%@ page import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
-<%@ page import="org.tobarsegais.webapp.data.TocEntry" %>
 <html>
 <head>
-    <%
-        String path = (String) request.getAttribute("content");
-        String pageTitle = null;
-
-        Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
-        for (Map.Entry<String,Toc> entry: contents.entrySet()) {
-            if (path.startsWith("/"+entry.getKey()+"/")) {
-                final TocEntry topic = entry.getValue().lookupTopic(path.substring(entry.getKey().length() + 2));
-                if (topic != null) {
-                    pageTitle = topic.getLabel();
-                } else if (path.equals("/" + entry.getKey() + "/index.html")) {
-                    pageTitle = entry.getValue().getLabel();
-                }
-            }
-        }
-        if (pageTitle == null) {
-            pageTitle = application.getInitParameter("default.page.title");
-        }
-        if (pageTitle == null) {
-            pageTitle = "Help";
-        }
-
-    %>
     <meta charset="utf-8"/>
-    <title><%=pageTitle%></title>
+    <tags:title/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- The styles -->
@@ -60,17 +32,19 @@
     <![endif]-->
 
     <!-- The fav and touch icons -->
-    <link rel="shortcut icon" href="${pageContext.request.contextPath}/img/favicon.ico">
+    <link rel="shortcut icon"
+          href="${pageContext.request.contextPath}/img/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144"
           href="${pageContext.request.contextPath}/img/apple-touch-icon-144x144.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114"
           href="${pageContext.request.contextPath}/img/apple-touch-icon-114x114.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72"
           href="${pageContext.request.contextPath}/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon-precomposed" href="${pageContext.request.contextPath}/img/apple-touch-icon.png">
+    <link rel="apple-touch-icon-precomposed"
+          href="${pageContext.request.contextPath}/img/apple-touch-icon.png">
 </head>
 <body>
-<jsp:include page="docs-navbar.jspf"/>
+<jsp:include page="custom-navbar.jspf"/>
 <div class="container-fluid">
 <div class="row-fluid">
 <div class="span4 no-print">
@@ -95,7 +69,7 @@
     <li class="<%=searchActive%>"><a href="#search-nav" data-toggle="tab"><i class="icon-search"></i>Search</a></li>
 </ul>
 <div class="tab-content" id="sidebar-content">
-<div class="tab-pane <%=contentsActive%>" id="contents-nav"><tags:toc/></div>
+<div class="tab-pane <%=contentsActive%>" id="contents-nav"><tags:toc id="toc"/></div>
 <div class="tab-pane <%=indexActive%>" id="index-nav"><tags:keywords/></div>
 <div class="tab-pane <%=searchActive%>" id="search-nav"><tags:search/></div>
 </div>
@@ -103,9 +77,7 @@
 <!--/.well -->
 </div>
 <!--/span-->
-<div class="span8">
-    <div id="content"><tags:contents/></div>
-</div>
+<div class="span8"><tags:contents id="content"/></div>
 </div>
 </div>
 <script src="${pageContext.request.contextPath}/js/jquery-latest.js"></script>
