@@ -69,30 +69,84 @@ public class ContentServlet extends HttpServlet {
             }
             JarURLConnection jarConnection = (JarURLConnection) connection;
             JarFile jarFile = jarConnection.getJarFile();
-
-            int endOfFileName = path.indexOf('#', index);
-            endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
-            String fileName = path.substring(index + 1, endOfFileName);
-            JarEntry jarEntry = jarFile.getJarEntry(fileName);
-            if (jarEntry == null) {
-                continue;
-            }
-            long size = jarEntry.getSize();
-            if (size > 0 && size < Integer.MAX_VALUE) {
-                resp.setContentLength((int) size);
-            }
-            resp.setContentType(getServletContext().getMimeType(fileName));
-            InputStream in = null;
-            OutputStream out = resp.getOutputStream();
             try {
-                in = jarFile.getInputStream(jarEntry);
-                IOUtils.copy(in, out);
+                int endOfFileName = path.indexOf('#', index);
+                endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
+                String fileName = path.substring(index + 1, endOfFileName);
+                JarEntry jarEntry = jarFile.getJarEntry(fileName);
+                if (jarEntry == null) {
+                    continue;
+                }
+                long size = jarEntry.getSize();
+                if (size > 0 && size < Integer.MAX_VALUE) {
+                    resp.setContentLength((int) size);
+                }
+                resp.setContentType(getServletContext().getMimeType(fileName));
+                InputStream in = null;
+                OutputStream out = resp.getOutputStream();
+                try {
+                    in = jarFile.getInputStream(jarEntry);
+                    IOUtils.copy(in, out);
+                } finally {
+                    IOUtils.closeQuietly(in);
+                    out.close();
+                }
+                return;
             } finally {
-                IOUtils.closeQuietly(in);
-                out.close();
+                jarFile.close();
             }
-            return;
         }
         resp.sendError(404);
+    }
+
+    @Override
+    protected long getLastModified(HttpServletRequest req) {
+        String path = req.getPathInfo();
+        if (path == null) {
+            path = req.getServletPath();
+        }
+        int index = path.indexOf(PLUGINS_ROOT);
+        if (index != -1) {
+            path = path.substring(index + PLUGINS_ROOT.length() - 1);
+        }
+        Map<String, String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
+        try {
+            for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+                String key = path.substring(0, index);
+                if (key.startsWith("/")) {
+                    key = key.substring(1);
+                }
+                if (bundles.containsKey(key)) {
+                    key = bundles.get(key);
+                }
+                URL resource =
+                        getServletContext().getResource(ServletContextListenerImpl.BUNDLE_PATH + "/" + key + ".jar");
+                if (resource == null) {
+                    continue;
+                }
+                URL jarResource = new URL("jar:" + resource + "!/");
+                URLConnection connection = jarResource.openConnection();
+                if (!(connection instanceof JarURLConnection)) {
+                    continue;
+                }
+                JarURLConnection jarConnection = (JarURLConnection) connection;
+                JarFile jarFile = jarConnection.getJarFile();
+                try {
+                    int endOfFileName = path.indexOf('#', index);
+                    endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
+                    String fileName = path.substring(index + 1, endOfFileName);
+                    JarEntry jarEntry = jarFile.getJarEntry(fileName);
+                    if (jarEntry == null) {
+                        continue;
+                    }
+                    return jarEntry.getTime();
+                } finally {
+                    jarFile.close();
+                }
+            }
+        } catch (IOException e) {
+            // ignore
+        }
+        return -1;
     }
 }
