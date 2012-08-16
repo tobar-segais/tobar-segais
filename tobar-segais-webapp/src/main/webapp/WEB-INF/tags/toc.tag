@@ -14,71 +14,81 @@
   ~ limitations under the License.
   --%>
 
-<%@ tag import="java.util.Map" %>
+<%@ tag import="org.apache.commons.lang3.StringEscapeUtils" %>
+<%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
 <%@ tag import="org.tobarsegais.webapp.data.Toc" %>
 <%@ tag import="org.tobarsegais.webapp.data.TocEntry" %>
-<%@ tag import="org.apache.commons.lang3.StringEscapeUtils" %>
-<%@ tag import="java.util.Stack" %>
 <%@ tag import="java.util.Iterator" %>
-<%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
+<%@ tag import="java.util.Map" %>
+<%@ tag import="java.util.Stack" %>
+<%@ tag import="java.util.ArrayList" %>
+<%@ tag import="java.util.List" %>
+<%@ tag import="java.util.Collections" %>
+<%@ tag import="java.util.Comparator" %>
 <%@attribute name="id" required="true" %>
 <ul id="${id}"><%
     final String contextPath = request.getContextPath();
     Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
-        for (Map.Entry<String, Toc> bundleEntry : contents.entrySet()) {
-            TocEntry entry = bundleEntry.getValue();
-            String bundle = bundleEntry.getKey();
-            out.print("<li>");
-            if (entry.getHref() != null) {
-                out.print("<a href=\"");
-                out.print(contextPath);
-                out.print("/docs/");
-                out.print(bundle);
-                out.print("/");
-                out.print(entry.getHref());
-                out.print("\">");
-            }
-            out.print("<span>");
-            out.print(StringEscapeUtils.escapeHtml4(entry.getLabel()));
-            out.print("</span>");
-            if (entry.getHref() != null) {
-                out.print("</a>");
-            }
-            Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
-            if (!entry.getChildren().isEmpty()) {
-                out.print("<ul>");
-                stack.push(entry.getChildren().iterator());
-                while (!stack.empty()) {
-                    Iterator<? extends TocEntry> cur = stack.pop();
-                    if (cur.hasNext()) {
-                        entry = cur.next();
-                        stack.push(cur);
-                        out.print("<li>");
-                        if (entry.getHref() != null) {
-                            out.print("<a href=\"");
-                            out.print(contextPath);
-                            out.print("/docs/");
-                            out.print(bundle);
-                            out.print("/");
-                            out.print(entry.getHref());
-                            out.print("\">");
-                        }
-                        out.print("<span>");
-                        out.print(StringEscapeUtils.escapeHtml4(entry.getLabel()));
-                        out.print("</span>");
-                        if (entry.getHref() != null) {
-                            out.print("</a>");
-                        }
-                        if (!entry.getChildren().isEmpty()) {
-                            out.print("<ul>");
-                            stack.push(entry.getChildren().iterator());
-                        }
-                    } else {
-                        out.print("</ul></li>");
+    List<Map.Entry<String,Toc>> sortedEntries = new ArrayList<Map.Entry<String,Toc>>(contents.entrySet());
+    Collections.sort(sortedEntries, new Comparator<Map.Entry<String, Toc>>() {
+        public int compare(Map.Entry<String, Toc> o1, Map.Entry<String, Toc> o2) {
+            return o1.getValue().getLabel().compareTo(o2.getValue().getLabel());
+        }
+    });
+    for (Map.Entry<String, Toc> bundleEntry : sortedEntries) {
+        TocEntry entry = bundleEntry.getValue();
+        String bundle = bundleEntry.getKey();
+        out.print("<li>");
+        if (entry.getHref() != null) {
+            out.print("<a href=\"");
+            out.print(contextPath);
+            out.print("/docs/");
+            out.print(bundle);
+            out.print("/");
+            out.print(entry.getHref());
+            out.print("\">");
+        }
+        out.print("<span>");
+        out.print(StringEscapeUtils.escapeHtml4(entry.getLabel()));
+        out.print("</span>");
+        if (entry.getHref() != null) {
+            out.print("</a>");
+        }
+        Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
+        if (!entry.getChildren().isEmpty()) {
+            out.print("<ul>");
+            stack.push(entry.getChildren().iterator());
+            while (!stack.empty()) {
+                Iterator<? extends TocEntry> cur = stack.pop();
+                if (cur.hasNext()) {
+                    entry = cur.next();
+                    stack.push(cur);
+                    out.print("<li>");
+                    if (entry.getHref() != null) {
+                        out.print("<a href=\"");
+                        out.print(contextPath);
+                        out.print("/docs/");
+                        out.print(bundle);
+                        out.print("/");
+                        out.print(entry.getHref());
+                        out.print("\">");
                     }
+                    out.print("<span>");
+                    out.print(StringEscapeUtils.escapeHtml4(entry.getLabel()));
+                    out.print("</span>");
+                    if (entry.getHref() != null) {
+                        out.print("</a>");
+                    }
+                    if (!entry.getChildren().isEmpty()) {
+                        out.print("<ul>");
+                        stack.push(entry.getChildren().iterator());
+                    }
+                } else {
+                    out.print("</ul></li>");
                 }
             }
-            out.print("</li>");
         }
-    %>
+        out.print("</li>");
+    }
+%>
 </ul>
