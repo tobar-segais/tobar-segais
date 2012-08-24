@@ -93,7 +93,7 @@ public class ContentServlet extends HttpServlet {
                 }
                 return;
             } finally {
-                jarFile.close();
+                //jarFile.close();
             }
         }
         resp.sendError(404);
@@ -141,7 +141,7 @@ public class ContentServlet extends HttpServlet {
                     }
                     return jarEntry.getTime();
                 } finally {
-                    jarFile.close();
+                    //jarFile.close();
                 }
             }
         } catch (IOException e) {

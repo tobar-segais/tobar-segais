@@ -207,6 +207,11 @@
         <code>src/main/webapp/img/glyphicons-halflings.png</code> and
         <code>src/main/webapp/img/glyphicons-halflings-white.png</code>
       </para>
+      <para>
+        If you just want to apply some simple tweaks to the CSS after Twitter Bootstrap is loaded
+        all you need to do is create the file <code>src/main/webapp/css/custom.css</code>
+        this file is included after all the other CSS files have been included.
+      </para>
     </section>
     <section>
       <title>Navbar customization</title>

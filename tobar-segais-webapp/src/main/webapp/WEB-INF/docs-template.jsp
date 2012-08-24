@@ -25,6 +25,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/tobar-segais.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet">
 
     <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
