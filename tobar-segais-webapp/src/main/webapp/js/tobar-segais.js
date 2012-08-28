@@ -52,6 +52,28 @@ var TobairSegais = {
             });
             return false;
         }
+    },
+    windowSizer:function(){
+      var css = {'height':'100%','overflow':'auto','margin':0,'padding':0,'position':'relative','border':'none', 'border-redius':0};
+      
+      var $win = $(window); 
+      var $top = $('.navbar-fixed-top').first().css(css);
+      var $bottom = $('.navbar-fixed-bottom').first().css(css);
+      var $body = $('.row-fluid').first().css(css);
+      var $sideBar = $('.sidebar-nav').first().parent().css(css);
+      var $content = $('#content').css('padding','20px 5% 20px 0').parent().css(css).css('float','right');
+      var $sbContent = $('#sidebar-content').css(css);
+      
+      $('body').css(css);
+      
+      $body.height($win.height() - ($top.height() + $bottom.height()) ).parent().css({'padding':0});
+      $sbContent.height($win.height() - $sbContent.offset().top).parent().css(css);
+      $('.sidebar-nav').first().css({'border-right':'1px solid #ccc', 'border-radius':0});
+      
+      if($win.width() < 768){
+        $sideBar.add($sbContent).css({'height':'auto','overflow':'auto'});
+        $('#content').css('padding','20px');
+      }
     }
 };
 window.onpopstate = function (event) {
@@ -64,4 +86,6 @@ window.onpopstate = function (event) {
 $(function () {
     TobairSegais.addClickSupport("#content");
     TobairSegais.addClickSupport("#sidebar-content");
+    TobairSegais.windowSizer();
+    $(window).resize(TobairSegais.windowSizer);
 });
