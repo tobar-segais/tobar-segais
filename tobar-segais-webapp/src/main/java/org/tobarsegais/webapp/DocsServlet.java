@@ -28,6 +28,12 @@ public class DocsServlet extends HttpServlet {
         if (index != -1) {
             path = path.substring(index + PLUGINS_ROOT.length() - 1);
         }
+
+        if (path.equals("/docs")) {
+            resp.sendRedirect("/docs/");
+            return;
+        }
+
         int endOfFileName = path.indexOf('#');
         endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
         int startOfFileName = path.lastIndexOf('/', endOfFileName);
