@@ -65,6 +65,11 @@
     <url-pattern>/docs/*</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>docs-servlet</servlet-name>
+    <url-pattern>/docs</url-pattern>
+  </servlet-mapping>
+
   <filter>
     <filter-name>RedirectFilter</filter-name>
     <filter-class>org.tobarsegais.webapp.RedirectFilter</filter-class>
