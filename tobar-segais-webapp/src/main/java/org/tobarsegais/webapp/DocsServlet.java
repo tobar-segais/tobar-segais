@@ -1,10 +1,17 @@
 package org.tobarsegais.webapp;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.tobarsegais.webapp.data.Toc;
+import org.tobarsegais.webapp.data.TocEntry;
+
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author stephenc
@@ -20,6 +27,9 @@ public class DocsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         boolean raw = req.getParameter("raw") != null;
+        String topicKey = req.getParameter("topic");
+        boolean isTopic = topicKey != null && topicKey.length() > 0;
+        
         String path = req.getPathInfo();
         if (path == null) {
             path = req.getServletPath();
@@ -29,6 +39,10 @@ public class DocsServlet extends HttpServlet {
             path = path.substring(index + PLUGINS_ROOT.length() - 1);
         }
 
+        if( isTopic ){
+        	path = findTopicPath(topicKey);
+        }
+        
         if (path.equals("/docs")) {
             resp.sendRedirect("/docs/");
             return;
@@ -44,8 +58,32 @@ public class DocsServlet extends HttpServlet {
                 .isEmpty())) {
             req.getRequestDispatcher("/content" + path).forward(req, resp);
         } else {
-            req.setAttribute("content", req.getPathInfo());
+        	if( isTopic ){
+        		req.setAttribute("content", path );
+        	} else {
+        		req.setAttribute("content", req.getPathInfo());
+        	}
             req.getRequestDispatcher("/WEB-INF/docs-template.jsp").forward(req, resp);
         }
+    }
+    
+    /**
+     * search full path for given topic href
+     * 
+     * if topic key place more than one bundle, returns first found
+     * 
+     * @param topicKey
+     * @return
+     */
+    protected String findTopicPath( String topicKey ){
+    	ServletContext application = getServletContext();
+    	Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
+    	for( Entry<String, Toc> entry :  contents.entrySet() ){
+    		TocEntry tocEntry = entry.getValue().lookupTopic(topicKey);
+    		if( tocEntry != null ){
+    			return "/" + entry.getKey() + "/" + tocEntry.getHref();
+    		}
+    	}
+    	return "/docs";
     }
 }
