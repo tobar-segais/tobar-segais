@@ -26,7 +26,7 @@
 <%@ tag import="java.util.Collections" %>
 <%@ tag import="java.util.Comparator" %>
 <%@attribute name="id" required="true" %>
-<ul id="${id}"><%
+<ul id="${id}" style="margin-top: 10px; margin-left: 25px; "><%
     final String contextPath = request.getContextPath();
     Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
     List<Map.Entry<String,Toc>> sortedEntries = new ArrayList<Map.Entry<String,Toc>>(contents.entrySet());

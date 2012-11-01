@@ -116,3 +116,10 @@ $(function () {
     TobairSegais.windowSizer();
     $(window).resize(TobairSegais.windowSizer);
 });
+
+$(document).ready(function(){
+    $("#toc").treeview({
+		animated: "fast",
+		collapsed: true,
+    });    
+})
