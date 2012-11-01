@@ -39,15 +39,16 @@ var TobairSegais = {
         if (/^https?:\/\//.test(url)) {
             return true;
         } else {
+            var i = url.indexOf('#');
+            if (i != -1) {
+                window.location.href = url.substring(i);
+            } else {
+                    window.location.href = "#";
+            }
+            history.pushState({url:url}, "", url);
             $('#content').load(TobairSegais.toRawUri(url), function () {
                 TobairSegais.addClickSupport("#content");
-                history.pushState({url:url}, "", url);
-                var i = url.indexOf('#');
-                if (i != -1) {
-                    window.location.href = url.substring(i);
-                } else {
-                    window.location.href = "#";
-                }
+                
                 document.title = $("#contents-nav a[href='"+(i == -1 ? url : url.substring(0,i))+"']").text();
             });
             return false;
@@ -89,3 +90,18 @@ $(function () {
     TobairSegais.windowSizer();
     $(window).resize(TobairSegais.windowSizer);
 });
+
+$(document).ready(function(){
+    
+            $("#toc").treeview({
+		animated: "fast",
+		collapsed: true,
+		//unique: true,
+                //prerendered: true,
+		//persist: "cookie",
+		toggle: function() {
+			window.console && console.log("%o was toggled", this);
+		}
+            });
+    
+})

@@ -26,6 +26,7 @@
     <link href="${pageContext.request.contextPath}/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/tobar-segais.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/jquery.treeview.css" rel="stylesheet">
 
     <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -83,6 +84,8 @@
 </div>
 <script src="${pageContext.request.contextPath}/js/jquery-latest.js"></script>
 <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.treeview.js"></script>
 <script src="${pageContext.request.contextPath}/js/tobar-segais.js"></script>
+
 </body>
 </html>
