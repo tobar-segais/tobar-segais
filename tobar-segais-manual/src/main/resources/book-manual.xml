@@ -54,7 +54,7 @@
     </para>
   </preface>
 
-  <chapter>
+  <chapter xml:id="intro">
     <title>Introduction</title>
     <blockquote>
       <attribution>Irish mythology</attribution>
@@ -180,9 +180,9 @@
 
   </chapter>
 
-  <chapter>
+  <chapter xml:id="customization">
     <title>Customization</title>
-    <section>
+    <section xml:id="customization-intro">
       <title>Introduction</title>
       <para>
         Not everyone will be happy with everything about how the Tobar Segais web application looks.
@@ -190,7 +190,7 @@
         points to enable you to get it looking just the way you want.
       </para>
     </section>
-    <section>
+    <section xml:id="customization-css">
       <title>Stylesheet customization</title>
       <para>
         The core look of Tobar Segais is based on Twitter Bootstrap. Any custom full build of Bootstrap 2.0.x should
@@ -213,7 +213,7 @@
         this file is included after all the other CSS files have been included.
       </para>
     </section>
-    <section>
+    <section xml:id="customization-navbar">
       <title>Navbar customization</title>
       <para>
         The Navbar at the top of the page can be easily customized by providing a replacement JSP Fragment.
@@ -250,7 +250,7 @@
 &lt;/div&gt;</programlisting>
       </informalexample>
     </section>
-    <section>
+    <section xml:id="customization-icon">
       <title>Icon customization</title>
       <para>
         There are a number of icons which can be replaced quite simply.
