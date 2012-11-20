@@ -55,7 +55,7 @@ public class RedirectFilter implements Filter {
                 if (queryString != null) {
                     requestURL.append('?').append(queryString);
                 }
-                resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 resp.setHeader("Location", requestURL.toString());
             }
         }
