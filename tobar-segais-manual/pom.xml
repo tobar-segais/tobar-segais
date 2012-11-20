@@ -99,6 +99,7 @@
           <targetDirectory>${project.build.directory}/docbook</targetDirectory>
           <xincludeSupported>true</xincludeSupported>
           <includes>book-manual.xml</includes>
+          <useIdAsFilename>1</useIdAsFilename>
         </configuration>
         <executions>
           <execution>
