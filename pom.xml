@@ -58,6 +58,14 @@
       </roles>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Jesse Glick</name>
+    </contributor>
+    <contributor>
+      <name>Hakan Uygun</name>
+    </contributor>
+  </contributors>
 
   <modules>
     <module>tobar-segais-webapp</module>
