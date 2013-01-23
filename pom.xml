@@ -27,7 +27,7 @@
 
   <groupId>org.tobarsegais</groupId>
   <artifactId>tobarsegais-parent</artifactId>
-  <version>1.3</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Tobar Segais: Parent POM</name>
@@ -69,7 +69,7 @@
     <connection>scm:git:git://github.com/tobar-segais/tobar-segais.git</connection>
     <developerConnection>scm:git:git@github.com:tobar-segais/tobar-segais.git</developerConnection>
     <url>http://github.com/tobar-segais/tobar-segais/tree/master/</url>
-    <tag>tobarsegais-1.3</tag>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>github</system>
