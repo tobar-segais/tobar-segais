@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Source Repository</title>
+    <title>Dependency Information</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -60,8 +60,8 @@
                           <a href="team-list.html" title="Project Team">Project Team</a>
             </li>
                       <li class="none">
-                          <a href="dependency-info.html" title="Dependency Information">Dependency Information</a>
-            </li>
+            <strong>Dependency Information</strong>
+          </li>
                       <li class="none">
                           <a href="plugins.html" title="Project Plugins">Project Plugins</a>
             </li>
@@ -72,8 +72,8 @@
                           <a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
             </li>
                       <li class="none">
-            <strong>Source Repository</strong>
-          </li>
+                          <a href="source-repository.html" title="Source Repository">Source Repository</a>
+            </li>
                       <li class="none">
                           <a href="dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a>
             </li>
@@ -107,7 +107,16 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Overview<a name="Overview"></a></h2><a name="Overview"></a><p>This project uses a Source Content Management System to manage its source code.</p></div><div class="section"><h2>Web Access<a name="Web_Access"></a></h2><a name="Web_Access"></a><p>The following is a link to the online source repository.</p><div class="source"><pre><a class="externalLink" href="http://github.com/tobar-segais/tobar-segais/tree/master/tobar-segais-webapp/">http://github.com/tobar-segais/tobar-segais/tree/master/tobar-segais-webapp/</a></pre></div></div><div class="section"><h2>Anonymous access<a name="Anonymous_access"></a></h2><a name="Anonymous_access"></a><p>Refer to the documentation of the SCM used for more information about anonymously check out. The connection url is:</p><div class="source"><pre>git:git://github.com/tobar-segais/tobar-segais.git/tobar-segais-webapp</pre></div></div><div class="section"><h2>Developer access<a name="Developer_access"></a></h2><a name="Developer_access"></a><p>Refer to the documentation of the SCM used for more information about developer check out. The connection url is:</p><div class="source"><pre>git:git@github.com:tobar-segais/tobar-segais.git/tobar-segais-webapp</pre></div></div><div class="section"><h2>Access from behind a firewall<a name="Access_from_behind_a_firewall"></a></h2><a name="Access_from_behind_a_firewall"></a><p>Refer to the documentation of the SCM used for more information about access behind a firewall.</p></div>
+        <div class="section"><h2>Dependency Information<a name="Dependency_Information"></a></h2><a name="Dependency_Information"></a><div class="section"><h3>Apache Maven<a name="Apache_Maven"></a></h3><a name="Apache_Maven"></a><div class="source"><pre>&lt;dependency&gt;
+  &lt;groupId&gt;org.tobarsegais&lt;/groupId&gt;
+  &lt;artifactId&gt;tobar-segais-webapp&lt;/artifactId&gt;
+  &lt;version&gt;1.3&lt;/version&gt;
+  &lt;type&gt;war&lt;/type&gt;
+&lt;/dependency&gt;</pre></div></div><div class="section"><h3>Apache Buildr<a name="Apache_Buildr"></a></h3><a name="Apache_Buildr"></a><div class="source"><pre>'org.tobarsegais:tobar-segais-webapp:war:1.3'</pre></div></div><div class="section"><h3>Apache Ant<a name="Apache_Ant"></a></h3><a name="Apache_Ant"></a><div class="source"><pre>&lt;dependency org=&quot;org.tobarsegais&quot; name=&quot;tobar-segais-webapp&quot; rev=&quot;1.3&quot;&gt;
+  &lt;artifact name=&quot;tobar-segais-webapp&quot; type=&quot;war&quot; /&gt;
+&lt;/dependency&gt;</pre></div></div><div class="section"><h3>Groovy Grape<a name="Groovy_Grape"></a></h3><a name="Groovy_Grape"></a><div class="source"><pre>@Grapes(
+@Grab(group='org.tobarsegais', module='tobar-segais-webapp', version='1.3')
+)</pre></div></div><div class="section"><h3>Grails<a name="Grails"></a></h3><a name="Grails"></a><div class="source"><pre>compile 'org.tobarsegais:tobar-segais-webapp:1.3'</pre></div></div><div class="section"><h3>Leiningen<a name="Leiningen"></a></h3><a name="Leiningen"></a><div class="source"><pre>[org.tobarsegais/tobar-segais-webapp &quot;1.3&quot;]</pre></div></div><div class="section"><h3>SBT<a name="SBT"></a></h3><a name="SBT"></a><div class="source"><pre>libraryDependencies += &quot;org.tobarsegais&quot; %% &quot;tobar-segais-webapp&quot; % &quot;1.3&quot;</pre></div></div></div>
       </div>
     </div>
     <div class="clear">
