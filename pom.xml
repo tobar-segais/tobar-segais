@@ -69,6 +69,7 @@
 
   <modules>
     <module>tobar-segais-webapp</module>
+    <module>tobar-segais-maven-plugin</module>
     <module>tobar-segais-manual</module>
     <module>tobar-segais-manual-webapp</module>
   </modules>
