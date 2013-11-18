@@ -6,4 +6,5 @@
 *.iws
 .idea
 target/
+tobar-segais-manual-webapp/overlays/
 
