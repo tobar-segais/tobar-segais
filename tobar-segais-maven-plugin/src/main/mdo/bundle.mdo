@@ -67,7 +67,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    <class xml.tagName="bundle" rootElement="true">
+    <class xml.tagName="bundle" rootElement="true" xsd.compositor="sequence">
       <name>BundleModel</name>
       <description>A bundle of files to form a complete document</description>
       <version>1.0+</version>

@@ -40,7 +40,7 @@ public class GenerateBundleMojo extends AbstractGenerateMojo {
 
     protected void render(DocumentModel model) throws DocumentRendererException, IOException {
         renderer.render(sourceDirectory, outputFile.getParentFile(), model);
-        projectHelper.attachArtifact(project, "pdf", "docs", outputFile);
+        projectHelper.attachArtifact(project, "jar", "docs", outputFile);
     }
 
     public File getOutputFile() {
