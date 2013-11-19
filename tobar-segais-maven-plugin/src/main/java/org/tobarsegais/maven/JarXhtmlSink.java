@@ -43,13 +43,26 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     private final XhtmlSinkFactory factory;
     private Sink delegate;
     private String encoding;
-    private StringBuilder sectionTitleBuffer;
+    private StringBuilder textBuffer;
 
     private boolean sectionHasID;
 
     private boolean isSectionTitle;
 
+    private boolean isTitle;
+
+    private boolean isHead;
+
+    private boolean isBody;
+
+    private boolean wroteHeader;
+
     private Set<String> anchorsInSectionTitle;
+
+    private String previousRef;
+    private String currentRef;
+    private String currentName;
+    private String nextRef;
 
     public JarXhtmlSink(JarOutputStream outputStream, XhtmlSinkFactory factory, String encoding) {
         this.outputStream = outputStream;
@@ -66,6 +79,10 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     }
 
     public void file(String name, long time) throws IOException {
+        file(name, time, null, null);
+    }
+
+    public void file(String name, long time, String description, String nextRef) throws IOException {
         if (delegate != null) {
             file_();
         }
@@ -73,6 +90,15 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
         entry.setTime(time);
         outputStream.putNextEntry(entry);
         delegate = factory.createSink(new NoCloseOutputStream(outputStream), encoding);
+        previousRef = currentRef;
+        currentRef = name;
+        currentName = description;
+        this.nextRef = nextRef;
+        isHead = false;
+        isSectionTitle = false;
+        isTitle = false;
+        isBody = false;
+        wroteHeader = false;
     }
 
     public void file_() {
@@ -115,6 +141,36 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
         delegate.list_();
     }
 
+    private void navLinks() {
+        SinkEventAttributes style = new SinkEventAttributeSet("width", "100%", "border", "none");
+        SinkEventAttributes attributes = new SinkEventAttributeSet();
+        attributes.addAttribute(SinkEventAttributes.STYLE, style);
+        delegate.table(attributes);
+        delegate.tableRow();
+        delegate.tableCell(new SinkEventAttributeSet(SinkEventAttributes.WIDTH, "20%", SinkEventAttributeSet.ALIGN, "left"));
+        if (previousRef != null) {
+            delegate.link(previousRef);
+            delegate.text("<<");
+            delegate.link_();
+        } else {
+            text(" ");
+        }
+        delegate.tableCell_();
+        delegate.tableHeaderCell(new SinkEventAttributeSet(SinkEventAttributes.WIDTH, "60%", SinkEventAttributeSet.ALIGN, "center"));
+        delegate.text(StringUtils.defaultString(currentName, " "));
+        delegate.tableHeaderCell_();
+        delegate.tableCell(new SinkEventAttributeSet(SinkEventAttributes.WIDTH, "20%", SinkEventAttributeSet.ALIGN, "right"));
+        if (nextRef != null) {
+            delegate.link(nextRef);
+            delegate.text(">>");
+            delegate.link_();
+        } else {
+            text(" ");
+        }
+        delegate.tableCell_();
+        delegate.table_();
+    }
+
     @Override
     public void author_() {
         delegate.author_();
@@ -122,11 +178,21 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
 
     @Override
     public void body() {
-        delegate.body();
+        body(null);
+    }
+
+    @Override
+    public void body(SinkEventAttributes attributes) {
+        delegate.body(attributes);
+        navLinks();
+        horizontalRule();
     }
 
     @Override
     public void body_() {
+        isBody = false;
+        horizontalRule();
+        navLinks();
         delegate.body_();
     }
 
@@ -137,21 +203,38 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
 
     @Override
     public void head() {
-        delegate.head();
+        head(null);
+    }
+
+    @Override
+    public void head(SinkEventAttributes attributes) {
+        isHead = true;
+        delegate.head(attributes);
     }
 
     @Override
     public void head_() {
+        isHead = false;
         delegate.head_();
     }
 
     @Override
     public void title() {
-        delegate.title();
+        title(null);
+    }
+
+    @Override
+    public void title(SinkEventAttributes attributes) {
+        isTitle = true;
+        textBuffer = new StringBuilder(128);
+        delegate.title(attributes);
     }
 
     @Override
     public void title_() {
+        isTitle = false;
+        currentName = textBuffer.toString();
+        textBuffer = null;
         delegate.title_();
     }
 
@@ -442,79 +525,67 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     @Override
     public void section(int level, SinkEventAttributes attributes) {
         delegate.section(level, attributes);
-        onSectionTitle(level, attributes);
     }
 
     @Override
     public void section1() {
         delegate.section1();
-        onSectionTitle(1, null);
     }
 
     @Override
     public void section1_() {
         delegate.section1_();
-        onSectionTitle_(1);
     }
 
     @Override
     public void section2() {
         delegate.section2();
-        onSectionTitle(2, null);
     }
 
     @Override
     public void section2_() {
         delegate.section2_();
-        onSectionTitle_(2);
     }
 
     @Override
     public void section3() {
         delegate.section3();
-        onSectionTitle(3, null);
     }
 
     @Override
     public void section3_() {
         delegate.section3_();
-        onSectionTitle_(3);
     }
 
     @Override
     public void section4() {
         delegate.section4();
-        onSectionTitle(4, null);
     }
 
     @Override
     public void section4_() {
         delegate.section4_();
-        onSectionTitle_(4);
     }
 
     @Override
     public void section5() {
         delegate.section5();
-        onSectionTitle(5, null);
     }
 
     @Override
     public void section5_() {
         delegate.section5_();
-        onSectionTitle_(5);
     }
 
     @Override
     public void section_(int level) {
         delegate.section_(level);
-        onSectionTitle_(level);
     }
 
     /** {@inheritDoc} */
     protected void onSectionTitle( int depth, SinkEventAttributes attributes )
     {
-        this.sectionTitleBuffer = new StringBuilder();
+        this.textBuffer = new StringBuilder();
         sectionHasID = ( attributes != null && attributes.isDefined ( HTML.Attribute.ID.toString() ) );
         isSectionTitle = true;
     }
@@ -522,8 +593,8 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     /** {@inheritDoc} */
     protected void onSectionTitle_( int depth )
     {
-        String sectionTitle = sectionTitleBuffer.toString();
-        this.sectionTitleBuffer = null;
+        String sectionTitle = textBuffer.toString();
+        this.textBuffer = null;
 
         if ( !sectionHasID && !StringUtils.isEmpty(sectionTitle) )
         {
@@ -544,63 +615,87 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     }
 
     @Override
+    public void sectionTitle() {
+        delegate.sectionTitle();
+        onSectionTitle(0, null);
+    }
+
+    @Override
+    public void sectionTitle_() {
+        delegate.sectionTitle_();
+        onSectionTitle_(0);
+    }
+
+    @Override
     public void sectionTitle(int level, SinkEventAttributes attributes) {
         delegate.sectionTitle(level, attributes);
+        onSectionTitle(level, attributes);
     }
 
     @Override
     public void sectionTitle1() {
         delegate.sectionTitle1();
+        onSectionTitle(1, null);
     }
 
     @Override
     public void sectionTitle1_() {
         delegate.sectionTitle1_();
+        onSectionTitle_(1);
     }
 
     @Override
     public void sectionTitle2() {
         delegate.sectionTitle2();
+        onSectionTitle(2, null);
     }
 
     @Override
     public void sectionTitle2_() {
         delegate.sectionTitle2_();
+        onSectionTitle_(2);
     }
 
     @Override
     public void sectionTitle3() {
         delegate.sectionTitle3();
+        onSectionTitle(3, null);
     }
 
     @Override
     public void sectionTitle3_() {
         delegate.sectionTitle3_();
+        onSectionTitle_(3);
     }
 
     @Override
     public void sectionTitle4() {
         delegate.sectionTitle4();
+        onSectionTitle(4, null);
     }
 
     @Override
     public void sectionTitle4_() {
         delegate.sectionTitle4_();
+        onSectionTitle_(4);
     }
 
     @Override
     public void sectionTitle5() {
         delegate.sectionTitle5();
+        onSectionTitle(5, null);
     }
 
     @Override
     public void sectionTitle5_() {
         delegate.sectionTitle5_();
+        onSectionTitle_(5);
     }
 
     @Override
     public void sectionTitle_(int level) {
         delegate.sectionTitle_(level);
+        onSectionTitle_(level);
     }
 
     @Override
@@ -705,10 +800,10 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
 
     @Override
     public void text(String text, SinkEventAttributes attributes) {
-        if ( sectionTitleBuffer != null )
+        if ( textBuffer != null )
         {
-            // this implies we're inside a section title, collect text events for anchor generation
-            sectionTitleBuffer.append( text );
+            // this implies we're interested in collecting text events
+            textBuffer.append(text);
         }
         delegate.text(text, attributes);
     }
@@ -745,11 +840,6 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     }
 
     @Override
-    public void body(SinkEventAttributes attributes) {
-        delegate.body(attributes);
-    }
-
-    @Override
     public void date() {
         delegate.date();
     }
@@ -772,26 +862,6 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
     @Override
     public void definitionListItem_() {
         delegate.definitionListItem_();
-    }
-
-    @Override
-    public void head(SinkEventAttributes attributes) {
-        delegate.head(attributes);
-    }
-
-    @Override
-    public void sectionTitle() {
-        delegate.sectionTitle();
-    }
-
-    @Override
-    public void sectionTitle_() {
-        delegate.sectionTitle_();
-    }
-
-    @Override
-    public void title(SinkEventAttributes attributes) {
-        delegate.title(attributes);
     }
 
     private static class NoCloseOutputStream extends OutputStream {
