@@ -40,8 +40,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -172,21 +174,44 @@ public class BundleRenderer extends AbstractDocumentRenderer {
     private void mergeAllSources(Map<String, SiteModule> filesToProcess, JarXhtmlSink sink,
                                  DocumentRendererContext context)
             throws DocumentRendererException, IOException {
+        List<ContentFile> content = new ArrayList<ContentFile>(filesToProcess.size());
         for (Map.Entry<String, SiteModule> entry : filesToProcess.entrySet()) {
             String key = entry.getKey();
             SiteModule module = entry.getValue();
             File fullDoc = new File(getBaseDir(), module.getSourceDirectory() + File.separator + key);
-            sink.file(key, fullDoc.lastModified());
-            parse(fullDoc.getAbsolutePath(), module.getParserId(), sink, context);
+            final DocumentTOCItem tocItem = new DocumentTOCItem();
+            tocItem.setRef(key);
+            tocItem.setName(null);
+            content.add(new ContentFile(tocItem, entry.getValue(), fullDoc));
         }
+        renderContentFiles(sink, context, content);
     }
 
     private void mergeSourcesFromTOC(DocumentTOC toc, JarXhtmlSink sink, DocumentRendererContext context)
             throws IOException, DocumentRendererException {
-        parseTocItems(toc.getItems(), sink, context);
+        List<ContentFile> content = new ArrayList<ContentFile>();
+        parseTocItems(content, toc.getItems());
+        renderContentFiles(sink, context, content);
     }
 
-    private void parseTocItems(List<DocumentTOCItem> items, JarXhtmlSink sink, DocumentRendererContext context)
+    private void renderContentFiles(JarXhtmlSink sink, DocumentRendererContext context,
+                                    List<ContentFile> content)
+            throws IOException, DocumentRendererException {
+        if (content.isEmpty()) return;
+        Iterator<ContentFile> iterator = content.iterator();
+        ContentFile contentFile = iterator.next();
+        ContentFile nextFile;
+        while (contentFile != null) {
+            nextFile = iterator.hasNext() ? iterator.next() : null;
+            sink.file(contentFile.getTocItem().getRef(), contentFile.getSource().lastModified(),
+                    contentFile.getTocItem() .getName(), nextFile != null ? nextFile.getTocItem().getRef():null);
+            parse(contentFile.getSource().getPath(), contentFile.getModule().getParserId(), sink, context);
+            sink.file_();
+            contentFile = nextFile;
+        }
+    }
+
+    private void parseTocItems(List<ContentFile> content, List<DocumentTOCItem> items)
             throws IOException, DocumentRendererException {
         for (DocumentTOCItem tocItem : items) {
             if (tocItem.getRef() == null) {
@@ -202,16 +227,15 @@ public class BundleRenderer extends AbstractDocumentRenderer {
                 href = href.substring(0, href.lastIndexOf('.'));
             }
 
-            renderModules(href, sink, tocItem, context);
+            renderModules(content, href, tocItem);
 
             if (tocItem.getItems() != null) {
-                parseTocItems(tocItem.getItems(), sink, context);
+                parseTocItems(content, tocItem.getItems());
             }
         }
     }
 
-    private void renderModules(String href, JarXhtmlSink sink, DocumentTOCItem tocItem,
-                               DocumentRendererContext context)
+    private void renderModules(List<ContentFile> content, String href, DocumentTOCItem tocItem)
             throws DocumentRendererException, IOException {
         Collection<SiteModule> modules = siteModuleManager.getSiteModules();
         for (SiteModule module : modules) {
@@ -232,8 +256,7 @@ public class BundleRenderer extends AbstractDocumentRenderer {
                 }
 
                 if (source.exists()) {
-                    sink.file(tocItem.getRef(), source.lastModified());
-                    parse(source.getPath(), module.getParserId(), sink, context);
+                    content.add(new ContentFile(tocItem, module, source));
                 }
             }
         }
@@ -248,7 +271,7 @@ public class BundleRenderer extends AbstractDocumentRenderer {
             XMLWriter w = new PrettyPrintXMLWriter(pw, "  ", "\n", "UTF-8", null);
             w.startElement("toc");
             w.addAttribute("label", model.getCover().getCoverTitle());
-            w.addAttribute("href", "_toc.html");
+            w.addAttribute("topic", "_toc.html");
             writeTocItems(w, model.getToc().getItems());
             w.endElement();
         } finally {
@@ -261,7 +284,7 @@ public class BundleRenderer extends AbstractDocumentRenderer {
             for (DocumentTOCItem item : items) {
                 w.startElement("topic");
                 w.addAttribute("label", item.getName());
-                w.addAttribute("href", item.getRef() + ".html");
+                w.addAttribute("href", item.getRef());
                 writeTocItems(w, item.getItems());
                 w.endElement();
             }
@@ -270,7 +293,8 @@ public class BundleRenderer extends AbstractDocumentRenderer {
 
     private void renderTocXhtml(JarXhtmlSink sink, DocumentModel model, DocumentRendererContext context)
             throws IOException {
-        sink.file("_toc");
+        sink.file("_toc.html", System.currentTimeMillis(), model.getToc().getName(),
+                model.getToc().getItems().isEmpty() ? null : model.getToc().getItems().iterator().next().getRef());
         sink.head();
         sink.title();
         sink.text(model.getToc().getName());
@@ -307,5 +331,27 @@ public class BundleRenderer extends AbstractDocumentRenderer {
         }
     }
 
+    private static class ContentFile {
+        private final DocumentTOCItem tocItem;
+        private final SiteModule module;
+        private final File source;
 
+        private ContentFile(DocumentTOCItem tocItem, SiteModule module, File source) {
+            this.tocItem = tocItem;
+            this.module = module;
+            this.source = source;
+        }
+
+        public DocumentTOCItem getTocItem() {
+            return tocItem;
+        }
+
+        public SiteModule getModule() {
+            return module;
+        }
+
+        public File getSource() {
+            return source;
+        }
+    }
 }

@@ -34,7 +34,7 @@
     <value>modelVersion</value>
   </versionDefinition>
   <classes>
-    <class xml.tagName="file">
+    <class xml.tagName="file" xsd.compositor="sequence">
       <name>BundleFile</name>
       <description>A file to be included in the bundle</description>
       <version>1.0+</version>
@@ -52,6 +52,17 @@
           <required>false</required>
           <type>String</type>
         </field>
+        <field xml.attribute="false">
+          <name>files</name>
+          <version>1.0+</version>
+          <required>false</required>
+          <type>List</type>
+          <description>The files to include as sub-items</description>
+          <association xml.itemsStyle="flat">
+            <type>BundleFile</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -61,6 +72,7 @@
         StringBuilder buf = new StringBuilder(256);
         buf.append("DocumentFile[src=\"").append(src).append('\"');
         buf.append(", title=\"").append(title).append("\"]");
+        buf.append(", files=\"").append(files);
         return buf.toString();
     }
           ]]></code>

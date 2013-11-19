@@ -48,8 +48,10 @@ import org.tobarsegais.maven.model.io.xpp3.BundleXpp3Reader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -191,48 +193,7 @@ public abstract class AbstractGenerateMojo extends AbstractMojo {
             model.getToc().setName("Contents");
             final Map<String, SiteModule> toProcess = getRenderer().getFilesToProcess(sourceDirectory);
             for (BundleFile f : bundleModel.getFiles()) {
-                final DocumentTOCItem item = new DocumentTOCItem();
-                if (StringUtils.isBlank(f.getTitle())) {
-                    boolean found = false;
-                    for (Map.Entry<String, SiteModule> entry : toProcess.entrySet()) {
-                        if (f.getSrc().equals(entry.getKey())
-                                || f.getSrc().equals(FilenameUtils.removeExtension(entry.getKey()))) {
-                            try {
-                                final Parser parser = doxia
-                                        .getParser(entry.getValue().getParserId());
-                                fis = null;
-                                CapturingSink sink = null;
-                                try {
-                                    fis = new FileInputStream(
-                                            new File(new File(sourceDirectory, entry.getValue().getSourceDirectory()),
-                                                    entry.getKey()));
-                                    sink = new CapturingSink();
-                                    parser.parse(new InputStreamReader(fis, sourceEncoding), sink);
-                                } catch (ParseException e) {
-                                    getLog().error(e);
-                                } finally {
-                                    if (sink != null) {
-                                        sink.close();
-                                    }
-                                    IOUtil.close(fis);
-                                }
-                                item.setName(sink.getTitle());
-                                found = true;
-                            } catch (ParserNotFoundException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File
-                                // Templates.
-                            }
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        item.setName(new File(sourceDirectory, f.getSrc()).getName());
-                    }
-
-                } else {
-                    item.setName(f.getTitle());
-                }
-                item.setRef(f.getSrc()+".html");
+                final DocumentTOCItem item = toDocumentTOCItem(f, toProcess);
                 model.getToc().addItem(item);
             }
 
@@ -242,6 +203,55 @@ public abstract class AbstractGenerateMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
+    }
+
+    private DocumentTOCItem toDocumentTOCItem(BundleFile f, Map<String, SiteModule> contentFiles)
+            throws FileNotFoundException, UnsupportedEncodingException {
+        final DocumentTOCItem item = new DocumentTOCItem();
+        if (StringUtils.isBlank(f.getTitle())) {
+            boolean found = false;
+            for (Map.Entry<String, SiteModule> entry : contentFiles.entrySet()) {
+                if (f.getSrc().equals(entry.getKey())
+                        || f.getSrc().equals(FilenameUtils.removeExtension(entry.getKey()))) {
+                    try {
+                        final Parser parser = doxia
+                                .getParser(entry.getValue().getParserId());
+                        FileInputStream fis = null;
+                        CapturingSink sink = null;
+                        try {
+                            fis = new FileInputStream(
+                                    new File(new File(sourceDirectory, entry.getValue().getSourceDirectory()),
+                                            entry.getKey()));
+                            sink = new CapturingSink();
+                            parser.parse(new InputStreamReader(fis, sourceEncoding), sink);
+                        } catch (ParseException e) {
+                            getLog().error(e);
+                        } finally {
+                            if (sink != null) {
+                                sink.close();
+                            }
+                            IOUtil.close(fis);
+                        }
+                        item.setName(sink.getTitle());
+                        found = true;
+                    } catch (ParserNotFoundException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File
+                        // Templates.
+                    }
+                    break;
+                }
+            }
+            if (!found) {
+                item.setName(new File(sourceDirectory, f.getSrc()).getName());
+            }
+        } else {
+            item.setName(f.getTitle());
+        }
+        item.setRef(f.getSrc()+".html");
+        for (BundleFile file : f.getFiles()) {
+            item.addItem(toDocumentTOCItem(file, contentFiles));
+        }
+        return item;
     }
 
     protected abstract AbstractDocumentRenderer getRenderer();
