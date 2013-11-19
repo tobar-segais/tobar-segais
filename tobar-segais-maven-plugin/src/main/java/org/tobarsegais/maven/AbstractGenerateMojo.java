@@ -92,13 +92,9 @@ public abstract class AbstractGenerateMojo extends AbstractMojo {
                         ? project
                         .getOrganization().getName()
                         : null));
-        cover.setCompanyLogo(
-                bundleModel.getCompanyLogo() != null ? new File(sourceDirectory, bundleModel.getCompanyLogo())
-                        .getAbsolutePath() : null);
+        cover.setCompanyLogo(bundleModel.getCompanyLogo());
         cover.setProjectName(bundleModel.getProjectName());
-        cover.setProjectLogo(
-                bundleModel.getProjectLogo() != null ? new File(sourceDirectory, bundleModel.getProjectLogo())
-                        .getAbsolutePath() : null);
+        cover.setProjectLogo(bundleModel.getProjectLogo());
         cover.setCoverDate(date);
         cover.setCoverVersion(StringUtils.defaultString(bundleModel.getVersion(), project.getVersion()));
         cover.setCoverSubTitle(bundleModel.getSubject());

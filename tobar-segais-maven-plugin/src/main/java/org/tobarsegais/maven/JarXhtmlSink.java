@@ -69,7 +69,7 @@ public class JarXhtmlSink extends AbstractXhtmlSink {
         if (delegate != null) {
             file_();
         }
-        final JarEntry entry = new JarEntry(name + ".html");
+        final JarEntry entry = new JarEntry(name);
         entry.setTime(time);
         outputStream.putNextEntry(entry);
         delegate = factory.createSink(new NoCloseOutputStream(outputStream), encoding);
