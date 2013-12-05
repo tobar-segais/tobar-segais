@@ -121,5 +121,6 @@ $(document).ready(function(){
     $("#toc").treeview({
 		animated: "fast",
 		collapsed: true,
+                persist: "location"
     });    
 })
