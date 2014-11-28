@@ -33,8 +33,7 @@ public class RedirectFilter implements Filter {
     private String domain = null;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        domain =
-                filterConfig.getServletContext().getInitParameter(RedirectFilter.class.getName() + ".domain");
+        domain = filterConfig.getServletContext().getInitParameter(RedirectFilter.class.getName() + ".domain");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
