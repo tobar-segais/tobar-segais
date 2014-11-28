@@ -17,6 +17,7 @@
 package org.tobarsegais.webapp;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -54,6 +55,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
@@ -72,6 +74,8 @@ public class ServletContextListenerImpl implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext application = sce.getServletContext();
         Map<String, String> bundles = new HashMap<String, String>();
+        Map<String, String> redirects = new HashMap<String, String>();
+        Map<String, String> aliases = new HashMap<String, String>();
         Map<String, Toc> contents = new LinkedHashMap<String, Toc>();
         List<IndexEntry> keywords = new ArrayList<IndexEntry>();
         Directory index = new RAMDirectory();
@@ -213,6 +217,34 @@ public class ServletContextListenerImpl implements ServletContextListener {
                         ((HttpURLConnection) connection).disconnect();
                     }
                 }
+            } else if ("/WEB-INF/bundles/permanent-redirect.properties".equals(path)) {
+                final Properties properties = new Properties();
+                try {
+                    properties.load(application.getResourceAsStream(path));
+                } catch (IOException e) {
+                    application.log("Cannot read permanent redirects.", e);
+                }
+                for (String key: properties.stringPropertyNames()) {
+                    final String value = properties.getProperty(key);
+                    if (StringUtils.isNotBlank(value)) {
+                        redirects.put(StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/"),
+                                StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/"));
+                    }
+                }
+            } else if ("/WEB-INF/bundles/temporary-redirect.properties".equals(path)) {
+                final Properties properties = new Properties();
+                try {
+                    properties.load(application.getResourceAsStream(path));
+                } catch (IOException e) {
+                    application.log("Cannot read temporary redirects.", e);
+                }
+                for (String key: properties.stringPropertyNames()) {
+                    final String value = properties.getProperty(key);
+                    if (StringUtils.isNotBlank(value)) {
+                        aliases.put(StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/"),
+                                StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/"));
+                    }
+                }
             }
         }
         if (indexWriter != null) {
@@ -227,6 +259,8 @@ public class ServletContextListenerImpl implements ServletContextListener {
         application.setAttribute("toc", Collections.unmodifiableMap(contents));
         application.setAttribute("keywords", new Index(keywords));
         application.setAttribute("bundles", Collections.unmodifiableMap(bundles));
+        application.setAttribute("redirects", Collections.unmodifiableMap(redirects));
+        application.setAttribute("aliases", Collections.unmodifiableMap(aliases));
         application.setAttribute("analyzer", analyzer);
         application.setAttribute("contentsQueryParser", new QueryParser(LUCENE_VERSON, "contents", analyzer));
     }

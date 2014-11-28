@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tobarsegais.webapp.data.Toc;
 import org.tobarsegais.webapp.data.TocEntry;
 
@@ -46,6 +47,35 @@ public class DocsServlet extends HttpServlet {
         if (path.equals("/docs")) {
             resp.sendRedirect("/docs/");
             return;
+        }
+
+        if (!isTopic) {
+            Map<String, String> redirects = (Map<String, String>) getServletContext().getAttribute("redirects");
+            Map<String, String> aliases = (Map<String, String>) getServletContext().getAttribute("aliases");
+            for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+                String key = path.substring(0, index);
+                if (key.startsWith("/")) {
+                    key = key.substring(1);
+                }
+                if (redirects.containsKey(key)) {
+                    resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                    final String permanentKey =
+                            StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"), "/");
+                    resp.setHeader("Location",
+                            req.getContextPath() + req.getServletPath() + "/" + permanentKey + path.substring(index));
+                    resp.flushBuffer();
+                    return;
+                }
+                if (aliases.containsKey(key)) {
+                    resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                    final String temporaryKey =
+                            StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"), "/");
+                    resp.setHeader("Location",
+                            req.getContextPath() + req.getServletPath() + "/" + temporaryKey + path.substring(index));
+                    resp.flushBuffer();
+                    return;
+                }
+            }
         }
 
         int endOfFileName = path.indexOf('#');

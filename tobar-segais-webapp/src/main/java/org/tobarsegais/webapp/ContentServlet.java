@@ -17,6 +17,7 @@
 package org.tobarsegais.webapp;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,10 +51,28 @@ public class ContentServlet extends HttpServlet {
             path = path.substring(index + PLUGINS_ROOT.length() - 1);
         }
         Map<String, String> bundles = (Map<String, String>) getServletContext().getAttribute("bundles");
+        Map<String, String> redirects = (Map<String, String>) getServletContext().getAttribute("redirects");
+        Map<String, String> aliases = (Map<String, String>) getServletContext().getAttribute("aliases");
         for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
             String key = path.substring(0, index);
             if (key.startsWith("/")) {
                 key = key.substring(1);
+            }
+            if (redirects.containsKey(key)) {
+                resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                final String permanentKey = StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"), "/");
+                resp.setHeader("Location",
+                        req.getContextPath() + req.getServletPath() + "/" + permanentKey + path.substring(index));
+                resp.flushBuffer();
+                return;
+            }
+            if (aliases.containsKey(key)) {
+                resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                final String temporaryKey = StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"),"/");
+                resp.setHeader("Location",
+                        req.getContextPath() + req.getServletPath() + "/" + temporaryKey + path.substring(index));
+                resp.flushBuffer();
+                return;
             }
             if (bundles.containsKey(key)) {
                 key = bundles.get(key);
