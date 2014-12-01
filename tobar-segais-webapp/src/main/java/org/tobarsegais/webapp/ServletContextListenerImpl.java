@@ -227,8 +227,10 @@ public class ServletContextListenerImpl implements ServletContextListener {
                 for (String key: properties.stringPropertyNames()) {
                     final String value = properties.getProperty(key);
                     if (StringUtils.isNotBlank(value)) {
-                        redirects.put(StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/"),
-                                StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/"));
+                        final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
+                        final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
+                        application.log(String.format("Adding HTTP/301 (permanent) from bundle %s to %s", src, dst));
+                        redirects.put(src, dst);
                     }
                 }
             } else if ("/WEB-INF/bundles/temporary-redirect.properties".equals(path)) {
@@ -241,8 +243,10 @@ public class ServletContextListenerImpl implements ServletContextListener {
                 for (String key: properties.stringPropertyNames()) {
                     final String value = properties.getProperty(key);
                     if (StringUtils.isNotBlank(value)) {
-                        aliases.put(StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/"),
-                                StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/"));
+                        final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
+                        final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
+                        application.log(String.format("Adding HTTP/302 (temporary) from bundle %s to %s", src, dst));
+                        aliases.put(src, dst);
                     }
                 }
             }
