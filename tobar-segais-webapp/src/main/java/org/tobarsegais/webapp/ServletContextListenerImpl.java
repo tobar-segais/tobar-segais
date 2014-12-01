@@ -88,165 +88,175 @@ public class ServletContextListenerImpl implements ServletContextListener {
             application.log("Cannot create search index. Search will be unavailable.", e);
             indexWriter = null;
         }
-        for (String path : (Set<String>) application.getResourcePaths(BUNDLE_PATH)) {
-            if (path.endsWith(".jar")) {
-                String key = path.substring("/WEB-INF/bundles/".length(), path.lastIndexOf(".jar"));
-                application.log("Parsing " + path);
-                URLConnection connection = null;
-                try {
-                    URL url = new URL("jar:" + application.getResource(path) + "!/");
-                    connection = url.openConnection();
-                    if (!(connection instanceof JarURLConnection)) {
-                        application.log(path + " is not a jar file, ignoring");
-                        continue;
-                    }
-                    JarURLConnection jarConnection = (JarURLConnection) connection;
-                    JarFile jarFile = jarConnection.getJarFile();
-                    Manifest manifest = jarFile.getManifest();
-                    if (manifest != null) {
-                        String symbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
-                        if (symbolicName != null) {
-                            int i = symbolicName.indexOf(';');
-                            if (i != -1) {
-                                symbolicName = symbolicName.substring(0, i);
-                            }
-                            bundles.put(symbolicName, key);
-                            key = symbolicName;
-                        }
-                    }
-
-                    JarEntry pluginEntry = jarFile.getJarEntry("plugin.xml");
-                    if (pluginEntry == null) {
-                        application.log(path + " does not contain a plugin.xml file, ignoring");
-                        continue;
-                    }
-                    Plugin plugin = Plugin.read(jarFile.getInputStream(pluginEntry));
-
-                    Extension tocExtension = plugin.getExtension("org.eclipse.help.toc");
-                    if (tocExtension == null || tocExtension.getFile("toc") == null) {
-                        application.log(path + " does not contain a 'org.eclipse.help.toc' extension, ignoring");
-                        continue;
-                    }
-                    JarEntry tocEntry = jarFile.getJarEntry(tocExtension.getFile("toc"));
-                    if (tocEntry == null) {
-                        application.log(path + " is missing the referenced toc: " + tocExtension.getFile("toc")
-                                + ", ignoring");
-                        continue;
-                    }
-                    Toc toc;
+        final Set<String> paths = (Set<String>) application.getResourcePaths(BUNDLE_PATH);
+        if (paths == null) {
+            application.log(String.format("Could not find any bundles at %s", BUNDLE_PATH));
+        } else {
+            for (String path : paths) {
+                if (path.endsWith(".jar")) {
+                    String key = path.substring("/WEB-INF/bundles/".length(), path.lastIndexOf(".jar"));
+                    application.log("Parsing " + path);
+                    URLConnection connection = null;
                     try {
-                        toc = Toc.read(jarFile.getInputStream(tocEntry));
-                    } catch (IllegalStateException e) {
-                        application.log("Could not parse " + path + " due to " + e.getMessage(), e);
-                        continue;
-                    }
-                    contents.put(key, toc);
-
-                    Extension indexExtension = plugin.getExtension("org.eclipse.help.index");
-                    if (indexExtension != null && indexExtension.getFile("index") != null) {
-                        JarEntry indexEntry = jarFile.getJarEntry(indexExtension.getFile("index"));
-                        if (indexEntry != null) {
-                            try {
-                                keywords.addAll(Index.read(key, jarFile.getInputStream(indexEntry)).getChildren());
-                            } catch (IllegalStateException e) {
-                                application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                        URL url = new URL("jar:" + application.getResource(path) + "!/");
+                        connection = url.openConnection();
+                        if (!(connection instanceof JarURLConnection)) {
+                            application.log(path + " is not a jar file, ignoring");
+                            continue;
+                        }
+                        JarURLConnection jarConnection = (JarURLConnection) connection;
+                        JarFile jarFile = jarConnection.getJarFile();
+                        Manifest manifest = jarFile.getManifest();
+                        if (manifest != null) {
+                            String symbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+                            if (symbolicName != null) {
+                                int i = symbolicName.indexOf(';');
+                                if (i != -1) {
+                                    symbolicName = symbolicName.substring(0, i);
+                                }
+                                bundles.put(symbolicName, key);
+                                key = symbolicName;
                             }
-                        } else {
-                            application.log(path + " is missing the referenced index: " + indexExtension.getFile("index"));
                         }
 
-                    }
-                    application.log(path + " successfully parsed and added as " + key);
-                    if (indexWriter != null) {
-                        application.log("Indexing content of " + path);
-                        Set<String> files = new HashSet<String>();
-                        Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
-                        stack.push(Collections.singleton(toc).iterator());
-                        while (!stack.empty()) {
-                            Iterator<? extends TocEntry> cur = stack.pop();
-                            if (cur.hasNext()) {
-                                TocEntry entry = cur.next();
-                                stack.push(cur);
-                                if (!entry.getChildren().isEmpty()) {
-                                    stack.push(entry.getChildren().iterator());
-                                }
-                                String file = entry.getHref();
-                                if (file == null) {
-                                    continue;
-                                }
-                                int hashIndex = file.indexOf('#');
-                                if (hashIndex != -1) {
-                                    file = file.substring(0, hashIndex);
-                                }
-                                if (files.contains(file)) {
-                                    // already indexed
-                                    // todo work out whether to just pull the section
-                                    continue;
-                                }
-                                Document document = new Document();
-                                document.add(
-                                        new Field("title", entry.getLabel(), Field.Store.YES, Field.Index.ANALYZED));
-                                document.add(new Field("href", key+"/"+entry.getHref(), Field.Store.YES, Field.Index.NO));
-                                JarEntry docEntry = jarFile.getJarEntry(file);
-                                if (docEntry == null) {
-                                    // ignore missing file
-                                    continue;
-                                }
-                                InputStream inputStream = null;
+                        JarEntry pluginEntry = jarFile.getJarEntry("plugin.xml");
+                        if (pluginEntry == null) {
+                            application.log(path + " does not contain a plugin.xml file, ignoring");
+                            continue;
+                        }
+                        Plugin plugin = Plugin.read(jarFile.getInputStream(pluginEntry));
+
+                        Extension tocExtension = plugin.getExtension("org.eclipse.help.toc");
+                        if (tocExtension == null || tocExtension.getFile("toc") == null) {
+                            application.log(path + " does not contain a 'org.eclipse.help.toc' extension, ignoring");
+                            continue;
+                        }
+                        JarEntry tocEntry = jarFile.getJarEntry(tocExtension.getFile("toc"));
+                        if (tocEntry == null) {
+                            application.log(path + " is missing the referenced toc: " + tocExtension.getFile("toc")
+                                    + ", ignoring");
+                            continue;
+                        }
+                        Toc toc;
+                        try {
+                            toc = Toc.read(jarFile.getInputStream(tocEntry));
+                        } catch (IllegalStateException e) {
+                            application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                            continue;
+                        }
+                        contents.put(key, toc);
+
+                        Extension indexExtension = plugin.getExtension("org.eclipse.help.index");
+                        if (indexExtension != null && indexExtension.getFile("index") != null) {
+                            JarEntry indexEntry = jarFile.getJarEntry(indexExtension.getFile("index"));
+                            if (indexEntry != null) {
                                 try {
-                                    inputStream = jarFile.getInputStream(docEntry);
-                                    org.jsoup.nodes.Document docDoc = Jsoup.parse(IOUtils.toString(inputStream));
-                                    document.add(new Field("contents", docDoc.body().text(), Field.Store.NO,
-                                            Field.Index.ANALYZED));
-                                    indexWriter.addDocument(document);
-                                } finally {
-                                    IOUtils.closeQuietly(inputStream);
+                                    keywords.addAll(Index.read(key, jarFile.getInputStream(indexEntry)).getChildren());
+                                } catch (IllegalStateException e) {
+                                    application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                                }
+                            } else {
+                                application.log(path + " is missing the referenced index: " + indexExtension
+                                        .getFile("index"));
+                            }
+
+                        }
+                        application.log(path + " successfully parsed and added as " + key);
+                        if (indexWriter != null) {
+                            application.log("Indexing content of " + path);
+                            Set<String> files = new HashSet<String>();
+                            Stack<Iterator<? extends TocEntry>> stack = new Stack<Iterator<? extends TocEntry>>();
+                            stack.push(Collections.singleton(toc).iterator());
+                            while (!stack.empty()) {
+                                Iterator<? extends TocEntry> cur = stack.pop();
+                                if (cur.hasNext()) {
+                                    TocEntry entry = cur.next();
+                                    stack.push(cur);
+                                    if (!entry.getChildren().isEmpty()) {
+                                        stack.push(entry.getChildren().iterator());
+                                    }
+                                    String file = entry.getHref();
+                                    if (file == null) {
+                                        continue;
+                                    }
+                                    int hashIndex = file.indexOf('#');
+                                    if (hashIndex != -1) {
+                                        file = file.substring(0, hashIndex);
+                                    }
+                                    if (files.contains(file)) {
+                                        // already indexed
+                                        // todo work out whether to just pull the section
+                                        continue;
+                                    }
+                                    Document document = new Document();
+                                    document.add(
+                                            new Field("title", entry.getLabel(), Field.Store.YES,
+                                                    Field.Index.ANALYZED));
+                                    document.add(new Field("href", key + "/" + entry.getHref(), Field.Store.YES,
+                                            Field.Index.NO));
+                                    JarEntry docEntry = jarFile.getJarEntry(file);
+                                    if (docEntry == null) {
+                                        // ignore missing file
+                                        continue;
+                                    }
+                                    InputStream inputStream = null;
+                                    try {
+                                        inputStream = jarFile.getInputStream(docEntry);
+                                        org.jsoup.nodes.Document docDoc = Jsoup.parse(IOUtils.toString(inputStream));
+                                        document.add(new Field("contents", docDoc.body().text(), Field.Store.NO,
+                                                Field.Index.ANALYZED));
+                                        indexWriter.addDocument(document);
+                                    } finally {
+                                        IOUtils.closeQuietly(inputStream);
+                                    }
                                 }
                             }
                         }
+                    } catch (XMLStreamException e) {
+                        application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                    } catch (MalformedURLException e) {
+                        application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                    } catch (IOException e) {
+                        application.log("Could not parse " + path + " due to " + e.getMessage(), e);
+                    } finally {
+                        if (connection instanceof HttpURLConnection) {
+                            // should never be the case, but we should try to be sure
+                            ((HttpURLConnection) connection).disconnect();
+                        }
                     }
-                } catch (XMLStreamException e) {
-                    application.log("Could not parse " + path + " due to " + e.getMessage(), e);
-                } catch (MalformedURLException e) {
-                    application.log("Could not parse " + path + " due to " + e.getMessage(), e);
-                } catch (IOException e) {
-                    application.log("Could not parse " + path + " due to " + e.getMessage(), e);
-                } finally {
-                    if (connection instanceof HttpURLConnection) {
-                        // should never be the case, but we should try to be sure
-                        ((HttpURLConnection) connection).disconnect();
+                } else if ("/WEB-INF/bundles/permanent-redirect.properties".equals(path)) {
+                    final Properties properties = new Properties();
+                    try {
+                        properties.load(application.getResourceAsStream(path));
+                    } catch (IOException e) {
+                        application.log("Cannot read permanent redirects.", e);
                     }
-                }
-            } else if ("/WEB-INF/bundles/permanent-redirect.properties".equals(path)) {
-                final Properties properties = new Properties();
-                try {
-                    properties.load(application.getResourceAsStream(path));
-                } catch (IOException e) {
-                    application.log("Cannot read permanent redirects.", e);
-                }
-                for (String key: properties.stringPropertyNames()) {
-                    final String value = properties.getProperty(key);
-                    if (StringUtils.isNotBlank(value)) {
-                        final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
-                        final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
-                        application.log(String.format("Adding HTTP/301 (permanent) from bundle %s to %s", src, dst));
-                        redirects.put(src, dst);
+                    for (String key : properties.stringPropertyNames()) {
+                        final String value = properties.getProperty(key);
+                        if (StringUtils.isNotBlank(value)) {
+                            final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
+                            final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
+                            application
+                                    .log(String.format("Adding HTTP/301 (permanent) from bundle %s to %s", src, dst));
+                            redirects.put(src, dst);
+                        }
                     }
-                }
-            } else if ("/WEB-INF/bundles/temporary-redirect.properties".equals(path)) {
-                final Properties properties = new Properties();
-                try {
-                    properties.load(application.getResourceAsStream(path));
-                } catch (IOException e) {
-                    application.log("Cannot read temporary redirects.", e);
-                }
-                for (String key: properties.stringPropertyNames()) {
-                    final String value = properties.getProperty(key);
-                    if (StringUtils.isNotBlank(value)) {
-                        final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
-                        final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
-                        application.log(String.format("Adding HTTP/302 (temporary) from bundle %s to %s", src, dst));
-                        aliases.put(src, dst);
+                } else if ("/WEB-INF/bundles/temporary-redirect.properties".equals(path)) {
+                    final Properties properties = new Properties();
+                    try {
+                        properties.load(application.getResourceAsStream(path));
+                    } catch (IOException e) {
+                        application.log("Cannot read temporary redirects.", e);
+                    }
+                    for (String key : properties.stringPropertyNames()) {
+                        final String value = properties.getProperty(key);
+                        if (StringUtils.isNotBlank(value)) {
+                            final String src = StringUtils.removeEnd(StringUtils.removeStart(key, "/"), "/");
+                            final String dst = StringUtils.removeEnd(StringUtils.removeStart(value, "/"), "/");
+                            application
+                                    .log(String.format("Adding HTTP/302 (temporary) from bundle %s to %s", src, dst));
+                            aliases.put(src, dst);
+                        }
                     }
                 }
             }
