@@ -67,9 +67,9 @@ public class DocsServlet extends HttpServlet {
                     return;
                 }
                 if (aliases.containsKey(key)) {
-                    resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+                    resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                     final String temporaryKey =
-                            StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"), "/");
+                            StringUtils.removeEnd(StringUtils.removeStart(aliases.get(key), "/"), "/");
                     resp.setHeader("Location",
                             req.getContextPath() + req.getServletPath() + "/" + temporaryKey + path.substring(index));
                     resp.flushBuffer();

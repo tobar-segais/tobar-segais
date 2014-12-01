@@ -68,7 +68,7 @@ public class ContentServlet extends HttpServlet {
             }
             if (aliases.containsKey(key)) {
                 resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-                final String temporaryKey = StringUtils.removeEnd(StringUtils.removeStart(redirects.get(key), "/"),"/");
+                final String temporaryKey = StringUtils.removeEnd(StringUtils.removeStart(aliases.get(key), "/"),"/");
                 resp.setHeader("Location",
                         req.getContextPath() + req.getServletPath() + "/" + temporaryKey + path.substring(index));
                 resp.flushBuffer();
