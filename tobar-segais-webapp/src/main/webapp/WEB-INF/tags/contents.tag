@@ -26,46 +26,59 @@
 <%@ tag import="java.util.Map" %>
 <%@ tag import="java.util.jar.JarEntry" %>
 <%@ tag import="java.util.jar.JarFile" %>
+<%@ tag import="java.util.List" %>
+<%@ tag import="java.util.ArrayList" %>
+<%@ tag import="org.apache.commons.lang3.StringUtils" %>
 <div id="${id}"><%
-    String path = (String) request.getAttribute("content");
+    List<String> paths = new ArrayList<String>(2);
+    paths.add((String) request.getAttribute("content"));
+    String defaultPath = application.getInitParameter("default.page.path");
+    if (StringUtils.isNotBlank(defaultPath)) {
+        paths.add(defaultPath);
+    }
     Map<String, String> bundles = ServletContextListenerImpl.getBundles(application);
     boolean found = false;
-    for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
-        String key = path.substring(0, index);
-        if (key.startsWith("/")) {
-            key = key.substring(1);
-        }
-        if (bundles.containsKey(key)) {
-            key = bundles.get(key);
-        }
-        URL resource = application.getResource(ServletContextListenerImpl.BUNDLE_PATH + "/" + key + ".jar");
-        if (resource == null) {
-            continue;
-        }
-        URL jarResource = new URL("jar:" + resource + "!/");
-        URLConnection connection = jarResource.openConnection();
-        if (!(connection instanceof JarURLConnection)) {
-            continue;
-        }
-        JarURLConnection jarConnection = (JarURLConnection) connection;
-        JarFile jarFile = jarConnection.getJarFile();
+    for (String path: paths) {
+        for (int index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+            String key = path.substring(0, index);
+            if (key.startsWith("/")) {
+                key = key.substring(1);
+            }
+            if (bundles.containsKey(key)) {
+                key = bundles.get(key);
+            }
+            URL resource = application.getResource(ServletContextListenerImpl.BUNDLE_PATH + "/" + key + ".jar");
+            if (resource == null) {
+                continue;
+            }
+            URL jarResource = new URL("jar:" + resource + "!/");
+            URLConnection connection = jarResource.openConnection();
+            if (!(connection instanceof JarURLConnection)) {
+                continue;
+            }
+            JarURLConnection jarConnection = (JarURLConnection) connection;
+            JarFile jarFile = jarConnection.getJarFile();
 
-        int endOfFileName = path.indexOf('#', index);
-        endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
-        String fileName = path.substring(index + 1, endOfFileName);
-        JarEntry jarEntry = jarFile.getJarEntry(fileName);
-        if (jarEntry == null) {
-            continue;
+            int endOfFileName = path.indexOf('#', index);
+            endOfFileName = endOfFileName == -1 ? path.length() : endOfFileName;
+            String fileName = path.substring(index + 1, endOfFileName);
+            JarEntry jarEntry = jarFile.getJarEntry(fileName);
+            if (jarEntry == null) {
+                continue;
+            }
+            InputStream in = null;
+            try {
+                in = jarFile.getInputStream(jarEntry);
+                Document document = Jsoup.parse(in, "UTF-8", request.getRequestURI());
+                out.print(document.body());
+                found = true;
+                break;
+            } finally {
+                IOUtils.closeQuietly(in);
+            }
         }
-        InputStream in = null;
-        try {
-            in = jarFile.getInputStream(jarEntry);
-            Document document = Jsoup.parse(in, "UTF-8", request.getRequestURI());
-            out.print(document.body());
-            found = true;
+        if (found) {
             break;
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
     if (!found) {

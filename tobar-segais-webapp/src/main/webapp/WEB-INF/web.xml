@@ -29,6 +29,12 @@
 
   <!--<context-param>-->
     <!--<description>The domain to force this webapp to be served from.</description>-->
+    <!--<param-name>default.page.path</param-name>-->
+    <!--<param-value></param-value>-->
+  <!--</context-param>-->
+
+  <!--<context-param>-->
+    <!--<description>The domain to force this webapp to be served from.</description>-->
     <!--<param-name>org.tobarsegais.webapp.RedirectFilter.domain</param-name>-->
     <!--<param-value></param-value>-->
   <!--</context-param>-->
