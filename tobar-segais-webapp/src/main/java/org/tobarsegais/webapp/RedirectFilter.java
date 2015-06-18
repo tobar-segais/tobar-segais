@@ -40,7 +40,20 @@ public class RedirectFilter implements Filter {
         String statusStr = ctx.getInitParameter(RedirectFilter.class.getName() + ".status");
         if (StringUtils.isNotBlank(statusStr)) {
             try {
-                status = Integer.parseInt(statusStr);
+                switch (Integer.parseInt(statusStr)) {
+                    case 301:
+                        status = 301;
+                        break;
+                    case 307:
+                        status = 307;
+                        break;
+                    case 308:
+                        status = 308;
+                        break;
+                    default:
+                        status = 302;
+                        break;
+                }
             } catch (NumberFormatException e) {
                 // ignore
             }
@@ -65,7 +78,7 @@ public class RedirectFilter implements Filter {
                 if (queryString != null) {
                     requestURL.append('?').append(queryString);
                 }
-                resp.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                resp.setStatus(status);
                 resp.setHeader("Location", requestURL.toString());
             }
         }
