@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -31,9 +32,19 @@ import java.io.IOException;
 public class RedirectFilter implements Filter {
 
     private String domain = null;
+    private int status = HttpServletResponse.SC_MOVED_TEMPORARILY;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        domain = filterConfig.getServletContext().getInitParameter(RedirectFilter.class.getName() + ".domain");
+        final ServletContext ctx = filterConfig.getServletContext();
+        domain = ctx.getInitParameter(RedirectFilter.class.getName() + ".domain");
+        String statusStr = ctx.getInitParameter(RedirectFilter.class.getName() + ".status");
+        if (StringUtils.isNotBlank(statusStr)) {
+            try {
+                status = Integer.parseInt(statusStr);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

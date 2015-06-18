@@ -33,6 +33,12 @@
     <!--<param-value></param-value>-->
   <!--</context-param>-->
 
+  <!--<context-param>-->
+    <!--<description>The status code to use when redirecting the domain</description>-->
+    <!--<param-name>org.tobarsegais.webapp.RedirectFilter.status</param-name>-->
+    <!--<param-value>302</param-value>-->
+  <!--</context-param>-->
+
   <session-config>
     <session-timeout>10</session-timeout>
   </session-config>
