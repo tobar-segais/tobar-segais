@@ -62,6 +62,8 @@ import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Loads all the bundles.
@@ -269,6 +271,30 @@ public class ServletContextListenerImpl implements ServletContextListener {
                             aliases.put(src, dst);
                         }
                     }
+                } else if ("/WEB-INF/bundles/sequence.lst".equals(path)) {
+                    List<Pattern> sequence = new ArrayList<Pattern>();
+                    try {
+                        InputStream stream = application.getResourceAsStream(path);
+                        try {
+                            for (String line: IOUtils.readLines(stream, "UTF-8")) {
+                                int hash = line.indexOf('#');
+                                if (hash != -1) line = line.substring(0, hash);
+                                if (line.startsWith("#") || StringUtils.isBlank(line)) {
+                                    continue;
+                                }
+                                try {
+                                    sequence.add(Pattern.compile(line));
+                                } catch (PatternSyntaxException e) {
+                                    application.log("Ignoring malformed regex: " + line, e);
+                                }
+                            }
+                        } finally {
+                            IOUtils.closeQuietly(stream);
+                        }
+                    } catch (IOException e) {
+                        application.log("Cannot read sequence.lst.", e);
+                    }
+                    application.setAttribute("sequence", Collections.unmodifiableList(sequence));
                 }
             }
         }
@@ -374,6 +400,21 @@ public class ServletContextListenerImpl implements ServletContextListener {
         return (Analyzer) application.getAttribute("analyzer");
     }
     
+    @SuppressWarnings("unchecked")
+    public static List<Pattern> getSequence(ServletContext application) {
+        return (List<Pattern>) application.getAttribute("sequence");
+    }
+    
+    public static int getSequenceOrder(ServletContext application, String key) {
+        int i = 0;
+        for (Pattern p : getSequence(application)) {
+            if (p.matcher(key).matches()) return i;
+            i++;
+        }
+        return i;
+    }
+    
+    @SuppressWarnings("unchecked")
     public static String getInitParameter(ServletContext application, String name) {
         return (String) application.getAttribute("context-param." + name);
     }

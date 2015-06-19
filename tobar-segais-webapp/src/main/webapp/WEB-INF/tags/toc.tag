@@ -19,13 +19,13 @@
 <%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
 <%@ tag import="org.tobarsegais.webapp.data.Toc" %>
 <%@ tag import="org.tobarsegais.webapp.data.TocEntry" %>
-<%@ tag import="java.util.Iterator" %>
-<%@ tag import="java.util.Map" %>
-<%@ tag import="java.util.Stack" %>
 <%@ tag import="java.util.ArrayList" %>
-<%@ tag import="java.util.List" %>
 <%@ tag import="java.util.Collections" %>
 <%@ tag import="java.util.Comparator" %>
+<%@ tag import="java.util.Iterator" %>
+<%@ tag import="java.util.List" %>
+<%@ tag import="java.util.Map" %>
+<%@ tag import="java.util.Stack" %>
 <%@attribute name="id" required="true" %>
 <ul id="${id}" style="margin-top: 10px; margin-left: 25px; "><%
     final String contextPath = request.getContextPath();
@@ -33,6 +33,11 @@
     List<Map.Entry<String,Toc>> sortedEntries = new ArrayList<Map.Entry<String,Toc>>(contents.entrySet());
     Collections.sort(sortedEntries, new Comparator<Map.Entry<String, Toc>>() {
         public int compare(Map.Entry<String, Toc> o1, Map.Entry<String, Toc> o2) {
+            int i1 = ServletContextListenerImpl.getSequenceOrder(application, o1.getKey());
+            int i2 = ServletContextListenerImpl.getSequenceOrder(application, o2.getKey());
+            if (i1 != i2) {
+                return (i1 < i2) ? -1 : 1;
+            }
             return o1.getValue().getLabel().compareTo(o2.getValue().getLabel());
         }
     });
