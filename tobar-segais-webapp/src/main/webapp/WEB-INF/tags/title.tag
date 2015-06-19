@@ -14,6 +14,7 @@
   ~ limitations under the License.
   --%>
 
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ tag import="java.util.Map" %>
 <%@ tag import="org.tobarsegais.webapp.data.Toc" %>
 <%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>

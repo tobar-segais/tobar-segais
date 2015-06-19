@@ -1,4 +1,3 @@
-<%@ attribute name="id" required="true" %>
 <%--
 ~ Copyright 2012 Stephen Connolly
 ~
@@ -15,6 +14,8 @@
 ~ limitations under the License.
 --%>
 
+<%@ attribute name="id" required="true" %>
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ tag import="org.apache.commons.io.IOUtils" %>
 <%@ tag import="org.jsoup.Jsoup" %>
 <%@ tag import="org.jsoup.nodes.Document" %>
@@ -26,9 +27,6 @@
 <%@ tag import="java.util.Map" %>
 <%@ tag import="java.util.jar.JarEntry" %>
 <%@ tag import="java.util.jar.JarFile" %>
-<%@ tag import="java.util.List" %>
-<%@ tag import="java.util.ArrayList" %>
-<%@ tag import="org.apache.commons.lang3.StringUtils" %>
 <div id="${id}"><%
     String path = (String) request.getAttribute("content");
     Map<String, String> bundles = ServletContextListenerImpl.getBundles(application);

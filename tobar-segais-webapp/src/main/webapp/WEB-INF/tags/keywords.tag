@@ -14,6 +14,7 @@
   ~ limitations under the License.
   --%>
 
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ tag import="org.tobarsegais.webapp.data.Index" %>
 <%@ tag import="java.util.Stack" %>
 <%@ tag import="java.util.Iterator" %>

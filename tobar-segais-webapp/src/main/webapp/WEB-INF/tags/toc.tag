@@ -14,6 +14,7 @@
   ~ limitations under the License.
   --%>
 
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ tag import="org.apache.commons.lang3.StringEscapeUtils" %>
 <%@ tag import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
 <%@ tag import="org.tobarsegais.webapp.data.Toc" %>
