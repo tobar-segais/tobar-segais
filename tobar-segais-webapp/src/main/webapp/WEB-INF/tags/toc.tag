@@ -31,10 +31,11 @@
     final String contextPath = request.getContextPath();
     Map<String, Toc> contents = ServletContextListenerImpl.getTablesOfContents(application);
     List<Map.Entry<String,Toc>> sortedEntries = new ArrayList<Map.Entry<String,Toc>>(contents.entrySet());
+    final ServletContext ctx = application;
     Collections.sort(sortedEntries, new Comparator<Map.Entry<String, Toc>>() {
         public int compare(Map.Entry<String, Toc> o1, Map.Entry<String, Toc> o2) {
-            int i1 = ServletContextListenerImpl.getSequenceOrder(application, o1.getKey());
-            int i2 = ServletContextListenerImpl.getSequenceOrder(application, o2.getKey());
+            int i1 = ServletContextListenerImpl.getSequenceOrder(ctx, o1.getKey());
+            int i2 = ServletContextListenerImpl.getSequenceOrder(ctx, o2.getKey());
             if (i1 != i2) {
                 return (i1 < i2) ? -1 : 1;
             }
