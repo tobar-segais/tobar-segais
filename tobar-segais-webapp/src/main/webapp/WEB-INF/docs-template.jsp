@@ -1,3 +1,5 @@
+<%@ page import="org.tobarsegais.webapp.ServletContextListenerImpl" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%--
  ~ Copyright 2012 Stephen Connolly
  ~
@@ -16,14 +18,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%
-    String cacheControl = application.getInitParameter("cache-control.mime.text/html");
+    String cacheControl = ServletContextListenerImpl.getInitParameter(application, "cache-control.mime.text/html");
     if (cacheControl == null) {
-        cacheControl = application.getInitParameter("cache-control.mime.text/*");
+        cacheControl = ServletContextListenerImpl.getInitParameter(application, "cache-control.mime.text/*");
     }
     if (cacheControl == null) {
-        cacheControl = application.getInitParameter("cache-control.default");
+        cacheControl = ServletContextListenerImpl.getInitParameter(application, "cache-control.default");
     }
-    if (cacheControl != null) {
+    if (StringUtils.isNotBlank(cacheControl)) {
         response.setHeader("Cache-Control", cacheControl);
     }
 %><!DOCTYPE html>

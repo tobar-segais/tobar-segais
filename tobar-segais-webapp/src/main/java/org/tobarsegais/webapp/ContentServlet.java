@@ -104,17 +104,17 @@ public class ContentServlet extends HttpServlet {
                 }
                 String mimeType = ctx.getMimeType(fileName);
                 resp.setContentType(mimeType);
-                String cacheControl = ctx.getInitParameter("cache-control.mime." + mimeType);
+                String cacheControl = ServletContextListenerImpl.getInitParameter(ctx, "cache-control.mime." + mimeType);
                 if (cacheControl == null) {
                     int slash = mimeType.indexOf('/');
                     if (slash != -1) {
-                        cacheControl = ctx.getInitParameter("cache-control.mime." + mimeType.substring(0, slash) + "/*");
+                        cacheControl = ServletContextListenerImpl.getInitParameter(ctx, "cache-control.mime." + mimeType.substring(0, slash) + "/*");
                     }
                 }
                 if (cacheControl == null) {
-                    cacheControl = ctx.getInitParameter("cache-control.default");
+                    cacheControl = ServletContextListenerImpl.getInitParameter(ctx, "cache-control.default");
                 }
-                if (cacheControl != null) {
+                if (StringUtils.isNotBlank(cacheControl)) {
                     resp.setHeader("Cache-Control", cacheControl);
                 }
                 InputStream in = null;

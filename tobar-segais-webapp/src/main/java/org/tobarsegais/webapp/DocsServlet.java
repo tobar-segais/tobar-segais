@@ -59,7 +59,7 @@ public class DocsServlet extends HttpServlet {
         	path = findTopicPath(topicKey);
         }
 
-        String defaultPath = getServletContext().getInitParameter("default.page.path");
+        String defaultPath = ServletContextListenerImpl.getInitParameter(getServletContext(), "default.page.path");
         if (StringUtils.isNotBlank(defaultPath)) {
             if (path.equals("/docs")) {
                 resp.sendRedirect(defaultPath.startsWith("/") ? "docs" + defaultPath : "docs/" + defaultPath);

@@ -21,41 +21,55 @@
   <display-name>Tobar-Segais-WebApp</display-name>
   <description>Tobar Segais InfoCenter Container</description>
 
-  <context-param>
-    <description>The default cache-control header</description>
-    <param-name>cache-control.default</param-name>
-    <param-value>must-revalidate</param-value>
-  </context-param>
+  <!--
+   The default values of the context-params are picked up from /WEB-INF/default-context-param.properties
+   Then any overrides in /WEB-INF/web.xml are applied.
+   Finally the overrides in /WEB-INF/override-context-param.properties are applied to compute the effective
+   context-params
+  -->
+  
+  <!--
+    For any mime type, firstly an exact match will be checked, e.g. cache-control.mime.text/html
+    If there is no such match, then the base type will be checked, e.g. cache-control.mime.text/*
+    If there is still no match, then the default will be checked, e.g. cache-control.default
+    If there is still no match, then the cache-control header will not be applied.
+  -->
+  
+  <!--<context-param>-->
+    <!--<description>The default cache-control header</description>-->
+    <!--<param-name>cache-control.default</param-name>-->
+    <!--<param-value>must-revalidate</param-value>-->
+  <!--</context-param>-->
 
-  <context-param>
-    <description>The default max age for application mime types</description>
-    <param-name>cache-control.mime.application/*</param-name>
-    <param-value>public, max-age=86400</param-value>
-  </context-param>
+  <!--<context-param>-->
+    <!--<description>The default max age for application mime types</description>-->
+    <!--<param-name>cache-control.mime.application/*</param-name>-->
+    <!--<param-value>public, max-age=86400</param-value>-->
+  <!--</context-param>-->
 
-  <context-param>
-    <description>The default max age for audio mime types</description>
-    <param-name>cache-control.mime.audio/*</param-name>
-    <param-value>public, max-age=86400</param-value>
-  </context-param>
+  <!--<context-param>-->
+    <!--<description>The default max age for audio mime types</description>-->
+    <!--<param-name>cache-control.mime.audio/*</param-name>-->
+    <!--<param-value>public, max-age=86400</param-value>-->
+  <!--</context-param>-->
 
-  <context-param>
-    <description>The default max age for image mime types</description>
-    <param-name>cache-control.mime.image/*</param-name>
-    <param-value>public, max-age=86400</param-value>
-  </context-param>
+  <!--<context-param>-->
+    <!--<description>The default max age for image mime types</description>-->
+    <!--<param-name>cache-control.mime.image/*</param-name>-->
+    <!--<param-value>public, max-age=86400</param-value>-->
+  <!--</context-param>-->
 
-  <context-param>
-    <description>The default max age for video mime types</description>
-    <param-name>cache-control.mime.video/*</param-name>
-    <param-value>public, max-age=86400</param-value>
-  </context-param>
+  <!--<context-param>-->
+    <!--<description>The default max age for video mime types</description>-->
+    <!--<param-name>cache-control.mime.video/*</param-name>-->
+    <!--<param-value>public, max-age=86400</param-value>-->
+  <!--</context-param>-->
 
-  <context-param>
-    <description>The default page title to be used when the page title cannot be inferred.</description>
-    <param-name>default.page.title</param-name>
-    <param-value>Help</param-value>
-  </context-param>
+  <!--<context-param>-->
+    <!--<description>The default page title to be used when the page title cannot be inferred.</description>-->
+    <!--<param-name>default.page.title</param-name>-->
+    <!--<param-value>Help</param-value>-->
+  <!--</context-param>-->
 
   <!--<context-param>-->
     <!--<description>The domain to force this webapp to be served from.</description>-->

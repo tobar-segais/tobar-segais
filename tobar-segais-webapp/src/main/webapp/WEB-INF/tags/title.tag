@@ -35,7 +35,7 @@
                 }
             }
             if (pageTitle == null) {
-                pageTitle = application.getInitParameter("default.page.title");
+                pageTitle = ServletContextListenerImpl.getInitParameter(application, "default.page.title");
             }
             if (pageTitle == null) {
                 pageTitle = "Help";

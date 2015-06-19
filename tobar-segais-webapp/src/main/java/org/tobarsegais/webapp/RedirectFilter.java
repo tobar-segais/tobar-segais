@@ -36,8 +36,8 @@ public class RedirectFilter implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         final ServletContext ctx = filterConfig.getServletContext();
-        domain = ctx.getInitParameter(RedirectFilter.class.getName() + ".domain");
-        String statusStr = ctx.getInitParameter(RedirectFilter.class.getName() + ".status");
+        domain = ServletContextListenerImpl.getInitParameter(ctx, RedirectFilter.class.getName() + ".domain");
+        String statusStr = ServletContextListenerImpl.getInitParameter(ctx, RedirectFilter.class.getName() + ".status");
         if (StringUtils.isNotBlank(statusStr)) {
             try {
                 switch (Integer.parseInt(statusStr)) {

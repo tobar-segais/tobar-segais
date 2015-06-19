@@ -29,12 +29,12 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.jsoup.Jsoup;
-import org.tobarsegais.webapp.data.IndexEntry;
-import org.tobarsegais.webapp.data.TocEntry;
 import org.tobarsegais.webapp.data.Extension;
 import org.tobarsegais.webapp.data.Index;
+import org.tobarsegais.webapp.data.IndexEntry;
 import org.tobarsegais.webapp.data.Plugin;
 import org.tobarsegais.webapp.data.Toc;
+import org.tobarsegais.webapp.data.TocEntry;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -49,6 +49,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -227,7 +228,12 @@ public class ServletContextListenerImpl implements ServletContextListener {
                 } else if ("/WEB-INF/bundles/permanent-redirect.properties".equals(path)) {
                     final Properties properties = new Properties();
                     try {
-                        properties.load(application.getResourceAsStream(path));
+                        InputStream stream = application.getResourceAsStream(path);
+                        try {
+                            properties.load(stream);
+                        } finally {
+                            IOUtils.closeQuietly(stream);
+                        }
                     } catch (IOException e) {
                         application.log("Cannot read permanent redirects.", e);
                     }
@@ -244,7 +250,12 @@ public class ServletContextListenerImpl implements ServletContextListener {
                 } else if ("/WEB-INF/bundles/temporary-redirect.properties".equals(path)) {
                     final Properties properties = new Properties();
                     try {
-                        properties.load(application.getResourceAsStream(path));
+                        InputStream stream = application.getResourceAsStream(path);
+                        try {
+                            properties.load(stream);
+                        } finally {
+                            IOUtils.closeQuietly(stream);
+                        }
                     } catch (IOException e) {
                         application.log("Cannot read temporary redirects.", e);
                     }
@@ -277,6 +288,65 @@ public class ServletContextListenerImpl implements ServletContextListener {
         application.setAttribute("aliases", Collections.unmodifiableMap(aliases));
         application.setAttribute("analyzer", analyzer);
         application.setAttribute("contentsQueryParser", new QueryParser(LUCENE_VERSON, "contents", analyzer));
+        Properties properties = new Properties();
+        try {
+            // start with the global defaults
+            InputStream stream = getClass().getResourceAsStream("default-context-param.properties"); 
+            try {
+                properties.load(stream);
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
+        } catch (IOException e) {
+            application.log("Cannot read default-context-param.properties.", e);
+        }
+        try {
+            // now add the webapp defaults
+            InputStream stream = application.getResourceAsStream("/WEB-INF/default-context-param.properties");
+            if (stream != null) {
+                try {
+                    properties.load(stream);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
+        } catch (IOException e) {
+            application.log("Cannot read default-context-param.properties.", e);
+        }
+        for (String key : properties.stringPropertyNames()) {
+            final String value = properties.getProperty(key);
+            if (StringUtils.isBlank(value)) {
+                application.removeAttribute("context-param." + key);
+            } else {
+                application.setAttribute("context-param." + key, value);
+            }
+        }
+        // now come the actual values from web.xml
+        for (String name: Collections.list((Enumeration<String>)application.getInitParameterNames())) {
+            application.setAttribute("context-param." + name, application.getInitParameter(name));
+        }
+        properties = new Properties();
+        try {
+            // finally we let anyone bundling 
+            InputStream stream = application.getResourceAsStream("/WEB-INF/override-context-param.properties");
+            if (stream != null) {
+                try {
+                    properties.load(stream);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
+        } catch (IOException e) {
+            application.log("Cannot read override-context-param.properties.", e);
+        }
+        for (String key : properties.stringPropertyNames()) {
+            final String value = properties.getProperty(key);
+            if (StringUtils.isBlank(value)) {
+                application.removeAttribute("context-param." + key);
+            } else {
+                application.setAttribute("context-param." + key, value);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -302,6 +372,10 @@ public class ServletContextListenerImpl implements ServletContextListener {
     @SuppressWarnings("unchecked")
     public static Analyzer getAnalyzer(ServletContext application) {
         return (Analyzer) application.getAttribute("analyzer");
+    }
+    
+    public static String getInitParameter(ServletContext application, String name) {
+        return (String) application.getAttribute("context-param." + name);
     }
 
     @SuppressWarnings("unchecked")
