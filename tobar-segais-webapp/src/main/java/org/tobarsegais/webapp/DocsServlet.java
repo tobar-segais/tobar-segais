@@ -43,10 +43,22 @@ public class DocsServlet extends HttpServlet {
         if( isTopic ){
         	path = findTopicPath(topicKey);
         }
-        
-        if (path.equals("/docs")) {
-            resp.sendRedirect("/docs/");
-            return;
+
+        String defaultPath = getServletContext().getInitParameter("default.page.path");
+        if (StringUtils.isNotBlank(defaultPath)) {
+            if (path.equals("/docs")) {
+                resp.sendRedirect(defaultPath.startsWith("/") ? "docs" + defaultPath : "docs/" + defaultPath);
+                return;
+            }
+            if (path.equals("/") ) {
+                resp.sendRedirect(defaultPath.startsWith("/") ? defaultPath.substring(1) : defaultPath);
+                return;
+            }
+        } else {
+            if (path.equals("/docs")) {
+                resp.sendRedirect("/docs/");
+                return;
+            }
         }
 
         if (!isTopic) {
