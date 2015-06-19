@@ -22,6 +22,36 @@
   <description>Tobar Segais InfoCenter Container</description>
 
   <context-param>
+    <description>The default cache-control header</description>
+    <param-name>cache-control.default</param-name>
+    <param-value>must-revalidate</param-value>
+  </context-param>
+
+  <context-param>
+    <description>The default max age for application mime types</description>
+    <param-name>cache-control.mime.application/*</param-name>
+    <param-value>public, max-age=86400</param-value>
+  </context-param>
+
+  <context-param>
+    <description>The default max age for audio mime types</description>
+    <param-name>cache-control.mime.audio/*</param-name>
+    <param-value>public, max-age=86400</param-value>
+  </context-param>
+
+  <context-param>
+    <description>The default max age for image mime types</description>
+    <param-name>cache-control.mime.image/*</param-name>
+    <param-value>public, max-age=86400</param-value>
+  </context-param>
+
+  <context-param>
+    <description>The default max age for video mime types</description>
+    <param-name>cache-control.mime.video/*</param-name>
+    <param-value>public, max-age=86400</param-value>
+  </context-param>
+
+  <context-param>
     <description>The default page title to be used when the page title cannot be inferred.</description>
     <param-name>default.page.title</param-name>
     <param-value>Help</param-value>
