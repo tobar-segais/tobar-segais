@@ -56,6 +56,10 @@ public class ContentServlet extends HttpServlet {
         Map<String, String> redirects = (Map<String, String>) ctx.getAttribute("redirects");
         Map<String, String> aliases = (Map<String, String>) ctx.getAttribute("aliases");
         for (index = path.indexOf('/'); index != -1; index = path.indexOf('/', index + 1)) {
+            if (index == 0) {
+                // there is no bundle with an empty name
+                continue;
+            }
             String key = path.substring(0, index);
             if (key.startsWith("/")) {
                 key = key.substring(1);
