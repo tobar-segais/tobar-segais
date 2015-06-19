@@ -4,6 +4,6 @@
     if (StringUtils.isNotBlank(defaultPath)) {
         response.sendRedirect(defaultPath.startsWith("/") ? "docs" + defaultPath : "docs/" + defaultPath);
     } else {
-        response.sendRedirect("docs");
+        response.sendRedirect("docs/");
     }
 %>
