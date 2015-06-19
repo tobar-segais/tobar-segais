@@ -43,6 +43,7 @@ var TobairSegais = {
         // scroll content
         var i = url.indexOf('#');
         if (i != -1) {
+            window.location.hash = url.substring(i);
             // XXX clumsy but cannot get $('[name="ElementNameHere"]') to work
             // note: does not work for generated IDs like d0e4161 after redeploy unless you force a browser refresh
             var nl = document.getElementsByName(url.substring(i + 1));
@@ -69,11 +70,7 @@ var TobairSegais = {
                 TobairSegais.addClickSupport("#content");
                 history.pushState({url:url}, "", url);
                 var i = url.indexOf('#');
-                if (i != -1) {
-                    window.location.href = url.substring(i);
-                } else {
-                    TobairSegais.scroll(url);
-                }
+                TobairSegais.scroll(url);
                 document.title = $("#contents-nav a[href='"+(i == -1 ? url : url.substring(0,i))+"']").text();
             });
             return false;
