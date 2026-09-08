@@ -1,0 +1,53 @@
+= Building and publishing
+
+== One command
+
+[source,sh]
+----
+tobar-segais bundle ./docs --out ./content
+----
+
+That converts every `.adoc` page, converts `nav.adoc` into the navigation
+document, and writes a zip named from the slug and version the bundle
+declares.
+
+== What the tool runs
+
+Pages are a plain invocation:
+
+[source,sh]
+----
+asciidoctor -o page.html page.adoc
+----
+
+Whatever Asciidoctor wraps the content in -- the head, the embedded
+stylesheet, the footer with its "Last updated" timestamp -- is removed
+afterwards. The title survives, because in full output it is already an
+`<h1>`.
+
+The navigation document is converted whole, because its head is the point:
+
+[source,sh]
+----
+asciidoctor -a docinfosubs=attributes -o nav.html nav.adoc
+----
+
+Asciidoctor embeds a complete stylesheet in every full document.
+The tool strips stylesheets from the generated HTML afterwards, so no flag is
+needed to suppress something that would only be discarded.
+
+== Publishing
+
+Write the bundle where the server is watching:
+
+[source,sh]
+----
+tobar-segais bundle ./docs --out /srv/docs
+----
+
+The server notices within moments. There is nothing to restart.
+
+== Assets
+
+Images and other files next to the sources are copied into the bundle with
+their layout intact, so relative references from a page keep working.

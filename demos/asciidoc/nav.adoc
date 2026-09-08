@@ -1,0 +1,11 @@
+= Bundles from AsciiDoc
+:slug: asciidoc-bundles
+:revnumber: 1.0.0
+:docinfo: shared
+:docinfodir: .
+
+* xref:index.adoc[Introduction]
+* xref:navigation.adoc[The navigation document]
+* xref:building.adoc[Building and publishing]
+* xref:caveats.adoc[Caveats]
+* xref:appendix.adoc[Appendix: AsciiDoc elements]

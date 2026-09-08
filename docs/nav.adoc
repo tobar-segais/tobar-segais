@@ -1,0 +1,18 @@
+= Tobar Segais: User Manual
+:slug: tobar-segais-manual
+:revnumber: 2.0.0
+:copyright: Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.
+:docinfo: shared
+:docinfodir: .
+
+* xref:index.adoc[Introduction]
+* xref:quick-start.adoc[Quick start]
+* Publishing documentation
+** xref:bundles.adoc[Bundle format]
+** xref:formats.adoc[Source formats]
+** xref:versions.adoc[Versions]
+* Running the server
+** xref:configuration.adoc[Configuration]
+** xref:search.adoc[Search]
+* xref:static.adoc[Static sites]
+* xref:legacy.adoc[Legacy Eclipse bundles]

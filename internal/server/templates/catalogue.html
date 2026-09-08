@@ -1,0 +1,27 @@
+{{define "body"}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <article class="doc">
+      <h1>Documentation</h1>
+      {{if not .Products}}
+        <p class="empty">No archives loaded. Drop a <code>.zip</code> or <code>.jar</code> into the content directory and it appears here — no restart needed.</p>
+      {{else}}
+      <ul class="components">
+        {{range .Products}}
+          {{$latest := .Latest}}
+          {{if $latest}}
+          <li class="component">
+            <a class="title" href="{{site}}/docs/{{.Slug}}/{{$latest.Version}}/">{{$latest.Title}}</a>
+            <ul class="versions">
+              {{range .Versions}}<li><a class="version{{if eq .Version $latest.Version}} is-latest{{end}}" href="{{site}}/docs/{{.Slug}}/{{.Version}}/">{{.Version}}</a></li>{{end}}
+            </ul>
+          </li>
+          {{end}}
+        {{end}}
+      </ul>
+      {{end}}
+    </article>
+  </main>
+</div>
+{{end}}

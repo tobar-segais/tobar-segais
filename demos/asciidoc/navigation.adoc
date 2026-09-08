@@ -1,0 +1,54 @@
+= The navigation document
+
+Every bundle needs a `nav.adoc`. It carries the tree of pages and, with a
+`docinfo.html` beside it, the identity of the bundle.
+
+== The tree
+
+A nested list of cross-references:
+
+[source,asciidoc]
+----
+= The Handbook
+:slug: handbook
+:revnumber: 1.0.0
+:docinfo: shared
+:docinfodir: .
+
+* xref:index.adoc[Introduction]
+* Guides
+** xref:install.adoc[Installing]
+** xref:upgrade.adoc[Upgrading]
+----
+
+Cross-references point at the `.adoc` **sources**, and Asciidoctor rewrites
+them to the generated `.html` files. Unlike Markdown, no textual substitution
+is involved: the rewriting is done by the converter, so it is reliable.
+
+An entry with no cross-reference, like `Guides`, becomes a heading that groups
+its children without being a page itself.
+
+== Identity
+
+Put a `docinfo.html` next to `nav.adoc`:
+
+[source,html]
+----
+<meta name="tobar-segais.slug" content="{slug}">
+<meta name="tobar-segais.version" content="{revnumber}">
+----
+
+Asciidoctor substitutes the attributes and copies this into the generated
+head. The document title becomes the bundle title.
+
+So the slug, the version, the title and the navigation are all declared once,
+in the header of `nav.adoc`.
+
+Neither is required. A bundle with no `docinfo.html` at all takes its slug and
+version from the filename, so `handbook-1.0.0.zip` is `handbook` at `1.0.0`.
+Declaring them is worth it when the version comes from the build rather than
+from whoever names the file.
+
+The slug must be lowercase letters, digits and hyphens: it goes straight into
+a URL. The version is compared using semantic versioning, so `2.0.0-rc1` sorts
+below `2.0.0` and is never chosen as the latest.

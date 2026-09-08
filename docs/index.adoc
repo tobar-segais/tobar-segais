@@ -1,0 +1,60 @@
+// No document title: the logo and the epigraph come first, and Asciidoctor
+// puts the title above everything else. The page heading is a section
+// instead, which the server promotes back to h1 when it serves the page.
+:title: Introduction
+
+image::logo.svg[Tobar Segais,260,role="logo"]
+
+[quote, Irish mythology]
+____
+An ordinary salmon ate nine hazelnuts that fell into Tobar Segais - the Well of
+Wisdom - from the nine hazel trees that surrounded the well, and gained all the
+world's knowledge.
+____
+
+== Introduction
+
+Tobar Segais serves versioned documentation archives.
+Point it at a directory of `.zip` or `.jar` files and it publishes each one at
+a stable URL, with a navigation tree, full-text search and a version picker.
+
+It is a single static binary with no runtime dependencies.
+There is no application server, no JVM and no database.
+
+It does not have to run at all. The same content can be written out as a
+static site -- pages, assets and a search index that is queried in the browser
+-- and hosted on GitHub Pages or anything else that serves files. See
+xref:static.adoc[Static sites].
+
+=== What changed in 2.0
+
+Version 2.0 is a rewrite in Go.
+The 1.x releases were a Java web application that ran in a servlet container
+and read its content from inside its own WAR file.
+
+The differences that matter day to day:
+
+Content is no longer packaged with the application::
+Archives live in a directory the server watches.
+Adding, replacing or removing one takes effect without a rebuild or a restart.
+
+The server starts immediately::
+Opening an archive reads only its metadata and table of contents.
+The full-text index is built in the background, so documentation is readable
+straight away and search becomes available shortly after.
+
+Archives describe themselves::
+A generated `nav.html` carries the tree of pages and the bundle's slug and
+version together, so nothing is maintained twice.
+Eclipse InfoCenter bundles are still supported, and still need no Eclipse or
+OSGi machinery to serve. See xref:legacy.adoc[Legacy Eclipse bundles].
+
+Any zip will do::
+An archive needs a table of contents and some HTML.
+It does not need to be an Eclipse help bundle, and it does not need to be
+built by Maven.
+
+Markdown needs nothing installed::
+Markdown is rendered inside the tool, so a directory of `.md` files becomes a
+versioned, searchable manual with one command and no toolchain.
+AsciiDoc and Typst are supported too, and need their own converters.

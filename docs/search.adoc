@@ -1,0 +1,42 @@
+= Search
+
+Search covers the text of every page listed in every table of contents, across
+all versions of all products.
+
+== Indexing happens in the background
+
+The server does not wait for the index before it starts serving.
+Opening an archive reads its metadata and table of contents only, which is a
+few kilobytes; the index is built afterwards, on a background worker.
+
+Until it is ready the search page says so, and reports its progress, rather
+than returning an empty result set that looks like an answer.
+
+When archives are added or removed the index is rebuilt and replaced in one
+step, so a search never sees a half-built index.
+
+== How queries are matched
+
+All terms must appear::
+A query of `stylesheet customization` returns only pages containing both.
+Documentation search is a lookup rather than a discovery engine, and partial
+matches mostly produce noise.
+
+Titles count for more::
+A term in a page title weighs more heavily than the same term in the body.
+
+Results are ranked::
+Ranking uses term frequency against how common the term is across the corpus,
+so a word that appears everywhere contributes little.
+
+== Filtering
+
+Restrict a search to one product or one version with query parameters:
+
+[source]
+----
+/search?q=install&slug=handbook
+/search?q=install&slug=handbook&version=1.0.0
+----
+
+Searching from within a product carries the product filter automatically.

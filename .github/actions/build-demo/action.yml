@@ -1,0 +1,81 @@
+name: Build the demo site
+description: >
+  Builds every bundle the demo is made of and generates the static site from
+  them. It publishes nothing: the caller decides what to do with the output.
+
+# One place, two callers. `ci.yml` builds the site to find out whether it still
+# builds, and `demo.yml` builds it to publish it. If they were two copies of
+# these steps, a pull request would go green against steps that the publish no
+# longer runs.
+
+inputs:
+  out:
+    description: The directory to write the site into.
+    required: false
+    default: site
+  site:
+    description: >
+      The path the site is rooted at, when it is not the root of a domain.
+    required: false
+    default: ''
+  asciidoctor-version:
+    description: Pinned, so a converter release cannot change the demo.
+    required: false
+    default: 2.0.23
+  typst-version:
+    required: false
+    default: 0.13.1
+    description: Pinned, for the same reason.
+
+runs:
+  using: composite
+  steps:
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+
+    - shell: bash
+      run: gem install asciidoctor -v "${{ inputs.asciidoctor-version }}" --no-document
+
+    - name: Install Typst
+      shell: bash
+      env:
+        TYPST_VERSION: ${{ inputs.typst-version }}
+      run: |
+        set -euo pipefail
+        name="typst-x86_64-unknown-linux-musl"
+        url="https://github.com/typst/typst/releases/download/v$TYPST_VERSION/$name.tar.xz"
+        curl -fsSL "$url" | sudo tar -xJ --strip-components=1 -C /usr/local/bin "$name/typst"
+        typst --version
+
+    - name: Build the bundles
+      shell: bash
+      run: |
+        set -euo pipefail
+        # The archives that ship with the repository -- the 1.x manuals and the
+        # metadata files beside them -- and the manuals built here from source.
+        # They land in one directory because that is what the tool serves: a
+        # directory of archives.
+        rm -rf content && mkdir -p content
+        cp demo/content/* content/
+        for src in ./demo/welcome ./docs ./demos/asciidoc ./demos/markdown ./demos/typst; do
+          go run ./cmd/tobar-segais bundle "$src" --out ./content
+        done
+        ls -l content
+
+    - name: Build the site
+      shell: bash
+      env:
+        OUT: ${{ inputs.out }}
+        SITE: ${{ inputs.site }}
+      run: |
+        set -euo pipefail
+        # The root serves the welcome bundle: a landing page is what a
+        # visitor to the site wants, and a catalogue listing five archives is
+        # not it. The welcome bundle is itself an archive, built the same way
+        # as everything else here.
+        go run ./cmd/tobar-segais build \
+          --content ./content \
+          --out "$OUT" \
+          ${SITE:+--site "$SITE"} \
+          --default welcome

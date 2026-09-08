@@ -1,0 +1,9 @@
+.git
+.github
+site
+docs
+demos
+demo
+*.md
+Dockerfile
+.dockerignore

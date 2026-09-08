@@ -1,0 +1,56 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{if .Title}}{{.Title}} :: {{end}}Tobar Segais</title>
+<script>
+// Before the first paint, or the page flashes the wrong colours. The choice
+// is light, dark, or system -- and system is what an absent choice means.
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    // Storage can be unavailable. Then the stylesheet's media query decides,
+    // which is the right answer anyway.
+  }
+})();
+</script>
+<link rel="stylesheet" href="{{site}}/static/style.css">
+<link rel="icon" href="{{site}}/static/favicon.ico" sizes="any">
+<link rel="icon" href="{{site}}/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{site}}/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="{{site}}/">
+      <img src="{{site}}/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="{{site}}/search.html" method="get" role="search">
+      <input type="search" name="q" value="{{.Query}}" placeholder="Search" aria-label="Search documentation">
+      {{if .Bundle}}<input type="hidden" name="slug" value="{{.Bundle.Slug}}">{{end}}
+    </form>
+  </div>
+</nav>
+{{template "body" .}}
+<footer class="footer">
+  {{with notice .Bundle}}<p class="footer-content">{{.}}</p>{{end}}
+  <p class="footer-app"><span>{{provenance}} <a href="https://tobarsegais.org/">Tobar Segais</a>{{if serving}}{{if and .Status.Total (not .Status.Ready)}} · indexing {{.Status.Done}}/{{.Status.Total}} pages ({{pct .Status}}%){{end}}{{end}} · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="{{site}}/static/theme.js"></script>
+<script src="{{site}}/static/nav.js" data-site="{{site}}"></script>
+</body>
+</html>{{end}}

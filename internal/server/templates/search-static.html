@@ -1,0 +1,17 @@
+{{define "body"}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <article class="doc">
+      <h1>Search</h1>
+      <form class="find find--page" action="{{site}}/search.html" method="get" role="search">
+        <input type="search" id="q" name="q" placeholder="Search documentation" aria-label="Search documentation" autofocus>
+        <button type="submit">Search</button>
+      </form>
+      <p class="count" id="status">Loading the index&hellip;</p>
+      <ol class="results" id="results"></ol>
+    </article>
+  </main>
+</div>
+<script src="{{site}}/static/search.js" data-index="{{site}}/search-index.json" data-site="{{site}}"></script>
+{{end}}

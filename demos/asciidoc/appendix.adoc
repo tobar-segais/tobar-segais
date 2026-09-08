@@ -1,0 +1,55 @@
+= Appendix: AsciiDoc elements
+
+An illustration of how common AsciiDoc constructs reach the page.
+
+== Inline
+
+Ordinary prose, with _emphasis_, *strong text*, `inline code` and
+https://asciidoctor.org[links].
+
+== Lists
+
+* A bullet
+* Another
+** Nested one level
+** And another
+
+. Numbered
+. Second
+
+== Code
+
+[source,sh]
+----
+tobar-segais serve --content ./content --addr :8080
+----
+
+== Quotes
+
+[quote, Anonymous]
+____
+A documentation server should get out of the way of the documentation.
+____
+
+== Admonitions
+
+NOTE: Admonitions carry their own markup and are styled with the rest of the
+document.
+
+WARNING: Typst's HTML export is experimental; AsciiDoc's is not.
+
+== Tables
+
+[cols="1,1,2"]
+|===
+|Flag |Default |Meaning
+
+|`--content` |`./content` |Directory of archives
+|`--addr` |`:8080` |Listen address
+|`--poll` |`30s` |Rescan interval
+|===
+
+== Description lists
+
+Bundle:: A zip of HTML pages and a navigation document.
+Slug:: The name a bundle is served under.

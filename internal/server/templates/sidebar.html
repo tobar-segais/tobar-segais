@@ -1,0 +1,49 @@
+{{define "nav-list"}}
+<ul class="nav-list">
+  {{range .Topics}}
+    <li class="nav-item{{if and .Href (eq .Href $.Current)}} is-current{{end}}">
+      {{if .Href}}<a class="nav-link" href="{{site}}{{$.Base}}{{.Href}}"{{if eq .Href $.Current}} aria-current="page"{{end}}>{{.Label}}</a>
+      {{else}}<span class="nav-text">{{.Label}}</span>{{end}}
+      {{if .Children}}{{template "nav-list" (dict "Topics" .Children "Base" $.Base "Current" $.Current)}}{{end}}
+    </li>
+  {{end}}
+</ul>
+{{end}}
+
+{{define "sidebar"}}
+<aside class="nav">
+  <div class="nav-panel-menu">
+    {{$here := ""}}{{if .Product}}{{$here = .Product.Slug}}{{end}}
+    {{range .Products}}
+      {{$latest := .Latest}}
+      {{if $latest}}
+        {{$isCurrent := eq .Slug $here}}
+        <div class="nav-group{{if $isCurrent}} is-current{{end}}">
+          <a class="nav-group__title" href="{{site}}/docs/{{.Slug}}/{{$latest.Version}}/"
+             {{if $isCurrent}}aria-current="true"{{end}}>{{$latest.Title}}</a>
+          {{if gt (len .Versions) 1}}
+          <ul class="nav-versions">
+            {{if and $isCurrent $.Versions}}
+              {{range $.Versions}}
+                <li><a class="version{{if .IsHere}} is-here{{else if .IsLatest}} is-latest{{end}}{{if not .HasPage}} is-elsewhere{{end}}"
+                       href="{{site}}{{.Href}}"
+                       {{if .IsHere}}aria-current="true"{{end}}
+                       {{if not .HasPage}}title="This page is not in {{.Version}}; goes to that version instead"{{end}}>{{.Version}}</a></li>
+              {{end}}
+            {{else}}
+              {{range .Versions}}
+                <li><a class="version{{if eq .Version $latest.Version}} is-latest{{end}}"
+                       href="{{site}}/docs/{{.Slug}}/{{.Version}}/">{{.Version}}</a></li>
+              {{end}}
+            {{end}}
+          </ul>
+          {{end}}
+          {{if and $isCurrent $.TOC}}
+            {{template "nav-list" (dict "Topics" $.TOC.Topics "Base" $.Base "Current" $.Current)}}
+          {{end}}
+        </div>
+      {{end}}
+    {{end}}
+  </div>
+</aside>
+{{end}}

@@ -1,0 +1,207 @@
+= Bundle format
+
+A bundle is a `.zip` or `.jar` containing HTML pages and a navigation
+document.
+
+That is the whole format.
+In practice you will not write it by hand -- `tobar-segais bundle` generates
+it from AsciiDoc, Markdown or Typst -- but knowing the shape is useful when
+something does not appear where you expected.
+
+== The navigation document
+
+`nav.html` at the archive root carries two things: the tree of pages, and the
+identity of the bundle.
+
+The tree is a nested list of links:
+
+[source,html]
+----
+<ul>
+  <li><a href="index.html">Introduction</a></li>
+  <li>Guides
+    <ul>
+      <li><a href="guides/install.html">Installing</a></li>
+    </ul>
+  </li>
+</ul>
+----
+
+Every `href` is relative to the archive root.
+An item with no link is a heading that groups its children without being a
+page itself.
+The order is the reading order: the previous and next links at the foot of
+each page follow it.
+
+Identity lives in the head, as `meta` elements -- all of them optional:
+
+[source,html]
+----
+<title>The Handbook</title>
+<meta name="tobar-segais.slug" content="handbook">
+<meta name="tobar-segais.version" content="1.0.0">
+----
+
+[cols="1,3"]
+|===
+|Name |Meaning
+
+|`tobar-segais.slug`
+|Used directly in the URL, so lowercase letters, digits and hyphens only.
+Defaults to the name part of the filename.
+
+|`tobar-segais.version`
+|Compared using semantic versioning, so `2.0.0` sorts above `1.16.0` and
+`2.0.0-rc1` sorts below `2.0.0`.
+Defaults to the version part of the filename.
+
+|`tobar-segais.title`
+|Optional. Shown in the catalogue and the sidebar. Defaults to the document
+title.
+
+|`tobar-segais.aliases`
+|Optional, comma separated. Additional slugs that resolve to this product,
+which is how a rename keeps old links working. An alias never displaces a
+real slug.
+
+|`tobar-segais.hidden`
+|Optional. `true` keeps the version reachable by direct link but leaves it out
+of the catalogue and out of `latest`.
+
+|`tobar-segais.priority`
+|Optional, a whole number, `0` by default. Orders the catalogue and the
+sidebar: higher comes first, and bundles sharing a priority are ordered by
+title. It may be negative, so an archive that should not be met first can sink
+itself without every other archive having to be raised above it.
+
+|`tobar-segais.copyright`
+|Optional. A notice about this documentation, shown in the footer of its
+pages. It overrides the server's `--copyright`, so a bundle carrying its own
+notice keeps it wherever it is hosted.
+|===
+
+Elements may sit anywhere in the document; they are not required to be in the
+head. Typst, for one, emits them into the body.
+
+== Nothing has to be declared
+
+A bundle need not say who it is.
+`handbook-1.0.0.zip` is `handbook` at `1.0.0` with no metadata at all: the
+version is taken from the end of the filename and the slug is what remains.
+An underscore works as well as a hyphen, and a `v` prefix on the version is
+accepted and dropped, so `handbook_v1.0.0.zip` reads the same way.
+
+Where no version can be found anywhere, the filename without its extension
+becomes the slug and the version is `latest`.
+So `handbook.zip` is served at `/docs/handbook/latest/`.
+That is the right answer for a manual that simply has no versions, and it
+avoids an empty segment in every URL the bundle appears at.
+
+Sources are consulted in order -- the navigation document, then an OSGi
+manifest, then Maven's `pom.properties`, then the filename -- and each fills
+only what is still missing.
+So a navigation document declaring a version but no slug keeps its version and
+takes the slug from the filename.
+That combination is the common one: the version is what a build knows, and the
+slug is usually what the filename already says.
+
+The load line in the log records where each part came from:
+
+[source,log]
+----
+level=INFO msg="loaded bundle" slug=handbook version=1.0.0 identity=nav+filename
+----
+
+== Everything else in the archive
+
+Images, stylesheets, PDFs and other files are served from wherever they sit in
+the archive.
+Relative links between pages work unchanged, so a documentation generator's
+output can usually be zipped as-is.
+
+Pages are rendered inside the server's own layout, which supplies the
+navigation, search and version picker. Only the body of each page is used, so
+whatever a generator puts in the head is discarded.
+
+Four things are removed from the body as it is rendered:
+
+* `<script>` and `<noscript>`, and inline `on*` handlers -- documentation has
+  no business running code in the container's origin.
+* `<style>` and stylesheet `<link>` elements -- a page's CSS is written for the
+  layout its generator produced, and would restyle the one it is being
+  rendered into.
+* `<base>`, which would silently re-point every relative link on the page.
+* Generator furniture: a `<footer>` at the top of the body, and the ids and
+  classes documentation tools use for the same thing -- Asciidoctor's
+  `#footer`, DocBook XSL's `navheader` and `navfooter`.
+
+A `<footer>` nested inside content is left alone; only a page's own footer is
+removed. `<header>` is never removed, because that is where generators put
+the document title.
+
+`tobar-segais bundle` also strips stylesheets when it builds an archive, but
+that only covers archives it built. Anyone can assemble a zip, so the server
+does not assume the packer was involved.
+
+== Generating one
+
+Rather than writing the above, point the tool at your source:
+
+[source,console]
+----
+$ tobar-segais bundle ./docs --out ./content
+----
+
+Each format has its own manual, written in that format and published the way
+it describes:
+
+* xref:../../markdown-bundles/latest/index.html[Bundles from Markdown] -- needs nothing installed
+* xref:../../asciidoc-bundles/latest/index.html[Bundles from AsciiDoc]
+* xref:../../typst-bundles/latest/index.html[Bundles from Typst]
+
+Older archives are supported too, without being rebuilt.
+See xref:legacy.adoc[Legacy Eclipse bundles].
+
+== Metadata beside the archive
+
+Everything above is declared inside the bundle, which is the right place for
+it when you build the bundle. When you do not, there is a file:
+
+[source,console]
+----
+content/
+  vendor-manual.jar
+  vendor-manual.toml
+----
+
+A `.toml` file with the same name as an archive overrides that archive's
+metadata. It is read before anything inside the bundle, so what it states
+wins:
+
+[source,toml]
+----
+slug = "handbook"
+version = "2.1.0"
+title = "The Handbook"
+aliases = ["old-handbook"]
+hidden = false
+priority = 100
+copyright = "Copyright © 2026 Example Ltd."
+----
+
+Every key is optional and states only itself: a file setting `copyright` alone
+leaves the slug, version and title exactly as the archive gives them.
+`hidden = false` and `priority = 0` are worth having explicitly: they are the
+only way to show a version that hid itself, and to put back a bundle that
+raised itself above the rest.
+
+This is the one source that can contradict a bundle rather than fill gaps in
+it, and that is the point. A vendor's jar that names itself badly, a version
+that needs correcting after release, an archive built long before any of this
+existed: none of them can be rebuilt, and all of them can have a text file put
+next to them.
+
+Adding, editing or removing the file reloads the archive beside it, the same
+as replacing the archive would. A file that is not valid TOML is reported and
+the archive is skipped, rather than served under the identity the file was
+written to change.

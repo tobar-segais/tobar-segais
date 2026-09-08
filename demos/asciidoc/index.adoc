@@ -1,0 +1,41 @@
+= Introduction
+
+This manual documents how to publish AsciiDoc documentation to Tobar Segais.
+It is itself written in AsciiDoc and published that way, as is the server's own
+user manual.
+
+== What the server needs
+
+A bundle is a zip containing HTML pages and a navigation document.
+https://asciidoctor.org[Asciidoctor] produces both.
+
+== What you need installed
+
+Asciidoctor, on `PATH`. Either implementation will do: the Ruby one, or
+https://github.com/asciidoctor/asciidoctor.js[asciidoctor.js] from npm.
+They take the same flags and produce the same output.
+
+The server invokes it for you:
+
+[source,sh]
+----
+tobar-segais bundle ./docs --out ./content
+----
+
+Detection is by file extension, so a directory of `.adoc` files is recognised
+as AsciiDoc without being told.
+
+If your Asciidoctor is not on `PATH` under that name -- a user gem, or inside
+`bundle exec` -- point at it:
+
+[source,sh]
+----
+tobar-segais bundle ./docs --tool "bundle exec asciidoctor"
+----
+
+== Why AsciiDoc
+
+It is the format that needs the least glue.
+Cross-references rewrite themselves to the generated files, and a docinfo file
+carries the bundle's identity, so nothing has to be restated in a second
+format.

@@ -1,0 +1,394 @@
+name: Release
+
+# ONE workflow makes the release, from the tag.
+#
+# # Where the number lives
+#
+# The repository holds no version number. The tag holds it, on a commit of
+# `main`, and the build stamps it into the binary with
+# `-ldflags "-X github.com/tobar-segais/tobar-segais/internal/version.version=X.Y.Z"`. A build that nobody stamps — a checkout,
+# or `go install github.com/tobar-segais/tobar-segais@vX.Y.Z` — reports what the Go module
+# system recorded instead; see version.go. There is therefore no release
+# commit: making a release changes no file, so a branch ruleset on `main`
+# never applies, because only a TAG is pushed.
+#
+# # Two shapes, and one path out
+#
+# The `decide` job answers two questions for every other job: which tag, and is
+# there a release at all. No other job knows which way the run started. THE REF
+# GIVES THE SHAPE, and there is no input to plumb:
+#
+#   * THE REF IS A TAG — release that tag. A person pushed `v1.0.0` by hand, or
+#     a person dispatched this workflow on a tag to drive a release again. The
+#     two are one case: take the number from the tag, and make no tag.
+#   * THE REF IS `main` — the version rules read the commits. Nothing to
+#     release: the run stops in `decide`. Something to release: `decide` makes
+#     the tag on the commit that started the run, and pushes THE TAG ALONE.
+#     THIS PATH REFUSES ANY OTHER BRANCH, because a `workflow_dispatch` takes
+#     any ref, and a release from a branch would publish code that no pull
+#     request accepted.
+#
+# ONE workflow, and the events are disjoint, so two runs cannot publish one
+# release. A tag that the default token pushes starts NO workflow, so the tag
+# that `decide` makes does not start a second run of this file.
+#
+# # THE TAG COMES BEFORE THE BUILD, AND A FAILED RELEASE LEAVES IT BEHIND
+#
+# The tag is what a build builds, so it cannot come after. A run that fails
+# after `decide` thus leaves a tag on the repository with no release beside it.
+#
+# "Re-run all jobs" DOES NOT CORRECT THAT. The tag exists by then, so the rules
+# take it as the last release, the range of commits is empty, and the run goes
+# green having released nothing.
+#
+# To drive the release again, dispatch this workflow ON THE TAG:
+#
+#     gh workflow run release.yml --ref v0.8.0
+#
+# The ref is then a tag, so the run takes the second shape above: it skips the
+# calculation and the tag, and it goes to the build.
+#
+# # Why there is no `paths-ignore`
+#
+# `paths-ignore` belongs to the `push` event and not to one ref, so a single
+# `push` block that covers the branch AND the tags would apply it to a tag as
+# well: a tag on a commit that changed the words only would then release
+# nothing. The `decide` job is the ONE place that answers "is there a release"
+# — the version rules answer it already, because a `docs:` commit asks for no
+# release. The cost is a run of about twenty seconds for a push that changes
+# the words only.
+
+on:
+  push:
+    branches: [main]
+    # `v[0-9]*` and not `v*`. A tag such as `vendor-x` or `v1.0-beta` names
+    # something that is not a release; the rules refuse it with a message, but a
+    # run that goes red and a notification for `vendor-x` is noise that nobody
+    # asked for.
+    tags: ['v[0-9]*']
+  # No input. A dispatch names a ref, and a ref can be a tag, so the ref says
+  # which release to make.
+  workflow_dispatch:
+
+# One release at a time. Two together would calculate one number twice. Do not
+# stop a run that operates: it holds a tag and a release.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    name: The release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      # The tag that the ref names, and an empty string when the ref is `main`.
+      # This one expression is the whole difference between the two shapes.
+      ENTRY_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+    outputs:
+      tag: ${{ steps.decide.outputs.tag }}
+      version: ${{ steps.decide.outputs.version }}
+      create-release: ${{ steps.decide.outputs.create-release }}
+    steps:
+      # The default checkout, and never `fetch-depth: 0`. The action reads the
+      # tags and the commits through the API, so the whole history is not
+      # necessary. The checkout is here for the files of the action, and it is
+      # the commit that the tag goes on.
+      - uses: actions/checkout@v5
+
+      - id: compute
+        uses: ./.github/actions/compute-version
+        with:
+          tag: ${{ env.ENTRY_TAG }}
+
+      - id: decide
+        env:
+          REF: ${{ github.ref }}
+          VERSION: ${{ steps.compute.outputs.version }}
+          TAG: ${{ steps.compute.outputs.tag }}
+          BUMP: ${{ steps.compute.outputs.bump }}
+          PREVIOUS: ${{ steps.compute.outputs.previous }}
+        run: |
+          set -euo pipefail
+
+          # The ref is a tag, so there is nothing to calculate and nothing to
+          # make. The action read the number from that tag.
+          if [ -n "${ENTRY_TAG:-}" ]; then
+            {
+              echo "tag=$ENTRY_TAG"
+              echo "version=$VERSION"
+              echo "create-release=true"
+            } >>"$GITHUB_OUTPUT"
+            echo "Releasing **$ENTRY_TAG**, which the ref names." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # THE BRANCH PATH RUNS ON `main`, AND NOWHERE ELSE.
+          #
+          # It makes a tag and publishes a release. A `workflow_dispatch` takes
+          # any ref, and the rules read commit messages that any branch holds,
+          # so nothing downstream would stop it: the tag would be made, and a
+          # release would go out with code that no pull request accepted. This
+          # is the only test that stops it.
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "This workflow makes a release from \`main\`, and the ref is \`$REF\`." >&2
+            echo >&2
+            echo "A release from a branch would publish code that no pull request" >&2
+            echo "accepted. Merge the work to \`main\` first." >&2
+            echo >&2
+            echo "To make a release from a tag that exists, start this workflow on" >&2
+            echo "that tag:" >&2
+            echo "    gh workflow run release.yml --ref v0.8.0" >&2
+            exit 1
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "create-release=false" >>"$GITHUB_OUTPUT"
+            echo "No commit since $PREVIOUS asks for a release." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The tag goes on the commit that started this run: the head of
+          # `main` as this run saw it. The tag, and nothing else, is pushed, so
+          # a ruleset on `main` never applies.
+          git tag -a "$TAG" -m "tobar-segais $VERSION"
+          git push origin "refs/tags/$TAG"
+
+          {
+            echo "tag=$TAG"
+            echo "version=$VERSION"
+            echo "create-release=true"
+          } >>"$GITHUB_OUTPUT"
+          echo "The next release is **$TAG** ($BUMP)." >>"$GITHUB_STEP_SUMMARY"
+
+  # The tests run again here. The tests of the pull request ran against the
+  # branch; this runs against the commit that becomes the release. One machine
+  # for each system that a release binary targets.
+  test:
+    name: Test on ${{ matrix.os }}
+    needs: [decide]
+    if: needs.decide.outputs.create-release == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.decide.outputs.tag }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build ./...
+
+  # Every target builds on one Linux machine. Go cross-compiles with nothing
+  # but GOOS and GOARCH, and CGO_ENABLED=0 makes a binary that holds no dynamic
+  # library, so a matrix of machines would buy nothing here — the `test` job
+  # above is where each system runs the code.
+  build:
+    name: Build ${{ matrix.name }}
+    needs: [decide, test]
+    if: needs.decide.outputs.create-release == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          # The name of each file follows `uname -s` and `uname -m`, so that a
+          # reader can take the correct file with one line of shell. Windows
+          # has no `uname`, so its files take the plain names of the system and
+          # the architecture, in a zip and not a tar.
+          - name: Linux-x86_64
+            goos: linux
+            goarch: amd64
+          - name: Linux-aarch64
+            goos: linux
+            goarch: arm64
+          - name: Darwin-x86_64
+            goos: darwin
+            goarch: amd64
+          - name: Darwin-arm64
+            goos: darwin
+            goarch: arm64
+          - name: Windows-x86_64
+            goos: windows
+            goarch: amd64
+          - name: Windows-arm64
+            goos: windows
+            goarch: arm64
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.decide.outputs.tag }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # `-X github.com/tobar-segais/tobar-segais/internal/version.version=...` stamps the number into the binary. The number is
+      # the one that `decide` read from the tag, and the checkout above is the
+      # commit that the tag names, so the binary and its number cannot come
+      # apart.
+      - name: Build
+        env:
+          CGO_ENABLED: '0'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          VERSION: ${{ needs.decide.outputs.version }}
+        run: |
+          bin=tobar-segais
+          [ "$GOOS" = windows ] && bin=tobar-segais.exe
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/tobar-segais/tobar-segais/internal/version.version=$VERSION" \
+            -o "dist/$bin" ./cmd/tobar-segais
+
+      # The stamp must reach the binary: a renamed variable or a moved package
+      # would make `-X` write into nothing, in silence, and every binary of the
+      # release would then report a hash instead of its number. A binary for
+      # another machine cannot run here, so this step tests the binary of this
+      # machine only.
+      - name: The binary reports the version
+        if: matrix.name == 'Linux-x86_64'
+        run: |
+          got="$(./dist/tobar-segais version)"
+          echo "$got"
+          [ "$got" = "tobar-segais ${{ needs.decide.outputs.version }}" ] || {
+            echo "the binary reports \`$got\`, and this release is" \
+                 "\`tobar-segais ${{ needs.decide.outputs.version }}\`" >&2
+            exit 1
+          }
+
+      - name: Make the file
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.goos }}" = windows ]; then
+            file="tobar-segais-${{ matrix.name }}.zip"
+            (cd dist && zip -q "../$file" tobar-segais.exe)
+          else
+            file="tobar-segais-${{ matrix.name }}.tar.gz"
+            tar -czf "$file" -C dist tobar-segais
+          fi
+          sha256sum "$file" >"$file.sha256"
+          cat "$file.sha256"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: tobar-segais-${{ matrix.name }}
+          path: |
+            tobar-segais-${{ matrix.name }}.*
+          retention-days: 7
+          if-no-files-found: error
+
+  # The image is built from the tag, not from the artifacts above: buildx
+  # compiles once for each architecture, and the result is the same source at
+  # the same version. The digest is what a deployment pins, so this job runs
+  # before the release is published and its failure keeps the release back.
+  image:
+    name: Publish the image
+    needs: [decide, test]
+    if: needs.decide.outputs.create-release == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.decide.outputs.tag }}
+
+      # arm64 is emulated for the parts of the build that run on the builder,
+      # which here is nothing: the compiler runs natively and cross-compiles.
+      # QEMU is still needed for buildx to assemble the arm64 image.
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # `latest` moves and the version tags do not, so a deployment that wants
+      # to stay where it is names a version. The registry is lowercase only,
+      # and this repository is lowercase already.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ needs.decide.outputs.version }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ needs.decide.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+          labels: |
+            org.opencontainers.image.title=tobar-segais
+            org.opencontainers.image.version=${{ needs.decide.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.licenses=Apache-2.0
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  publish:
+    name: Publish the release
+    needs: [decide, build, image]
+    if: needs.decide.outputs.create-release == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      # `release-notes.sh` reads the commits between the two releases, so this
+      # one checkout needs the history and the tags.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.decide.outputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v5
+        with:
+          path: files
+          merge-multiple: true
+
+      - name: Write the notes
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+          TAG: ${{ needs.decide.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # The release before this one is the next tag down the list. Ask the
+          # rules, so that the order is a version order here as well.
+          previous="$(git for-each-ref --format='%(refname:short)' 'refs/tags/v*' |
+            .github/actions/compute-version/version-rules.sh previous "$TAG" |
+            sed -n 's/^previous=//p')"
+          .github/scripts/release-notes.sh "$VERSION" "$previous" >notes.md
+          {
+            echo
+            echo "## The image"
+            echo
+            echo '```'
+            echo "docker run --rm -p 8080:8080 -v \"\$PWD/content:/content\" \\"
+            echo "  ghcr.io/${{ github.repository }}:$VERSION"
+            echo '```'
+          } >>notes.md
+          cat notes.md >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ needs.decide.outputs.tag }}" \
+            --title "tobar-segais ${{ needs.decide.outputs.version }}" \
+            --notes-file notes.md \
+            files/*

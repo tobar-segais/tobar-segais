@@ -1,0 +1,95 @@
+= Configuration
+
+The server is started with `tobar-segais serve` and configured by flags.
+
+[cols="1,1,3"]
+|===
+|Flag |Default |Meaning
+
+|`--content`
+|`./content`
+|Directory of `.zip` and `.jar` archives to serve.
+
+|`--addr`
+|`:8080`
+|Address to listen on.
+
+|`--poll`
+|`30s`
+|How often to rescan the content directory.
+
+|`--default`
+|_(none)_
+|Slug to serve at `/` instead of the catalogue index.
+
+|`--copyright`
+|_(none)_
+|Notice about the documentation itself, shown in the footer.
+
+|`--debug`
+|`false`
+|Verbose logging, including a line per request.
+|===
+
+== Serving one product
+
+A server hosting a single product does not need a catalogue listing one item.
+Name it with `--default` and `/` redirects to its latest version:
+
+[source,console]
+----
+$ tobar-segais serve --content ./content --default handbook
+----
+
+The catalogue stays available at every other address, and the version picker
+still works.
+
+If the slug does not resolve -- misspelled, or its archive has not loaded --
+the catalogue is served instead and a warning is logged once.
+The root never fails because of a typo in a flag.
+
+== Watching the content directory
+
+The server watches the content directory for changes and reloads what has
+changed.
+Where the platform supports filesystem notifications it uses them; where it
+does not -- which in practice means some network filesystems and container
+volume drivers -- it falls back to polling at the `--poll` interval.
+
+Polling also runs as a backstop even when notifications are working, because a
+dropped event would otherwise leave the catalogue silently stale.
+
+Writes are allowed to settle before an archive is read, so copying a large file
+into the directory does not cause it to be read half-written.
+
+== Reloading
+
+Only archives that have actually changed are reopened.
+An archive that has not moved is left alone, so a reload costs one directory
+listing.
+
+Removing a file closes its archive and drops it from the catalogue.
+
+== Saying who owns the documentation
+
+The footer carries a notice for Tobar Segais itself -- it is Apache-licensed,
+and that does not change. What it cannot know is who owns the manuals being
+served, so nothing is claimed about them unless you say so:
+
+[source,console]
+----
+$ tobar-segais serve --content ./content \
+    --copyright "Copyright © 2026 Example Ltd. All rights reserved."
+----
+
+The text is shown above the software's own notice, on every page that does not
+say otherwise.
+
+A bundle can say otherwise. `tobar-segais.copyright` in its navigation
+document overrides this flag for that bundle's pages, which is the better
+place for it: the notice is about the documentation, so it belongs to the
+documentation and travels with it wherever the archive is served. Use the flag
+for what is true of the whole site, and the metadata for what is true of one
+manual. A server hosting several owners' documentation should set no flag at
+all and let each archive speak for itself. See
+xref:bundles.adoc[Bundle format].

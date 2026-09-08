@@ -1,0 +1,93 @@
+name: CI
+
+# Every push and every pull request. The release workflow runs the same tests
+# again on main, because a release must never come from an untested commit.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to one branch stops the run of the earlier push. The result of the
+# earlier push has no value once a newer commit exists.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  style:
+    name: Style
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: The layout of the code
+        run: |
+          set -euo pipefail
+          out="$(gofmt -l .)"
+          [ -z "$out" ] || {
+            echo "these files are not the layout of gofmt:" >&2
+            echo "$out" >&2
+            exit 1
+          }
+      - name: The advice of vet
+        run: go vet ./...
+
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # One machine for each system that a release binary targets. Each
+        # version is named, and `-latest` is not used: a name that moves would
+        # change the test with no commit.
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go build ./...
+      # Linux also measures coverage across all packages (one merged profile,
+      # so cross-package coverage counts) and reports the total in the step
+      # summary. There is no threshold gate: the number informs, not blocks.
+      - if: runner.os == 'Linux'
+        run: |
+          go test -coverprofile=coverage.out -coverpkg=./... ./...
+          go tool cover -func=coverage.out | tail -1 >> "$GITHUB_STEP_SUMMARY"
+      - if: runner.os != 'Linux'
+        run: go test ./...
+
+  # The demo site is built by the tool from this repository's own
+  # documentation, so a change that breaks bundling or generation breaks the
+  # site. Building it here says so on the pull request rather than after the
+  # merge, when `demo.yml` would be the one to fail.
+  demo:
+    name: The demo site builds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: ./.github/actions/build-demo
+        with:
+          out: site
+      - name: Every link the site writes has somewhere to land
+        run: .github/scripts/check-links.sh site
+
+  # The rules that give every release its number, and the driver that feeds
+  # them from the GitHub API. These decide what ships, so they are tested like
+  # the code that ships.
+  version-rules:
+    name: The version rules
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - run: .github/actions/compute-version/test.sh
