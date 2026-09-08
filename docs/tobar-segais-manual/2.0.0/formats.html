@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Source formats :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="tobar-segais-manual">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             aria-current="true">Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-here"
+                       href="/docs/tobar-segais-manual/2.0.0/formats.html"
+                       aria-current="true"
+                       >2.0.0</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.16/"
+                       
+                       title="This page is not in 1.16; goes to that version instead">1.16</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.15/"
+                       
+                       title="This page is not in 1.15; goes to that version instead">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/quick-start.html">Quick start</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Publishing documentation</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/bundles.html">Bundle format</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/formats.html" aria-current="page">Source formats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/versions.html">Versions</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Running the server</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/configuration.html">Configuration</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/search.html">Search</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/static.html">Static sites</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/legacy.html">Legacy Eclipse bundles</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/tobar-segais-manual/2.0.0/">Tobar Segais: User Manual</a></li>
+          <li>Source formats</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        
+        <select id="version" data-nav onchange="location=this.value">
+          
+            <option value="/docs/tobar-segais-manual/2.0.0/formats.html" selected>2.0.0 (current)</option>
+          
+            <option value="/docs/tobar-segais-manual/1.16/">1.16 — not in this version</option>
+          
+            <option value="/docs/tobar-segais-manual/1.15/">1.15 — not in this version</option>
+          
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+<div id="header">
+<h1 id="source-formats">Source formats</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>tobar-segais bundle</code> detects the source language from the files in the
+directory and runs the right converter.
+Each format needs a navigation document and some pages.
+Only AsciiDoc and Typst need a converter installed; Markdown is built in.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;"/>
+<col style="width: 25%;"/>
+<col style="width: 25%;"/>
+<col style="width: 25%;"/>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Format</th>
+<th class="tableblock halign-left valign-top">Navigation</th>
+<th class="tableblock halign-left valign-top">Pages</th>
+<th class="tableblock halign-left valign-top">Converter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>asciidoc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nav.adoc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>*.adoc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>asciidoctor</code> or <code>asciidoctor.js</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>markdown</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nav.md</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>*.md</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>built in</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typst</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nav.typ</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>*.typ</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>typst</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>nav.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>*.html</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">none, copied as-is</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Each format has its own manual, written in that format and published the way
+it describes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../../asciidoc-bundles/latest/index.html">Bundles from AsciiDoc</a></p>
+</li>
+<li>
+<p><a href="../../markdown-bundles/latest/index.html">Bundles from Markdown</a></p>
+</li>
+<li>
+<p><a href="../../typst-bundles/latest/index.html">Bundles from Typst</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_pointing_at_a_converter">Pointing at a converter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Converters are looked up on <code>PATH</code> under their usual names.
+Where that is not where yours lives — a user gem, a wrapper, a container — name it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais bundle ./docs --tool ~/.gem/ruby/3.3.0/bin/asciidoctor
+$ tobar-segais bundle ./docs --tool &#34;bundle exec asciidoctor&#34;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The value may carry arguments, which are placed before the ones the tool
+supplies. Quoting is honoured, so a path containing a space works.</p>
+</div>
+<div class="paragraph">
+<p>Both Asciidoctor implementations are supported and take the same flags.
+Building this manual with <code>asciidoctor.js</code> instead of the Ruby implementation
+produces byte-identical pages; only the generator string in the navigation
+document differs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_partials">Partials</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A source file whose name begins with an underscore is a partial: pulled into
+other pages, never a page itself.
+Shared setup, a preamble, a chapter meant to be included — name it
+<code>_common.typ</code> or <code>_preamble.adoc</code> and it stays out of the navigation and out
+of the bundle.</p>
+</div>
+<div class="paragraph">
+<p>This matters most for Typst, whose native model joins files with <code>#include</code>
+into a single document.</p>
+</div>
+<div class="paragraph">
+<p>Typst offers a second route: its <strong>bundle export</strong> lets one compilation write
+several files, each declared with <code>#document(&#34;page.html&#34;)[…​]</code>.
+Name that source <code>book.typ</code> or <code>main.typ</code> and omit <code>nav.typ</code>, and the tool
+uses bundle export, so a book can stay one source and still publish as a
+multi-page bundle.
+See <a href="../../typst-bundles/latest/multifile.html">Books and multiple files</a>.</p>
+</div>
+<div class="paragraph">
+<p>Pass <code>--format</code> to override detection.
+HTML is only detected when no other source is present, so a directory holding
+both sources and a previous build is still recognised by its sources.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_the_converters_are_invoked_this_way">Why the converters are invoked this way</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Converters are invoked as plainly as they allow.
+Rather than a flag per tool to suppress each thing a bundle does not want, the
+output is cleaned afterwards: stylesheets and generator footers are removed,
+from output this tool generated and from output it did not.</p>
+</div>
+<div class="paragraph">
+<p>That is why AsciiDoc is simply:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ asciidoctor -o page.html page.adoc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Asciidoctor embeds around 29 KB of CSS in every full document and a footer
+carrying a &#34;Last updated&#34; timestamp, which would otherwise change every page
+on every build. Both are removed. The document title stays, because in full
+output it is already an <code>&lt;h1&gt;</code> in the header.</p>
+</div>
+<div class="paragraph">
+<p>The navigation document keeps one flag, <code>-a docinfosubs=attributes</code>, because
+that is what substitutes the slug and version into its head. It is converted
+as a whole document for the same reason: its head is the point.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_heading_levels">Heading levels</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Generators disagree about what the top level means: Asciidoctor and goldmark
+make a document title an <code>h1</code>, Typst reserves <code>h1</code> for itself and starts
+content at <code>h2</code>, and DocBook XSL emits a chapter title as <code>h2</code>.</p>
+</div>
+<div class="paragraph">
+<p>The server shifts headings so the shallowest one on a page is an <code>h1</code>.
+A page therefore reads the same whatever produced it, and no format has to
+compensate — which matters because Typst cannot.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_markdown">Markdown</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Markdown needs nothing installed: it is rendered in-process with
+<a href="https://github.com/yuin/goldmark">goldmark</a>, the renderer Hugo uses.
+The dialect is GitHub Flavored Markdown — CommonMark plus tables,
+strikethrough, task lists and autolinks — with definition lists and footnotes
+enabled as well.</p>
+</div>
+<div class="paragraph">
+<p>Identity goes in YAML front matter on the navigation document:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-markdown" data-lang="markdown">---
+slug: handbook
+version: 1.0.0
+title: The Handbook
+---
+
+- [Introduction](index.md)
+- Guides
+  - [Installing](install.md)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Links point at the <code>.md</code> sources and are rewritten to the generated pages.
+Because the rewriting happens on the parsed document rather than by editing
+text, reference-style links and links split across lines are handled
+correctly, and anything with a scheme is left alone.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_typst">Typst</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-typst" data-lang="typst">#html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.slug&#34;, content: &#34;handbook&#34;))
+#html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.version&#34;, content: &#34;1.0.0&#34;))
+#html.elem(&#34;title&#34;)[The Handbook]
+
+- #link(&#34;index.html&#34;)[Introduction]
+- Guides
+  - #link(&#34;install.html&#34;)[Installing]</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tbody><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Typst’s HTML export is marked experimental by its authors and must be enabled
+with <code>--features html</code>, which the tool does for you.
+Treat it as a preview rather than a promise.</p>
+</div>
+<div class="paragraph">
+<p>Its exporter also shifts headings down a level, so <code>=</code> becomes <code>&lt;h2&gt;</code>.
+Nothing needs doing about that: the server normalises heading levels when it
+renders a page, so the shallowest heading becomes <code>h1</code> whatever produced it.</p>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_plain_html">Plain HTML</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If a generator already produces HTML, name its navigation document <code>nav.html</code>
+and pack the directory as-is.
+Anything the tool does not recognise as source — images, stylesheets, PDFs — is copied into the bundle with its layout intact.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/tobar-segais-manual/2.0.0/bundles.html" rel="prev"><span>Previous</span>Bundle format</a></span>
+          <span class="pagination__next"><a href="/docs/tobar-segais-manual/2.0.0/versions.html" rel="next"><span>Next</span>Versions</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#_pointing_at_a_converter">Pointing at a converter</a></li><li class="level-2"><a href="#_partials">Partials</a></li><li class="level-2"><a href="#_why_the_converters_are_invoked_this_way">Why the converters are invoked this way</a></li><li class="level-2"><a href="#_heading_levels">Heading levels</a></li><li class="level-2"><a href="#_markdown">Markdown</a></li><li class="level-2"><a href="#_typst">Typst</a></li><li class="level-2"><a href="#_plain_html">Plain HTML</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

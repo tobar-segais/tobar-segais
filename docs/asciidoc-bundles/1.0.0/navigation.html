@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The navigation document :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="asciidoc-bundles">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             aria-current="true">Bundles from AsciiDoc</a>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/asciidoc-bundles/1.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/asciidoc-bundles/1.0.0/navigation.html" aria-current="page">The navigation document</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/asciidoc-bundles/1.0.0/building.html">Building and publishing</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/asciidoc-bundles/1.0.0/caveats.html">Caveats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/asciidoc-bundles/1.0.0/appendix.html">Appendix: AsciiDoc elements</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             >Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest"
+                       href="/docs/tobar-segais-manual/2.0.0/">2.0.0</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.16/">1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/asciidoc-bundles/1.0.0/">Bundles from AsciiDoc</a></li>
+          <li>The navigation document</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        1.0.0
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+<div id="header">
+<h1 id="the-navigation-document">The navigation document</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Every bundle needs a <code>nav.adoc</code>. It carries the tree of pages and, with a
+<code>docinfo.html</code> beside it, the identity of the bundle.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_tree">The tree</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A nested list of cross-references:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-asciidoc" data-lang="asciidoc">= The Handbook
+:slug: handbook
+:revnumber: 1.0.0
+:docinfo: shared
+:docinfodir: .
+
+* xref:index.adoc[Introduction]
+* Guides
+** xref:install.adoc[Installing]
+** xref:upgrade.adoc[Upgrading]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Cross-references point at the <code>.adoc</code> <strong>sources</strong>, and Asciidoctor rewrites
+them to the generated <code>.html</code> files. Unlike Markdown, no textual substitution
+is involved: the rewriting is done by the converter, so it is reliable.</p>
+</div>
+<div class="paragraph">
+<p>An entry with no cross-reference, like <code>Guides</code>, becomes a heading that groups
+its children without being a page itself.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_identity">Identity</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Put a <code>docinfo.html</code> next to <code>nav.adoc</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;meta name=&#34;tobar-segais.slug&#34; content=&#34;{slug}&#34;&gt;
+&lt;meta name=&#34;tobar-segais.version&#34; content=&#34;{revnumber}&#34;&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Asciidoctor substitutes the attributes and copies this into the generated
+head. The document title becomes the bundle title.</p>
+</div>
+<div class="paragraph">
+<p>So the slug, the version, the title and the navigation are all declared once,
+in the header of <code>nav.adoc</code>.</p>
+</div>
+<div class="paragraph">
+<p>Neither is required. A bundle with no <code>docinfo.html</code> at all takes its slug and
+version from the filename, so <code>handbook-1.0.0.zip</code> is <code>handbook</code> at <code>1.0.0</code>.
+Declaring them is worth it when the version comes from the build rather than
+from whoever names the file.</p>
+</div>
+<div class="paragraph">
+<p>The slug must be lowercase letters, digits and hyphens: it goes straight into
+a URL. The version is compared using semantic versioning, so <code>2.0.0-rc1</code> sorts
+below <code>2.0.0</code> and is never chosen as the latest.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/asciidoc-bundles/1.0.0/index.html" rel="prev"><span>Previous</span>Introduction</a></span>
+          <span class="pagination__next"><a href="/docs/asciidoc-bundles/1.0.0/building.html" rel="next"><span>Next</span>Building and publishing</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#_the_tree">The tree</a></li><li class="level-2"><a href="#_identity">Identity</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

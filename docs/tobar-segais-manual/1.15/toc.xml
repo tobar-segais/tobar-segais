@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<toc label="Tobar Segais: User Manual" topic="book-manual.html">
+   <topic label="Copyright" href="copyright.html"/>
+   <topic label="Introduction" href="intro.html"/>
+   <topic label="Building" href="building.html"/>
+   <topic label="Customization" href="customization.html">
+      <topic label="Introduction" href="customization.html#customization-intro"/>
+      <topic label="Stylesheet customization" href="customization-css.html"/>
+      <topic label="Navbar customization" href="customization-navbar.html"/>
+      <topic label="Icon customization" href="customization-icon.html"/>
+   </topic>
+   <topic label="Index" href="ix01.html"/>
+</toc>

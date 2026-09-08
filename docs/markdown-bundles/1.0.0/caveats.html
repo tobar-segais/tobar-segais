@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caveats :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="markdown-bundles">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             aria-current="true">Bundles from Markdown</a>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/markdown-bundles/1.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/markdown-bundles/1.0.0/navigation.html">The navigation document</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/markdown-bundles/1.0.0/building.html">Building and publishing</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/markdown-bundles/1.0.0/caveats.html" aria-current="page">Caveats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/markdown-bundles/1.0.0/appendix.html">Appendix: Markdown elements</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             >Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest"
+                       href="/docs/tobar-segais-manual/2.0.0/">2.0.0</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.16/">1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/markdown-bundles/1.0.0/">Bundles from Markdown</a></li>
+          <li>Caveats</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        1.0.0
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        <h1 id="caveats">Caveats</h1>
+<p>Markdown is the least troublesome of the three formats, because nothing is
+shelled out to.</p>
+<h2 id="raw-html-is-passed-through-then-filtered">Raw HTML is passed through, then filtered</h2>
+<p>Markdown permits inline HTML, and it survives into the page. The server strips
+<code>&lt;script&gt;</code> elements and inline event handlers when it renders content, so a
+help page cannot run code in the container&#39;s origin.</p>
+<p>Do not rely on scripts in documentation; they will not run.</p>
+<h2 id="front-matter-belongs-on-the-navigation-document">Front matter belongs on the navigation document</h2>
+<p><code>slug</code> and <code>version</code> are read from <code>nav.md</code> only. Front matter on other pages
+is parsed and ignored, which is deliberate: a page cannot rename the bundle
+it happens to sit in.</p>
+<h2 id="only-relative-links-are-rewritten">Only relative links are rewritten</h2>
+<p>Links to <code>.md</code> files are rewritten to <code>.html</code>. Anything with a scheme is left
+exactly as written, so external links are never touched.</p>
+<h2 id="nesting-is-commonmarks">Nesting is CommonMark&#39;s</h2>
+<p>A sub-list is indented to line up with its parent&#39;s content — two spaces after
+a <code>-</code> marker. This is CommonMark&#39;s rule, and it is not what every Markdown
+tool does; some require four.</p>
+<p>If a group&#39;s children are missing from the sidebar, check the indentation.</p>
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/markdown-bundles/1.0.0/building.html" rel="prev"><span>Previous</span>Building and publishing</a></span>
+          <span class="pagination__next"><a href="/docs/markdown-bundles/1.0.0/appendix.html" rel="next"><span>Next</span>Appendix: Markdown elements</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#raw-html-is-passed-through-then-filtered">Raw HTML is passed through, then filtered</a></li><li class="level-2"><a href="#front-matter-belongs-on-the-navigation-document">Front matter belongs on the navigation document</a></li><li class="level-2"><a href="#only-relative-links-are-rewritten">Only relative links are rewritten</a></li><li class="level-2"><a href="#nesting-is-commonmarks">Nesting is CommonMark&#39;s</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static sites :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="tobar-segais-manual">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             aria-current="true">Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-here"
+                       href="/docs/tobar-segais-manual/2.0.0/static.html"
+                       aria-current="true"
+                       >2.0.0</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.16/"
+                       
+                       title="This page is not in 1.16; goes to that version instead">1.16</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.15/"
+                       
+                       title="This page is not in 1.15; goes to that version instead">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/quick-start.html">Quick start</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Publishing documentation</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/bundles.html">Bundle format</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/formats.html">Source formats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/versions.html">Versions</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Running the server</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/configuration.html">Configuration</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/search.html">Search</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/static.html" aria-current="page">Static sites</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/legacy.html">Legacy Eclipse bundles</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/tobar-segais-manual/2.0.0/">Tobar Segais: User Manual</a></li>
+          <li>Static sites</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        
+        <select id="version" data-nav onchange="location=this.value">
+          
+            <option value="/docs/tobar-segais-manual/2.0.0/static.html" selected>2.0.0 (current)</option>
+          
+            <option value="/docs/tobar-segais-manual/1.16/">1.16 — not in this version</option>
+          
+            <option value="/docs/tobar-segais-manual/1.15/">1.15 — not in this version</option>
+          
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+<div id="header">
+<h1 id="static-sites">Static sites</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The same content can be published without running anything.
+<code>tobar-segais build</code> renders every page to a file and writes them, with the
+search index and the assets, into an output directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais build --content ./content --out ./site
+level=INFO msg=&#34;site generated&#34; out=./site pages=42 assets=7 documents=42</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result is plain files. Upload them to GitHub Pages, an S3 bucket, or any
+web server, and there is nothing left to run or keep alive.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_you_get_and_what_you_lose">What you get, and what you lose</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Pages are rendered with the same templates the server uses, so a generated
+site looks and behaves like a served one. Navigation, the version picker and
+the table of contents are all there, and search still works: the index is
+written alongside the pages as <code>search-index.json</code> and queried in the browser.</p>
+</div>
+<div class="paragraph">
+<p>What a static site cannot do is notice a new archive. A served catalogue picks
+up a change to the content directory within moments; a generated one is a
+snapshot, and publishing a new version means running <code>build</code> again. That is
+the trade, and for documentation that changes when a release is cut it is
+usually the right one — the build already exists, and it can write the site.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_options">Options</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;"/>
+<col style="width: 20%;"/>
+<col style="width: 60%;"/>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Flag</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>./content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory of <code>.zip</code> and <code>.jar</code> archives to publish.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--out</code>, <code>-o</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>./site</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory to write the generated site into.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--site</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path the site is rooted at, if it is not the root of the domain.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--default</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Slug to publish at <code>/</code> instead of the catalogue index.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--copyright</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>(none)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notice about the documentation itself, shown in the footer. A bundle
+declaring <code>tobar-segais.copyright</code> overrides it for its own pages.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>--debug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verbose logging.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><code>publish</code> is accepted as an alias for <code>build</code>.</p>
+</div>
+<div class="paragraph">
+<p>A generated page says it was published by Tobar Segais where a served one says
+it was served by it. The difference is worth having: a served page is as
+current as the content directory, and a published one is as current as the
+last build.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sites_below_the_root_of_a_domain">Sites below the root of a domain</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A GitHub Pages project site is served from <code>https://user.github.io/repo/</code>,
+not from the root. Every absolute link the site writes has to carry that
+prefix, so give it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais build --content ./content --out ./site --site /repo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Get this wrong and the pages render but the stylesheet, the search index and
+every link between pages point one directory too high. Serving the output
+locally is the quickest way to be sure — but serve it from the same depth it
+will be published at, or the mistake will not show.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_in_a_release_pipeline">In a release pipeline</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The two commands compose: build the bundles from source, then build the site
+from the bundles.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais bundle ./docs --out ./content
+$ tobar-segais build --content ./content --out ./site --site /handbook</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keeping the archives — rather than generating the site straight from source — is what makes the version picker work. <code>build</code> publishes every archive it
+finds, so a content directory holding <code>handbook-1.0.0.zip</code> and
+<code>handbook-1.1.0.zip</code> produces a site with both versions and a picker that
+moves between them. Add each release to the directory and keep it there.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/tobar-segais-manual/2.0.0/search.html" rel="prev"><span>Previous</span>Search</a></span>
+          <span class="pagination__next"><a href="/docs/tobar-segais-manual/2.0.0/legacy.html" rel="next"><span>Next</span>Legacy Eclipse bundles</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#_what_you_get_and_what_you_lose">What you get, and what you lose</a></li><li class="level-2"><a href="#_options">Options</a></li><li class="level-2"><a href="#_sites_below_the_root_of_a_domain">Sites below the root of a domain</a></li><li class="level-2"><a href="#_in_a_release_pipeline">In a release pipeline</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="welcome">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             aria-current="true">Tobar Segais</a>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/welcome/1.0.0/index.html" aria-current="page">Welcome</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/welcome/1.0.0/about.html">About this site</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             >Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest"
+                       href="/docs/tobar-segais-manual/2.0.0/">2.0.0</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.16/">1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/welcome/1.0.0/">Tobar Segais</a></li>
+          <li>Welcome</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        1.0.0
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        <h1 id="tobar-segais">Tobar Segais</h1>
+<blockquote>
+<p>An ordinary salmon ate nine hazelnuts that fell into Tobar Segais - the Well
+of Wisdom - from the nine hazel trees that surrounded the well, and gained
+all the world&#39;s knowledge.</p>
+<p>— Irish mythology</p>
+</blockquote>
+<p>Tobar Segais serves versioned documentation archives. Point it at a directory
+of <code>.zip</code> or <code>.jar</code> files and it publishes each one at a stable URL, with a
+navigation tree, full-text search and a version picker.</p>
+<p>It is a single static binary. There is no application server, no JVM and no
+database.</p>
+<h2 id="this-site-is-the-demo">This site is the demo</h2>
+<p>Everything here is served by Tobar Segais, and every manual in the sidebar is
+an archive in a directory:</p>
+<ul>
+<li><strong><a href="../../tobar-segais-manual/latest/">The user manual</a></strong> — how to publish
+documentation to it and how to run it. The version picker on it reaches the
+1.15 and 1.16 manuals, which are the original Eclipse InfoCenter bundles from
+the 1.x releases, served unchanged.</li>
+<li><strong><a href="../../markdown-bundles/latest/">Bundles from Markdown</a></strong>,
+<strong><a href="../../asciidoc-bundles/latest/">from AsciiDoc</a></strong> and
+<strong><a href="../../typst-bundles/latest/">from Typst</a></strong> — one manual for each source
+format, each documenting how to publish that format, and each published that
+way.</li>
+</ul>
+<h2 id="get-it">Get it</h2>
+<pre><code class="language-console">$ go install github.com/tobar-segais/tobar-segais/cmd/tobar-segais@latest
+</code></pre>
+<p>Or run the image:</p>
+<pre><code class="language-console">$ docker run --rm -p 8080:8080 -v &#34;$PWD/content:/content&#34; \
+    ghcr.io/tobar-segais/tobar-segais:latest
+</code></pre>
+<p>Binaries for Linux, macOS and Windows are attached to
+<a href="https://github.com/tobar-segais/tobar-segais/releases">each release</a>.</p>
+<h2 id="elsewhere">Elsewhere</h2>
+<ul>
+<li><a href="https://github.com/tobar-segais/tobar-segais">The source</a></li>
+<li><a href="https://twitter.com/tobarsegais">Follow @tobarsegais</a></li>
+</ul>
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"></span>
+          <span class="pagination__next"><a href="/docs/welcome/1.0.0/about.html" rel="next"><span>Next</span>About this site</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#this-site-is-the-demo">This site is the demo</a></li><li class="level-2"><a href="#get-it">Get it</a></li><li class="level-2"><a href="#elsewhere">Elsewhere</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

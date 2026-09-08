@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bundle format :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="tobar-segais-manual">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             aria-current="true">Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-here"
+                       href="/docs/tobar-segais-manual/2.0.0/bundles.html"
+                       aria-current="true"
+                       >2.0.0</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.16/"
+                       
+                       title="This page is not in 1.16; goes to that version instead">1.16</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.15/"
+                       
+                       title="This page is not in 1.15; goes to that version instead">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/quick-start.html">Quick start</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Publishing documentation</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/bundles.html" aria-current="page">Bundle format</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/formats.html">Source formats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/versions.html">Versions</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Running the server</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/configuration.html">Configuration</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/search.html">Search</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/static.html">Static sites</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/legacy.html">Legacy Eclipse bundles</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/tobar-segais-manual/2.0.0/">Tobar Segais: User Manual</a></li>
+          <li>Bundle format</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        
+        <select id="version" data-nav onchange="location=this.value">
+          
+            <option value="/docs/tobar-segais-manual/2.0.0/bundles.html" selected>2.0.0 (current)</option>
+          
+            <option value="/docs/tobar-segais-manual/1.16/">1.16 — not in this version</option>
+          
+            <option value="/docs/tobar-segais-manual/1.15/">1.15 — not in this version</option>
+          
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+<div id="header">
+<h1 id="bundle-format">Bundle format</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>A bundle is a <code>.zip</code> or <code>.jar</code> containing HTML pages and a navigation
+document.</p>
+</div>
+<div class="paragraph">
+<p>That is the whole format.
+In practice you will not write it by hand — <code>tobar-segais bundle</code> generates
+it from AsciiDoc, Markdown or Typst — but knowing the shape is useful when
+something does not appear where you expected.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_navigation_document">The navigation document</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>nav.html</code> at the archive root carries two things: the tree of pages, and the
+identity of the bundle.</p>
+</div>
+<div class="paragraph">
+<p>The tree is a nested list of links:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&#34;index.html&#34;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Guides
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&#34;guides/install.html&#34;&gt;Installing&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Every <code>href</code> is relative to the archive root.
+An item with no link is a heading that groups its children without being a
+page itself.
+The order is the reading order: the previous and next links at the foot of
+each page follow it.</p>
+</div>
+<div class="paragraph">
+<p>Identity lives in the head, as <code>meta</code> elements — all of them optional:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;title&gt;The Handbook&lt;/title&gt;
+&lt;meta name=&#34;tobar-segais.slug&#34; content=&#34;handbook&#34;&gt;
+&lt;meta name=&#34;tobar-segais.version&#34; content=&#34;1.0.0&#34;&gt;</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;"/>
+<col style="width: 75%;"/>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.slug</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used directly in the URL, so lowercase letters, digits and hyphens only.
+Defaults to the name part of the filename.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.version</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compared using semantic versioning, so <code>2.0.0</code> sorts above <code>1.16.0</code> and
+<code>2.0.0-rc1</code> sorts below <code>2.0.0</code>.
+Defaults to the version part of the filename.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional. Shown in the catalogue and the sidebar. Defaults to the document
+title.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.aliases</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional, comma separated. Additional slugs that resolve to this product,
+which is how a rename keeps old links working. An alias never displaces a
+real slug.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.hidden</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional. <code>true</code> keeps the version reachable by direct link but leaves it out
+of the catalogue and out of <code>latest</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.priority</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional, a whole number, <code>0</code> by default. Orders the catalogue and the
+sidebar: higher comes first, and bundles sharing a priority are ordered by
+title. It may be negative, so an archive that should not be met first can sink
+itself without every other archive having to be raised above it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>tobar-segais.copyright</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional. A notice about this documentation, shown in the footer of its
+pages. It overrides the server’s <code>--copyright</code>, so a bundle carrying its own
+notice keeps it wherever it is hosted.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Elements may sit anywhere in the document; they are not required to be in the
+head. Typst, for one, emits them into the body.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_nothing_has_to_be_declared">Nothing has to be declared</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A bundle need not say who it is.
+<code>handbook-1.0.0.zip</code> is <code>handbook</code> at <code>1.0.0</code> with no metadata at all: the
+version is taken from the end of the filename and the slug is what remains.
+An underscore works as well as a hyphen, and a <code>v</code> prefix on the version is
+accepted and dropped, so <code>handbook_v1.0.0.zip</code> reads the same way.</p>
+</div>
+<div class="paragraph">
+<p>Where no version can be found anywhere, the filename without its extension
+becomes the slug and the version is <code>latest</code>.
+So <code>handbook.zip</code> is served at <code>/docs/handbook/latest/</code>.
+That is the right answer for a manual that simply has no versions, and it
+avoids an empty segment in every URL the bundle appears at.</p>
+</div>
+<div class="paragraph">
+<p>Sources are consulted in order — the navigation document, then an OSGi
+manifest, then Maven’s <code>pom.properties</code>, then the filename — and each fills
+only what is still missing.
+So a navigation document declaring a version but no slug keeps its version and
+takes the slug from the filename.
+That combination is the common one: the version is what a build knows, and the
+slug is usually what the filename already says.</p>
+</div>
+<div class="paragraph">
+<p>The load line in the log records where each part came from:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-log" data-lang="log">level=INFO msg=&#34;loaded bundle&#34; slug=handbook version=1.0.0 identity=nav+filename</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_everything_else_in_the_archive">Everything else in the archive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Images, stylesheets, PDFs and other files are served from wherever they sit in
+the archive.
+Relative links between pages work unchanged, so a documentation generator’s
+output can usually be zipped as-is.</p>
+</div>
+<div class="paragraph">
+<p>Pages are rendered inside the server’s own layout, which supplies the
+navigation, search and version picker. Only the body of each page is used, so
+whatever a generator puts in the head is discarded.</p>
+</div>
+<div class="paragraph">
+<p>Four things are removed from the body as it is rendered:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&lt;script&gt;</code> and <code>&lt;noscript&gt;</code>, and inline <code>on*</code> handlers — documentation has
+no business running code in the container’s origin.</p>
+</li>
+<li>
+<p><code>&lt;style&gt;</code> and stylesheet <code>&lt;link&gt;</code> elements — a page’s CSS is written for the
+layout its generator produced, and would restyle the one it is being
+rendered into.</p>
+</li>
+<li>
+<p><code>&lt;base&gt;</code>, which would silently re-point every relative link on the page.</p>
+</li>
+<li>
+<p>Generator furniture: a <code>&lt;footer&gt;</code> at the top of the body, and the ids and
+classes documentation tools use for the same thing — Asciidoctor’s
+<code>#footer</code>, DocBook XSL’s <code>navheader</code> and <code>navfooter</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A <code>&lt;footer&gt;</code> nested inside content is left alone; only a page’s own footer is
+removed. <code>&lt;header&gt;</code> is never removed, because that is where generators put
+the document title.</p>
+</div>
+<div class="paragraph">
+<p><code>tobar-segais bundle</code> also strips stylesheets when it builds an archive, but
+that only covers archives it built. Anyone can assemble a zip, so the server
+does not assume the packer was involved.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_generating_one">Generating one</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Rather than writing the above, point the tool at your source:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais bundle ./docs --out ./content</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each format has its own manual, written in that format and published the way
+it describes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../../markdown-bundles/latest/index.html">Bundles from Markdown</a> — needs nothing installed</p>
+</li>
+<li>
+<p><a href="../../asciidoc-bundles/latest/index.html">Bundles from AsciiDoc</a></p>
+</li>
+<li>
+<p><a href="../../typst-bundles/latest/index.html">Bundles from Typst</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Older archives are supported too, without being rebuilt.
+See <a href="legacy.html">Legacy Eclipse bundles</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_metadata_beside_the_archive">Metadata beside the archive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Everything above is declared inside the bundle, which is the right place for
+it when you build the bundle. When you do not, there is a file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">content/
+  vendor-manual.jar
+  vendor-manual.toml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>.toml</code> file with the same name as an archive overrides that archive’s
+metadata. It is read before anything inside the bundle, so what it states
+wins:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-toml" data-lang="toml">slug = &#34;handbook&#34;
+version = &#34;2.1.0&#34;
+title = &#34;The Handbook&#34;
+aliases = [&#34;old-handbook&#34;]
+hidden = false
+priority = 100
+copyright = &#34;Copyright © 2026 Example Ltd.&#34;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Every key is optional and states only itself: a file setting <code>copyright</code> alone
+leaves the slug, version and title exactly as the archive gives them.
+<code>hidden = false</code> and <code>priority = 0</code> are worth having explicitly: they are the
+only way to show a version that hid itself, and to put back a bundle that
+raised itself above the rest.</p>
+</div>
+<div class="paragraph">
+<p>This is the one source that can contradict a bundle rather than fill gaps in
+it, and that is the point. A vendor’s jar that names itself badly, a version
+that needs correcting after release, an archive built long before any of this
+existed: none of them can be rebuilt, and all of them can have a text file put
+next to them.</p>
+</div>
+<div class="paragraph">
+<p>Adding, editing or removing the file reloads the archive beside it, the same
+as replacing the archive would. A file that is not valid TOML is reported and
+the archive is skipped, rather than served under the identity the file was
+written to change.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/tobar-segais-manual/2.0.0/quick-start.html" rel="prev"><span>Previous</span>Quick start</a></span>
+          <span class="pagination__next"><a href="/docs/tobar-segais-manual/2.0.0/formats.html" rel="next"><span>Next</span>Source formats</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#_the_navigation_document">The navigation document</a></li><li class="level-2"><a href="#_nothing_has_to_be_declared">Nothing has to be declared</a></li><li class="level-2"><a href="#_everything_else_in_the_archive">Everything else in the archive</a></li><li class="level-2"><a href="#_generating_one">Generating one</a></li><li class="level-2"><a href="#_metadata_beside_the_archive">Metadata beside the archive</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

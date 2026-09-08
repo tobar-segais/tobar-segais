@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tobar Segais: User Manual :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="tobar-segais-manual">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             aria-current="true">Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest is-elsewhere"
+                       href="/docs/tobar-segais-manual/2.0.0/"
+                       
+                       title="This page is not in 2.0.0; goes to that version instead">2.0.0</a></li>
+              
+                <li><a class="version is-here"
+                       href="/docs/tobar-segais-manual/1.16/book-manual.html"
+                       aria-current="true"
+                       >1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/book-manual.html"
+                       
+                       >1.15</a></li>
+              
+            
+          </ul>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/copyright.html">Copyright</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/intro.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/building.html">Building</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/customization.html">Customization</a>
+      
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/customization.html#customization-intro">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/customization-css.html">Stylesheet customization</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/customization-navbar.html">Navbar customization</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/customization-icon.html">Icon customization</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/1.16/ix01.html">Index</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/tobar-segais-manual/1.16/">Tobar Segais: User Manual</a></li>
+          <li>Tobar Segais: User Manual</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        
+        <select id="version" data-nav onchange="location=this.value">
+          
+            <option value="/docs/tobar-segais-manual/2.0.0/">2.0.0 — not in this version</option>
+          
+            <option value="/docs/tobar-segais-manual/1.16/book-manual.html" selected>1.16 (current)</option>
+          
+            <option value="/docs/tobar-segais-manual/1.15/book-manual.html">1.15</option>
+          
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        <div lang="en" class="book" title="Tobar Segais: User Manual"><div class="titlepage"><div><div><h1 class="title" id="tobar-segais-user-manual"><a name="book-manual"></a>Tobar Segais: User Manual</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author" id="stephen-connolly">Stephen Connolly</h3></div></div></div><div><div class="abstract" title="Abstract"><p class="title"><b>Abstract</b></p><p>User Manual for the Tobair Segais Web application</p></div></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="preface"><a href="copyright.html">Copyright</a></span></dt><dt><span class="chapter"><a href="intro.html">1. Introduction</a></span></dt><dt><span class="chapter"><a href="building.html">2. Building</a></span></dt><dt><span class="chapter"><a href="customization.html">3. Customization</a></span></dt><dd><dl><dt><span class="section"><a href="customization.html#customization-intro">Introduction</a></span></dt><dt><span class="section"><a href="customization-css.html">Stylesheet customization</a></span></dt><dt><span class="section"><a href="customization-navbar.html">Navbar customization</a></span></dt><dt><span class="section"><a href="customization-icon.html">Icon customization</a></span></dt></dl></dd><dt><span class="index"><a href="ix01.html">Index</a></span></dt></dl></div><div class="list-of-figures"><p><b>List of Figures</b></p><dl><dt>1.1. <a href="intro.html#d0e56">Screenshot of the Tobar Segais web application
+           
+        </a></dt></dl></div></div>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-3"><a href="#stephen-connolly">Stephen Connolly</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2016 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

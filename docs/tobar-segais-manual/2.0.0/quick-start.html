@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick start :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="tobar-segais-manual">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             >Bundles from Typst</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             aria-current="true">Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-here"
+                       href="/docs/tobar-segais-manual/2.0.0/quick-start.html"
+                       aria-current="true"
+                       >2.0.0</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.16/"
+                       
+                       title="This page is not in 1.16; goes to that version instead">1.16</a></li>
+              
+                <li><a class="version is-elsewhere"
+                       href="/docs/tobar-segais-manual/1.15/"
+                       
+                       title="This page is not in 1.15; goes to that version instead">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/quick-start.html" aria-current="page">Quick start</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Publishing documentation</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/bundles.html">Bundle format</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/formats.html">Source formats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/versions.html">Versions</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <span class="nav-text">Running the server</span>
+      
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/configuration.html">Configuration</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/search.html">Search</a>
+      
+      
+    </li>
+  
+</ul>
+
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/static.html">Static sites</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/tobar-segais-manual/2.0.0/legacy.html">Legacy Eclipse bundles</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/tobar-segais-manual/2.0.0/">Tobar Segais: User Manual</a></li>
+          <li>Quick start</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        
+        <select id="version" data-nav onchange="location=this.value">
+          
+            <option value="/docs/tobar-segais-manual/2.0.0/quick-start.html" selected>2.0.0 (current)</option>
+          
+            <option value="/docs/tobar-segais-manual/1.16/">1.16 — not in this version</option>
+          
+            <option value="/docs/tobar-segais-manual/1.15/">1.15 — not in this version</option>
+          
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+<div id="header">
+<h1 id="quick-start">Quick start</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_run_the_server">Run the server</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais serve --content ./content</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The server listens on <code>:8080</code> and serves whatever archives are in <code>./content</code>.
+It creates nothing: if the directory does not exist, the server exits rather
+than silently serving an empty catalogue.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_publish_an_archive">Publish an archive</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Point the tool at a directory of documentation source.
+Markdown needs nothing installed, so it is the shortest path from nothing to a
+published manual:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ cat docs/nav.md
+---
+slug: handbook
+version: 1.0.0
+title: The Handbook
+---
+
+- [Introduction](index.md)
+
+$ tobar-segais bundle ./docs --out ./content
+  detected markdown source
+  converted 1 pages
+content/handbook-1.0.0.zip (handbook 1.0.0, from nav, 1204 bytes)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The catalogue picks it up within moments, without a restart.
+Removing the file removes the documentation just as quickly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_or_publish_without_a_server">Or publish without a server</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Nothing above has to stay running. The same archives can be written out as a
+static site and hosted anywhere that serves files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ tobar-segais build --content ./content --out ./site
+level=INFO msg=&#34;site generated&#34; out=./site pages=1 assets=7 documents=1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The pages are rendered with the same templates the server uses, and search
+still works — the index ships alongside them and is queried in the browser.
+See <a href="static.html">Static sites</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_check_it_worked">Check it worked</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-console" data-lang="console">$ curl -s localhost:8080/healthz
+ok</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The server logs one line per archive as it loads, naming the slug, the version
+and where the identity came from:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-log" data-lang="log">level=INFO msg=&#34;loaded bundle&#34; slug=handbook version=1.0.0 identity=metadata</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a slug or version is not what you expected, that <code>identity</code> field tells you
+which rule produced it. See <a href="bundles.html">Bundle format</a>.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/tobar-segais-manual/2.0.0/index.html" rel="prev"><span>Previous</span>Introduction</a></span>
+          <span class="pagination__next"><a href="/docs/tobar-segais-manual/2.0.0/bundles.html" rel="next"><span>Next</span>Bundle format</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#_run_the_server">Run the server</a></li><li class="level-2"><a href="#_publish_an_archive">Publish an archive</a></li><li class="level-2"><a href="#_or_publish_without_a_server">Or publish without a server</a></li><li class="level-2"><a href="#_check_it_worked">Check it worked</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="footer-content">Copyright © 2011–2026 Stephen Connolly. Licensed under the Apache License 2.0.</p>
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

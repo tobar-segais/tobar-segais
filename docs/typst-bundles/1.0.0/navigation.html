@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The navigation document :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="typst-bundles">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             aria-current="true">Bundles from Typst</a>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/navigation.html" aria-current="page">The navigation document</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/building.html">Building and publishing</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/multifile.html">Books and multiple files</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/caveats.html">Caveats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/appendix.html">Appendix: Typst elements</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             >Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest"
+                       href="/docs/tobar-segais-manual/2.0.0/">2.0.0</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.16/">1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/typst-bundles/1.0.0/">Bundles from Typst</a></li>
+          <li>The navigation document</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        1.0.0
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+    <h1 id="the-navigation-document">The navigation document</h1>
+    <p>Every bundle needs a navigation document. It carries the tree of pages and the identity of the bundle.</p>
+    <p>In a page-per-file layout it is <code>nav.typ</code>. With bundle export it is whatever your source emits as <code>nav.html</code>. The content is the same either way.</p>
+    <h2 id="the-tree">The tree</h2>
+    <p>Write it as a list of links. Nesting becomes nesting:</p>
+    <pre>- #link(&#34;index.html&#34;)[Introduction]<br/>- Guides<br/>  - #link(&#34;install.html&#34;)[Installing]<br/>  - #link(&#34;upgrade.html&#34;)[Upgrading]</pre>
+    <p>Links point at the generated <code>.html</code> files, not at the <code>.typ</code> sources. Typst has no cross-reference form that rewrites extensions, so this is one place where Typst is more manual than AsciiDoc.</p>
+    <p>An entry with no link, like <code>Guides</code>, becomes a heading that groups its children without being a page itself.</p>
+    <h2 id="identity">Identity</h2>
+    <p>Slug and version are declared as HTML meta elements, and the title as a title element:</p>
+    <pre>#html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.slug&#34;, content: &#34;handbook&#34;))<br/>#html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.version&#34;, content: &#34;1.0.0&#34;))<br/>#html.elem(&#34;title&#34;)[The Handbook]</pre>
+    <p>Typst emits these into the document body rather than its head. The server reads meta elements wherever they appear, so this works, but it is worth knowing if you inspect the generated file and wonder why the head looks bare.</p>
+    <p>Neither is required. A bundle with no metadata at all takes its slug and version from the filename, so <code>handbook-1.0.0.zip</code> is <code>handbook</code> at <code>1.0.0</code>.</p>
+    <p>The slug must be lowercase letters, digits and hyphens: it goes straight into a URL. The version is compared using semantic versioning.</p>
+  
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/typst-bundles/1.0.0/index.html" rel="prev"><span>Previous</span>Introduction</a></span>
+          <span class="pagination__next"><a href="/docs/typst-bundles/1.0.0/building.html" rel="next"><span>Next</span>Building and publishing</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#the-tree">The tree</a></li><li class="level-2"><a href="#identity">Identity</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>

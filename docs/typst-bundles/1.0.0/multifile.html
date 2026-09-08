@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Books and multiple files :: Tobar Segais</title>
+<script>
+
+
+(function () {
+  try {
+    var choice = localStorage.getItem("tobar-segais.theme") || "system";
+    var dark = choice === "dark" ||
+      (choice === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.themeChoice = choice;
+  } catch (e) {
+    
+    
+  }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/favicon.ico" sizes="any">
+<link rel="icon" href="/static/tobarsegais.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/tobarsegais.svg" alt="" width="50" height="50">
+      <span>Tobar Segais</span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="theme" role="group" aria-label="Colour theme" hidden>
+      <button type="button" value="light" title="Light" aria-label="Light">&#9788;</button>
+      <button type="button" value="system" title="Match system" aria-label="Match system">&#9681;</button>
+      <button type="button" value="dark" title="Dark" aria-label="Dark">&#9789;</button>
+    </div>
+    <form class="navbar-search" action="/search.html" method="get" role="search">
+      <input type="search" name="q" value="" placeholder="Search" aria-label="Search documentation">
+      <input type="hidden" name="slug" value="typst-bundles">
+    </form>
+  </div>
+</nav>
+
+<div class="body">
+  
+<aside class="nav">
+  <div class="nav-panel-menu">
+    
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/welcome/1.0.0/"
+             >Tobar Segais</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/asciidoc-bundles/1.0.0/"
+             >Bundles from AsciiDoc</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/markdown-bundles/1.0.0/"
+             >Bundles from Markdown</a>
+          
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group is-current">
+          <a class="nav-group__title" href="/docs/typst-bundles/1.0.0/"
+             aria-current="true">Bundles from Typst</a>
+          
+          
+            
+<ul class="nav-list">
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/index.html">Introduction</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/navigation.html">The navigation document</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/building.html">Building and publishing</a>
+      
+      
+    </li>
+  
+    <li class="nav-item is-current">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/multifile.html" aria-current="page">Books and multiple files</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/caveats.html">Caveats</a>
+      
+      
+    </li>
+  
+    <li class="nav-item">
+      <a class="nav-link" href="/docs/typst-bundles/1.0.0/appendix.html">Appendix: Typst elements</a>
+      
+      
+    </li>
+  
+</ul>
+
+          
+        </div>
+      
+    
+      
+      
+        
+        <div class="nav-group">
+          <a class="nav-group__title" href="/docs/tobar-segais-manual/2.0.0/"
+             >Tobar Segais: User Manual</a>
+          
+          <ul class="nav-versions">
+            
+              
+                <li><a class="version is-latest"
+                       href="/docs/tobar-segais-manual/2.0.0/">2.0.0</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.16/">1.16</a></li>
+              
+                <li><a class="version"
+                       href="/docs/tobar-segais-manual/1.15/">1.15</a></li>
+              
+            
+          </ul>
+          
+          
+        </div>
+      
+    
+  </div>
+</aside>
+
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="/">Docs</a></li>
+          <li><a href="/docs/typst-bundles/1.0.0/">Bundles from Typst</a></li>
+          <li>Books and multiple files</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        1.0.0
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        
+    <h1 id="books-and-multiple-files">Books and multiple files</h1>
+    <p>Typst joins files with <code>#include</code>, producing one document. A documentation bundle wants a page per file, each with its own address.</p>
+    <p>There are two ways to bridge that, and Typst supports both.</p>
+    <h2 id="keeping-one-source">Keeping one source</h2>
+    <p>Typst&#39;s <strong>bundle export</strong> lets a single compilation write several files, each declared with <code>#document</code>:</p>
+    <pre>#document(&#34;nav.html&#34;)[<br/>  #html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.slug&#34;, content: &#34;handbook&#34;))<br/>  #html.elem(&#34;meta&#34;, attrs: (name: &#34;tobar-segais.version&#34;, content: &#34;1.0.0&#34;))<br/>  #html.elem(&#34;title&#34;)[The Handbook]<br/><br/>  - #link(&#34;index.html&#34;)[Introduction]<br/>  - #link(&#34;chapter-two.html&#34;)[The second chapter]<br/>]<br/><br/>#document(&#34;index.html&#34;)[<br/>  <strong>=</strong><strong> </strong><strong>Introduction</strong><br/>  ...<br/>]</pre>
+    <p>Name that file <code>book.typ</code> or <code>main.typ</code>, leave out <code>nav.typ</code>, and the tool uses bundle export:</p>
+    <pre>tobar-segais bundle ./book --out ./content<br/>  detected typst source<br/>  bundle export from book.typ</pre>
+    <p>This suits a book that already exists as one source. Chapters can stay in separate files and be pulled in with <code>#import</code>, while each <code>#document</code> call decides what becomes a page.</p>
+    <p>The navigation document is emitted the same way, so identity and tree still come from the source.</p>
+    <h2 id="a-page-per-file">A page per file</h2>
+    <p>The alternative is one <code>.typ</code> per page and a <code>nav.typ</code> listing them, as this manual uses. The tool picks this when a <code>nav.typ</code> is present.</p>
+    <p>Each page is compiled on its own, so it cannot rely on setup performed by a parent. This fails:</p>
+    <pre><strong>=</strong><strong> </strong><strong>Third chapter</strong><br/><br/>#note[A helper defined elsewhere.]</pre>
+    <p>with <code>error: unknown variable: note</code>. Import what the page needs:</p>
+    <pre>#import &#34;_common.typ&#34;: note</pre>
+    <h2 id="partials">Partials</h2>
+    <p>A file whose name begins with an underscore is a partial: pulled into other files, never a page of its own. Put shared setup in <code>_common.typ</code> and it stays out of the navigation and out of the bundle.</p>
+    <p>The same convention applies to every format.</p>
+    <h2 id="which-to-choose">Which to choose</h2>
+    <p>Use bundle export for something that is a book: written as one work, read in order, where the chapters share setup.</p>
+    <p>Use a page per file for something that is a manual: pages that are written, reviewed and linked to separately.</p>
+    <h2 id="what-replaces-the-outline">What replaces the outline</h2>
+    <p><code>#outline()</code> builds a table of contents from headings and links to anchors within one document. In a bundle the server provides that instead: the navigation tree spans pages and versions, and the <strong>On this page</strong> column is built from each page&#39;s own headings.</p>
+  
+
+
+        
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev"><a href="/docs/typst-bundles/1.0.0/building.html" rel="prev"><span>Previous</span>Building and publishing</a></span>
+          <span class="pagination__next"><a href="/docs/typst-bundles/1.0.0/caveats.html" rel="next"><span>Next</span>Caveats</a></span>
+        </nav>
+        
+      </article>
+      
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            <li class="level-2"><a href="#keeping-one-source">Keeping one source</a></li><li class="level-2"><a href="#a-page-per-file">A page per file</a></li><li class="level-2"><a href="#partials">Partials</a></li><li class="level-2"><a href="#which-to-choose">Which to choose</a></li><li class="level-2"><a href="#what-replaces-the-outline">What replaces the outline</a></li>
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  
+  <p class="footer-app"><span>Published by <a href="https://tobarsegais.org/">Tobar Segais</a> · Copyright &copy; 2011&ndash;2026 Stephen Connolly · Licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a></span></p>
+</footer>
+<script src="/static/theme.js"></script>
+<script src="/static/nav.js" data-site=""></script>
+</body>
+</html>
