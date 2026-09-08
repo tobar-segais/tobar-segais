@@ -1,10 +1,12 @@
-.project
-.classpath
-.settings
-*.iml
-*.ipr
-*.iws
-.idea
-target/
-tobar-segais-manual-webapp/overlays/
+# Build output.
+/tobar-segais
+/dist/
+/site/
 
+# The directory the tool serves while you work on it. The archives in it are
+# built from `docs/` and `demos/`; the ones that ship are in `demo/content/`.
+/content/
+
+.DS_Store
+.idea/
+*.iml

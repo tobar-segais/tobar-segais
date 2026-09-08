@@ -1,0 +1,30 @@
+{{define "body"}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <article class="doc">
+      <h1>Search</h1>
+      {{if .Query}}
+        {{if .Results}}
+          <p class="count">{{len .Results}} result{{if ne (len .Results) 1}}s{{end}} for &ldquo;{{.Query}}&rdquo;</p>
+          <ol class="results">
+            {{range .Results}}
+            <li>
+              <a href="{{site}}/docs/{{.Slug}}/{{.Version}}/{{.Href}}">{{.Title}}</a>
+              <span class="where">{{.Slug}} {{.Version}}</span>
+              <p class="snippet">{{highlight .Snippet}}</p>
+            </li>
+            {{end}}
+          </ol>
+        {{else if not .Status.Ready}}
+          <p class="empty">Still indexing &mdash; try again in a moment.</p>
+        {{else}}
+          <p class="empty">Nothing matched &ldquo;{{.Query}}&rdquo;.</p>
+        {{end}}
+      {{else}}
+        <p class="empty">Type a query in the search box above.</p>
+      {{end}}
+    </article>
+  </main>
+</div>
+{{end}}

@@ -1,0 +1,83 @@
+name: Demo site
+
+# The site at tobarsegais.org, built by the tool from this repository's own
+# documentation and published to `gh-pages`.
+#
+# The site and the demo are one thing: the landing page, the manual, the format
+# guides and the 1.x archives are all bundles that this tool serves, so the
+# site is a demonstration of the tool by being the site.
+#
+# # Why this is not part of the release
+#
+# The site is documentation, and documentation changes without a release: a
+# `docs:` commit asks for no version, so a demo tied to releases would sit
+# stale behind `main` for as long as nobody shipped a feature. It therefore
+# runs on every push to `main`, and the site always shows what `main` says.
+#
+# The versions of the manual on the site are a separate matter: 2.0.0 comes
+# from `docs/`, and 1.15 and 1.16 are the archives in `demo/content/` -- the
+# original Eclipse InfoCenter bundles, served unchanged, which is both what
+# makes the version picker worth looking at and a demonstration that a 1.x
+# bundle still works.
+#
+# # Why `gh-pages` and not the Pages deployment API
+#
+# A branch is legible: `git log gh-pages` says what was published and when, and
+# `git show` says exactly what a visitor was served. The site is small and
+# static, and the deployment API buys nothing that is worth losing that for.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One publish at a time. Two together would race to force-push the branch.
+concurrency:
+  group: demo
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: ./.github/actions/build-demo
+        with:
+          out: site
+
+      - name: The domain, and no Jekyll
+        run: |
+          set -euo pipefail
+          # Without .nojekyll, GitHub Pages drops any file whose name begins
+          # with an underscore.
+          echo tobarsegais.org >site/CNAME
+          touch site/.nojekyll
+
+      # A published site is a snapshot and not a history: the branch holds one
+      # commit, which is why this is a fresh repository each time rather than a
+      # checkout of `gh-pages`. Everything published before it is in the log of
+      # this branch on the server until the force-push replaces it.
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Demo site from ${GITHUB_SHA::12}"
+          git push -q --force \
+            "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY" \
+            gh-pages
+          echo "Published $(find . -name '*.html' | wc -l | tr -d ' ') pages." \
+            >>"$GITHUB_STEP_SUMMARY"

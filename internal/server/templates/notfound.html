@@ -1,0 +1,53 @@
+{{define "body"}}
+{{if .Bundle}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="{{site}}/">Docs</a></li>
+          <li><a href="{{site}}/docs/{{.Bundle.Slug}}/{{.Bundle.Version}}/">{{.Bundle.Title}}</a></li>
+          <li>Not found</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        {{if gt (len .Versions) 1}}
+        <select id="version" data-nav onchange="location=this.value">
+          {{range .Versions}}
+            <option value="{{site}}{{.Href}}"{{if .IsHere}} selected{{end}}>{{.Version}}{{if .IsHere}} (current){{else if not .HasPage}} — not in this version{{end}}</option>
+          {{end}}
+        </select>
+        {{else}}{{.Bundle.Version}}{{end}}
+      </div>
+    </div>
+    <div class="doc-columns">
+      <article class="doc">
+        <h1>Page not found</h1>
+        <p class="empty">
+          <code>{{.Missing}}</code> is not in {{.Bundle.Title}} {{.Bundle.Version}}.
+        </p>
+        {{if .Elsewhere}}
+        <p>It does exist in other versions of this manual:</p>
+        <ul class="elsewhere">
+          {{range .Elsewhere}}<li><a href="{{site}}/docs/{{.Slug}}/{{.Version}}/{{$.Missing}}">{{.Version}}</a></li>{{end}}
+        </ul>
+        {{end}}
+        <p>The contents of this version are in the sidebar.</p>
+      </article>
+    </div>
+  </main>
+</div>
+{{else}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <article class="doc">
+      <h1>Not found</h1>
+      <p class="empty">That page is not in any loaded archive. <a href="{{site}}/">Back to the documentation index</a>.</p>
+    </article>
+  </main>
+</div>
+{{end}}
+{{end}}

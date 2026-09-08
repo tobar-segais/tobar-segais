@@ -1,0 +1,48 @@
+name: Pull request
+
+# The title of a pull request is the message of the commit that reaches `main`,
+# because this repository accepts a squash only. The release reads that message
+# to calculate the next version number, so this test guards the release.
+#
+# THIS IS A WORKFLOW OF ITS OWN BECAUSE OF `edited`.
+#
+# A title is not a commit. A person changes it in the browser, and no push
+# happens. `on: pull_request` with no `types` gives `opened`, `synchronize` and
+# `reopened` only, so a title that a person corrects — or breaks — AFTER the
+# last push leaves the earlier answer on the pull request. The check stays
+# green, and it measures a title that no longer exists.
+#
+# `edited` fires for the title and for the body. The body matters as well: a
+# `BREAKING CHANGE:` line in the body asks for a break, and the body becomes the
+# body of the commit.
+#
+# The test does not live in `ci.yml`, because `edited` there would run the
+# build and the tests on three machines each time a person corrects a word.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+# A second edit while the first test runs makes the first answer old.
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  title:
+    name: The form of the pull request title
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: The title must follow Conventional Commits
+        # The title goes through the environment, and never into the text of the
+        # command. A person outside this project can write a title, and text
+        # inside a command becomes part of that command.
+        #
+        # The locale gives `${#title}` characters and not bytes, so a title in a
+        # writing system that takes more than one byte for each character gets
+        # the limit that the message promises.
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          LC_ALL: C.UTF-8
+        run: .github/scripts/check-title.sh "$TITLE"

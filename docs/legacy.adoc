@@ -1,0 +1,60 @@
+= Legacy Eclipse bundles
+
+Tobar Segais began as a container for Eclipse InfoCenter help bundles, and
+still serves them without any Eclipse or OSGi machinery.
+Nothing needs to be repackaged.
+
+These formats are supported for archives that already exist.
+New documentation should use xref:bundles.adoc[the bundle format], which is
+generated for you.
+
+== Identity
+
+Where an archive has no navigation document of its own, the slug and version
+are resolved from the first of these that answers:
+
+. `nav.html` -- the convention, described in xref:bundles.adoc[Bundle format].
+. OSGi manifest headers `Bundle-SymbolicName` and `Bundle-Version`.
+. Maven's `META-INF/maven/**/pom.properties`.
+. The filename, read as `name-version`.
+. The filename alone, with no version.
+
+The server logs which rule produced the answer, as `identity=` on the load
+line, so an unexpected slug can be traced without guesswork.
+
+[NOTE]
+====
+`plugin.xml` carries an `id` and a `version`, and both are deliberately
+ignored.
+In bundles generated from the DocBook sample they are almost always left as
+`com.example.help` and `1.0`, which would collide across every product and
+report every version as the same.
+====
+
+== Table of contents
+
+Where there is no `nav.html`, the server reads a legacy Eclipse `plugin.xml`
+and follows its `org.eclipse.help.toc` extension, preferring the entry marked
+`primary`. Failing that, it looks for a `toc.xml` at the archive root.
+
+`toc.xml` and `nav.html` describe the same tree in different notation; the
+format is chosen by file extension.
+
+== Generator navigation
+
+Documentation generators often bake their own navigation into each page.
+DocBook XSL, for instance, emits Prev/Next tables at the top and bottom of
+every page.
+
+The server removes those, because it provides the same navigation itself from
+the table of contents.
+Reading order comes from the table of contents rather than from whatever the
+generator recorded, so it stays correct if the bundle is reorganised.
+
+== Correcting an old bundle
+
+An Eclipse bundle names itself through its OSGi manifest, which was written
+when the bundle was built and cannot be changed now without rebuilding it. If
+the slug, version or title that comes out is not what you want, put a `.toml`
+file beside the archive and say so there instead. See
+xref:bundles.adoc[Bundle format].

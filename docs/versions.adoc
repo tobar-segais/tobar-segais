@@ -1,0 +1,58 @@
+= Versions
+
+Every archive declares a version.
+Archives sharing a slug are grouped into one product, and the version picker in
+the toolbar moves between them.
+
+== Ordering
+
+Versions are ordered by semantic versioning precedence.
+Versions that are not strict semver are accepted where the intent is clear:
+`1.16` is read as `1.16.0`.
+
+A pre-release sorts below the release it precedes, so `2.0.0-SNAPSHOT` is older
+than `2.0.0` and will not be chosen as the latest version.
+
+A version that cannot be parsed at all sorts last and is never selected as the
+latest.
+It remains reachable at its own URL.
+
+An archive that declares no version at all is served as `latest`, which is
+both its version and the alias every product answers to.
+Mixing an unversioned archive with versioned ones under the same slug is
+therefore possible but confusing, and the unversioned one will sort last.
+
+== URLs
+
+Each version has a stable address:
+
+[source]
+----
+/docs/handbook/1.0.0/guides/install.html
+----
+
+`latest` resolves to the newest visible version:
+
+[source]
+----
+/docs/handbook/latest/guides/install.html
+----
+
+Requesting the product on its own redirects to the latest version:
+
+[source]
+----
+/docs/handbook/  ->  /docs/handbook/2.0.0/
+----
+
+Switching version keeps your position in the document, so the picker moves you
+to the same page in the other version.
+If that page does not exist there, you get the not-found page rather than a
+silent redirect to somewhere else.
+
+== Retiring a version
+
+Set `hidden = true` in its metadata.
+The version disappears from the catalogue and from `latest`, but existing links
+to it keep working.
+Removing the archive from the directory removes it entirely.

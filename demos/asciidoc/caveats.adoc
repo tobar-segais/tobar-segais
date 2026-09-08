@@ -1,0 +1,40 @@
+= Caveats
+
+Few, compared with the other formats, but worth knowing.
+
+== docinfo naming is easy to get wrong
+
+`:docinfo: shared` reads `docinfo.html`.
+`:docinfo: private` reads `<docname>-docinfo.html` -- so for `nav.adoc` that is
+`nav-docinfo.html`.
+
+Naming the file `docinfo.html` while declaring `private` produces no error and
+no meta tags: the file is simply not found, and the bundle falls back to being
+identified by its filename. If a bundle appears under an unexpected slug, this
+is the first thing to check.
+
+== Attributes are not substituted unless you ask
+
+Docinfo content is copied verbatim by default, so `{slug}` would reach the
+output literally. `-a docinfosubs=attributes` enables substitution; the tool
+passes it.
+
+== Pages need no flags
+
+Asciidoctor is invoked plainly, and its output is cleaned afterwards.
+You do not need `-s`, and you should not use it: in embedded mode the
+document title is omitted unless `-a showtitle` is also given, and the tool
+relies on the title being present.
+
+== The two implementations agree
+
+Ruby Asciidoctor and asciidoctor.js accept the same flags and, in this
+manual's case, produce byte-identical pages.
+The only difference is the `generator` meta element in the navigation
+document, which names the version that built it and is not used for anything.
+
+== Section ids are generated for you
+
+Asciidoctor gives every section an id, which the server uses to build the
+*On this page* column. Nothing extra is required, but if you set `:idprefix:`
+or `:idseparator:` the anchors change accordingly.

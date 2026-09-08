@@ -1,0 +1,48 @@
+{{define "body"}}
+<div class="body">
+  {{template "sidebar" .}}
+  <main class="doc-shell">
+    <div class="toolbar">
+      <nav class="breadcrumbs" aria-label="Breadcrumbs">
+        <ul>
+          <li><a href="{{site}}/">Docs</a></li>
+          <li><a href="{{site}}/docs/{{.Bundle.Slug}}/{{.Bundle.Version}}/">{{.Bundle.Title}}</a></li>
+          <li>{{.Title}}</li>
+        </ul>
+      </nav>
+      <div class="page-versions">
+        <label class="sr-only" for="version">Version</label>
+        {{if gt (len .Versions) 1}}
+        <select id="version" data-nav onchange="location=this.value">
+          {{range .Versions}}
+            <option value="{{site}}{{.Href}}"{{if .IsHere}} selected{{end}}>{{.Version}}{{if .IsHere}} (current){{else if not .HasPage}} — not in this version{{end}}</option>
+          {{end}}
+        </select>
+        {{else}}{{.Bundle.Version}}{{end}}
+      </div>
+    </div>
+
+    <div class="doc-columns">
+      <article class="doc">
+        {{.Content}}
+        {{if or .Prev .Next}}
+        <nav class="pagination" aria-label="Page navigation">
+          <span class="pagination__prev">{{if .Prev}}<a href="{{site}}{{$.Base}}{{.Prev.Href}}" rel="prev"><span>Previous</span>{{.Prev.Label}}</a>{{end}}</span>
+          <span class="pagination__next">{{if .Next}}<a href="{{site}}{{$.Base}}{{.Next.Href}}" rel="next"><span>Next</span>{{.Next.Label}}</a>{{end}}</span>
+        </nav>
+        {{end}}
+      </article>
+      {{if .Headings}}
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-menu">
+          <h3>On this page</h3>
+          <ul>
+            {{range .Headings}}<li class="level-{{.Level}}"><a href="#{{.ID}}">{{.Text}}</a></li>{{end}}
+          </ul>
+        </div>
+      </aside>
+      {{end}}
+    </div>
+  </main>
+</div>
+{{end}}

@@ -1,0 +1,94 @@
+name: Compute the version
+description: >
+  Gives the release that a commit asks for. It computes only. It makes no commit
+  and no tag, and it reads the GitHub API and not a clone of the history.
+
+# The rules are in `version-rules.sh`, beside this file. Keep them there.
+#
+# THIS ACTION NEEDS NO HISTORY. A workflow still needs `actions/checkout` to get
+# the files of the action, but the DEFAULT checkout is enough:
+#
+#     - uses: actions/checkout@v5
+#     - uses: ./.github/actions/compute-version
+#       id: version
+#
+# Never ask for `fetch-depth: 0` for this action. The whole history costs time
+# on every push and on every pull request, and four API calls answer the
+# question whatever the size of the history.
+
+inputs:
+  repository:
+    description: The repository to read, as `owner/name`.
+    required: false
+    default: ${{ github.repository }}
+  sha:
+    description: The commit to give a version to.
+    required: false
+    default: ${{ github.sha }}
+  tag:
+    description: >
+      The release tag that the commit carries, or an empty string. The default
+      takes it from the event, so a push of a tag needs nothing here.
+    required: false
+    default: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+  token:
+    description: The token that reads the API.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: >
+      The release to make, such as `0.8.0`. EMPTY when no commit since the last
+      release asks for one. It is the number of the tag when the commit carries
+      one.
+    value: ${{ steps.compute.outputs.version }}
+  tag:
+    description: >
+      The tag to make, such as `v0.8.0`. EMPTY when there is no release to make,
+      and EMPTY when the commit carries a tag already, because that commit needs
+      no second tag.
+    value: ${{ steps.compute.outputs.tag }}
+  bump:
+    description: >
+      `major`, `minor` or `patch`. EMPTY when no commit asks for a release.
+    value: ${{ steps.compute.outputs.bump }}
+  is-release:
+    description: >
+      `true` when the commit carries a release tag, and `false` otherwise.
+    value: ${{ steps.compute.outputs.is-release }}
+  previous:
+    description: >
+      The release before this one, such as `v0.7.2`. EMPTY when no release
+      exists.
+    value: ${{ steps.compute.outputs.previous }}
+
+runs:
+  using: composite
+  steps:
+    - id: compute
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ACTION_PATH: ${{ github.action_path }}
+        REPOSITORY: ${{ inputs.repository }}
+        SHA: ${{ inputs.sha }}
+        TAG: ${{ inputs.tag }}
+      # THE SCRIPT IS NOT PIPED, AND THAT IS DELIBERATE.
+      #
+      # A composite step runs `bash -e {0}`: `-e` with no `-o pipefail`. The
+      # exit value of a pipeline is the exit value of its LAST command, so
+      # `compute-version.sh | tee ...` gives the exit value of `tee`, which is
+      # always 0. A call to the API that failed would then kill the script
+      # before it printed anything, `tee` would write nothing, the step would
+      # report success, and the run would go GREEN HAVING RELEASED NOTHING.
+      #
+      # The script writes to a file instead, and the exit value of the step is
+      # the exit value of the script. `cat` then writes the values to the log,
+      # so a person who reads a run sees the numbers that the run used.
+      run: |
+        set -euo pipefail
+        out="$RUNNER_TEMP/compute-version.txt"
+        "$ACTION_PATH/compute-version.sh" "$REPOSITORY" "$SHA" "$TAG" >"$out"
+        cat "$out"
+        cat "$out" >>"$GITHUB_OUTPUT"

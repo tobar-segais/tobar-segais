@@ -1,0 +1,157 @@
+= Source formats
+
+`tobar-segais bundle` detects the source language from the files in the
+directory and runs the right converter.
+Each format needs a navigation document and some pages.
+Only AsciiDoc and Typst need a converter installed; Markdown is built in.
+
+[cols="1,1,1,1"]
+|===
+|Format |Navigation |Pages |Converter
+
+|`asciidoc` |`nav.adoc` |`*.adoc` |`asciidoctor` or `asciidoctor.js`
+|`markdown` |`nav.md` |`*.md` |_built in_
+|`typst` |`nav.typ` |`*.typ` |`typst`
+|`html` |`nav.html` |`*.html` |none, copied as-is
+|===
+
+Each format has its own manual, written in that format and published the way
+it describes:
+
+* xref:../../asciidoc-bundles/latest/index.html[Bundles from AsciiDoc]
+* xref:../../markdown-bundles/latest/index.html[Bundles from Markdown]
+* xref:../../typst-bundles/latest/index.html[Bundles from Typst]
+
+== Pointing at a converter
+
+Converters are looked up on `PATH` under their usual names.
+Where that is not where yours lives -- a user gem, a wrapper, a container --
+name it:
+
+[source,console]
+----
+$ tobar-segais bundle ./docs --tool ~/.gem/ruby/3.3.0/bin/asciidoctor
+$ tobar-segais bundle ./docs --tool "bundle exec asciidoctor"
+----
+
+The value may carry arguments, which are placed before the ones the tool
+supplies. Quoting is honoured, so a path containing a space works.
+
+Both Asciidoctor implementations are supported and take the same flags.
+Building this manual with `asciidoctor.js` instead of the Ruby implementation
+produces byte-identical pages; only the generator string in the navigation
+document differs.
+
+== Partials
+
+A source file whose name begins with an underscore is a partial: pulled into
+other pages, never a page itself.
+Shared setup, a preamble, a chapter meant to be included -- name it
+`_common.typ` or `_preamble.adoc` and it stays out of the navigation and out
+of the bundle.
+
+This matters most for Typst, whose native model joins files with `#include`
+into a single document.
+
+Typst offers a second route: its *bundle export* lets one compilation write
+several files, each declared with `#document("page.html")[...]`.
+Name that source `book.typ` or `main.typ` and omit `nav.typ`, and the tool
+uses bundle export, so a book can stay one source and still publish as a
+multi-page bundle.
+See xref:../../typst-bundles/latest/multifile.html[Books and multiple files].
+
+Pass `--format` to override detection.
+HTML is only detected when no other source is present, so a directory holding
+both sources and a previous build is still recognised by its sources.
+
+== Why the converters are invoked this way
+
+Converters are invoked as plainly as they allow.
+Rather than a flag per tool to suppress each thing a bundle does not want, the
+output is cleaned afterwards: stylesheets and generator footers are removed,
+from output this tool generated and from output it did not.
+
+That is why AsciiDoc is simply:
+
+[source,console]
+----
+$ asciidoctor -o page.html page.adoc
+----
+
+Asciidoctor embeds around 29 KB of CSS in every full document and a footer
+carrying a "Last updated" timestamp, which would otherwise change every page
+on every build. Both are removed. The document title stays, because in full
+output it is already an `<h1>` in the header.
+
+The navigation document keeps one flag, `-a docinfosubs=attributes`, because
+that is what substitutes the slug and version into its head. It is converted
+as a whole document for the same reason: its head is the point.
+
+== Heading levels
+
+Generators disagree about what the top level means: Asciidoctor and goldmark
+make a document title an `h1`, Typst reserves `h1` for itself and starts
+content at `h2`, and DocBook XSL emits a chapter title as `h2`.
+
+The server shifts headings so the shallowest one on a page is an `h1`.
+A page therefore reads the same whatever produced it, and no format has to
+compensate -- which matters because Typst cannot.
+
+== Markdown
+
+Markdown needs nothing installed: it is rendered in-process with
+https://github.com/yuin/goldmark[goldmark], the renderer Hugo uses.
+The dialect is GitHub Flavored Markdown -- CommonMark plus tables,
+strikethrough, task lists and autolinks -- with definition lists and footnotes
+enabled as well.
+
+Identity goes in YAML front matter on the navigation document:
+
+[source,markdown]
+----
+---
+slug: handbook
+version: 1.0.0
+title: The Handbook
+---
+
+- [Introduction](index.md)
+- Guides
+  - [Installing](install.md)
+----
+
+Links point at the `.md` sources and are rewritten to the generated pages.
+Because the rewriting happens on the parsed document rather than by editing
+text, reference-style links and links split across lines are handled
+correctly, and anything with a scheme is left alone.
+
+== Typst
+
+[source,typst]
+----
+#html.elem("meta", attrs: (name: "tobar-segais.slug", content: "handbook"))
+#html.elem("meta", attrs: (name: "tobar-segais.version", content: "1.0.0"))
+#html.elem("title")[The Handbook]
+
+- #link("index.html")[Introduction]
+- Guides
+  - #link("install.html")[Installing]
+----
+
+[NOTE]
+====
+Typst's HTML export is marked experimental by its authors and must be enabled
+with `--features html`, which the tool does for you.
+Treat it as a preview rather than a promise.
+
+Its exporter also shifts headings down a level, so `=` becomes `<h2>`.
+Nothing needs doing about that: the server normalises heading levels when it
+renders a page, so the shallowest heading becomes `h1` whatever produced it.
+====
+
+== Plain HTML
+
+If a generator already produces HTML, name its navigation document `nav.html`
+and pack the directory as-is.
+Anything the tool does not recognise as source -- images, stylesheets, PDFs --
+is copied into the bundle with its layout intact.

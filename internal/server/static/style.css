@@ -1,0 +1,501 @@
+/* Tobar Segais UI.
+   Layout follows the Antora documentation shape used by docs.asciidoctor.org:
+   a dark navbar, a fixed left nav, a measured document column and an
+   "On this page" rail. Brand colour is the orange of the salmon in the logo
+   rather than Asciidoctor's red. Fonts are the system stack, so a server
+   running on an isolated network still renders correctly. */
+
+:root {
+  --brand: #e8762c;
+  --brand-ink: #b8551a;
+
+  --white: #fff;
+  --smoke-30: #fafafa;
+  --smoke-50: #f5f5f5;
+  --smoke-70: #f0f0f0;
+  --smoke-90: #e1e1e1;
+  --gray-10: #c1c1c1;
+  --gray-30: #8e8e8e;
+  --gray-70: #5d5d5d;
+  --jet-50: #333;
+  --jet-80: #191919;
+
+  --body-bg: var(--white);
+  --panel-bg: var(--smoke-30);
+  --panel-border: var(--smoke-90);
+  --doc-color: #24262b;
+  --muted: var(--gray-70);
+  --link: #2c7fa2;
+  --link-hover: #08658c;
+  --nav-bg: var(--white);
+  /* Tobar Segais is the well: the spring the river rises from, and the
+     salmon of knowledge swims in the river, not the well. The current runs
+     right to left across the banner, so the salmon at the source is facing
+     into it -- swimming upstream, as salmon do. */
+  --navbar-bg: #10314f;
+  --navbar-deep: #0a2136;
+  --river: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='64' viewBox='0 0 240 64'%3E%3Cg fill='none' stroke='%23ffffff' stroke-linecap='round'%3E%3Cpath d='M0 16 C 30 8, 50 24, 80 16 S 130 8, 160 16 S 210 24, 240 16' stroke-opacity='.055' stroke-width='1.4'/%3E%3Cpath d='M0 32 C 40 22, 60 42, 100 32 S 160 22, 200 32 S 228 38, 240 32' stroke-opacity='.075' stroke-width='1.6'/%3E%3Cpath d='M0 48 C 35 40, 55 56, 95 48 S 155 40, 195 48 S 226 54, 240 48' stroke-opacity='.05' stroke-width='1.2'/%3E%3C/g%3E%3C/svg%3E");
+  --navbar-fg: var(--white);
+  /* The banner is deep blue in both themes, so the field on it needs its own
+     pair rather than borrowing the page's: white on blue reads as a field in
+     light, and glares in dark. */
+  --field-bg: var(--white);
+  --field-fg: #222;
+  --field-border: transparent;
+  --code-bg: var(--smoke-70);
+  --mark-bg: #ffe9a8;
+
+  --navbar-height: 3.9375rem;
+  --toolbar-height: 2.8125rem;
+  --nav-width: 16.875rem;
+  --toc-width: 13.5rem;
+  --doc-max-width: 51.75rem;
+  --doc-line-height: 1.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --body-bg: #14161a;
+    --panel-bg: #191c21;
+    --panel-border: #2a2f37;
+    --doc-color: #dfe3e8;
+    --muted: #99a1ac;
+    --link: #6fb3d2;
+    --link-hover: #9ccbe4;
+    --nav-bg: #16181d;
+    --navbar-bg: #0b2137;
+    --navbar-deep: #06121f;
+    --code-bg: #1d2128;
+    --smoke-50: #1d2128;
+    --smoke-70: #1d2128;
+    --smoke-90: #2a2f37;
+    --gray-10: #3a414b;
+    --mark-bg: #6b5312;
+    --field-bg: #1b1f26;
+    --field-fg: #dfe3e8;
+    --field-border: #39414c;
+  }
+}
+
+/* The same palette for a reader who asked for dark outright, rather than
+   inheriting it from the system. Kept in step with the media query above --
+   both are the one dark palette, applied by two different routes. */
+:root[data-theme="dark"] {
+  --body-bg: #14161a;
+  --panel-bg: #191c21;
+  --panel-border: #2a2f37;
+  --doc-color: #dfe3e8;
+  --muted: #99a1ac;
+  --link: #6fb3d2;
+  --link-hover: #9ccbe4;
+  --nav-bg: #16181d;
+  --navbar-bg: #0b2137;
+  --navbar-deep: #06121f;
+  --code-bg: #1d2128;
+  --smoke-50: #1d2128;
+  --smoke-70: #1d2128;
+  --smoke-90: #2a2f37;
+  --gray-10: #3a414b;
+  --mark-bg: #6b5312;
+  --field-bg: #1b1f26;
+  --field-fg: #dfe3e8;
+  --field-border: #39414c;
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+/* A column so a short page still puts the footer on the far bank rather than
+   halfway up the screen: the content takes what it needs, the footer's auto
+   margin takes the rest. dvh, so a phone's collapsing toolbar does not leave
+   a gap. */
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--body-bg);
+  color: var(--doc-color);
+  font: 1rem/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); text-decoration: underline; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---- navbar ------------------------------------------------------------ */
+
+.navbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 1rem;
+  height: var(--navbar-height);
+  padding: 0 1rem;
+  color: var(--navbar-fg);
+  background:
+    var(--river) repeat-x center / 240px 100%,
+    linear-gradient(180deg, var(--navbar-bg) 0%, var(--navbar-deep) 100%);
+  background-color: var(--navbar-bg);
+}
+
+/* The current runs right to left, into the salmon. One tile per cycle, so
+   the loop is seamless. */
+@media (prefers-reduced-motion: no-preference) {
+  .navbar { animation: upstream 90s linear infinite; }
+}
+@keyframes upstream {
+  from { background-position: 0 center, 0 0; }
+  to   { background-position: -240px center, 0 0; }
+}
+
+/* The water settles as it reaches the spring: full flow out in the river,
+   quiet behind the mark. */
+.navbar::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    var(--navbar-bg) 0,
+    color-mix(in srgb, var(--navbar-bg) 70%, transparent) 7rem,
+    transparent 16rem);
+}
+.navbar { position: sticky; }
+.navbar > * { position: relative; z-index: 1; }
+
+/* Keep the brand and the search field legible over the water. */
+.navbar-brand .navbar-item { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35); }
+.navbar-brand .navbar-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  color: var(--navbar-fg); font-weight: 600; letter-spacing: -0.01em;
+}
+.navbar-brand .navbar-item:hover { color: var(--navbar-fg); text-decoration: none; }
+/* Sized against the banner rather than in fixed pixels, so the mark keeps
+   its proportion if the banner height changes. */
+.navbar-brand img {
+  display: block;
+  height: calc(var(--navbar-height) * 0.8);
+  width: auto;
+}
+.navbar-end { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+
+/* Three states, not two: light, dark, and whatever the system says. A reader
+   who never chooses gets the third, which is why it is the one that starts
+   pressed. The control is hidden until the script that drives it runs, so it
+   is never a row of buttons that do nothing. */
+.theme {
+  display: flex; align-items: center;
+  border: 1px solid color-mix(in srgb, var(--white) 25%, transparent);
+  border-radius: 0.25rem; overflow: hidden;
+}
+.theme button {
+  font: inherit; font-size: 0.8125rem; line-height: 1;
+  padding: 0.35rem 0.5rem; min-width: 2rem;
+  border: 0; background: none; cursor: pointer;
+  color: color-mix(in srgb, var(--white) 70%, transparent);
+}
+.theme button + button { border-left: 1px solid color-mix(in srgb, var(--white) 20%, transparent); }
+.theme button:hover { color: var(--white); background: color-mix(in srgb, var(--white) 12%, transparent); }
+.theme button[aria-pressed="true"] {
+  color: var(--white); background: color-mix(in srgb, var(--white) 22%, transparent);
+}
+.theme button:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.navbar-search input {
+  font: inherit; font-size: 0.875rem;
+  padding: 0.4rem 0.75rem; min-width: 15rem;
+  border: 1px solid var(--field-border); border-radius: 0.25rem;
+  background: var(--field-bg); color: var(--field-fg);
+}
+.navbar-search input::placeholder { color: color-mix(in srgb, var(--field-fg) 55%, transparent); }
+.navbar-search input:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* ---- shell ------------------------------------------------------------- */
+
+/* The sidebar is sticky and only as tall as its own tree, so on a short page
+   its panel would stop partway down and leave the column unfinished. Paint
+   the column on the shell instead -- the panel and its rule as one gradient,
+   full height by construction. */
+.body {
+  display: flex; align-items: flex-start; flex: 1 0 auto;
+  background: linear-gradient(90deg,
+    var(--nav-bg) 0 var(--nav-width),
+    var(--panel-border) var(--nav-width) calc(var(--nav-width) + 1px),
+    transparent calc(var(--nav-width) + 1px));
+}
+.body--plain { justify-content: center; }
+
+.nav {
+  flex: none; width: var(--nav-width);
+  position: sticky; top: var(--navbar-height);
+  /* Tall enough to scroll on its own, but not forced to a full screen: a
+     fixed height on a short page holds the shell down and pushes the footer
+     off the bottom, which is exactly what the column layout is avoiding. */
+  height: auto; max-height: calc(100dvh - var(--navbar-height));
+  overflow-y: auto;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--panel-border);
+  padding: 1rem 0 3rem;
+}
+/* The sidebar lists every product, with the current one expanded. Seeing
+   the other manuals from inside one of them is the difference between a
+   documentation site and a pile of separate ones. */
+.nav-group { padding: 0.35rem 0 0.6rem; }
+.nav-group + .nav-group { border-top: 1px solid var(--panel-border); }
+.nav-group__title {
+  display: block; font-weight: 600; font-size: 0.9375rem;
+  color: var(--doc-color); padding: 0.4rem 1.25rem;
+}
+.nav-group__title:hover { color: var(--link); text-decoration: none; }
+.nav-group.is-current > .nav-group__title { color: var(--brand); }
+
+/* Version pills sit with the manual they belong to, so switching version is
+   in the same place as choosing a manual. Within the current manual they
+   keep your position in the document. */
+.nav-versions {
+  list-style: none; margin: 0; padding: 0 1.25rem 0.2rem;
+  display: flex; flex-wrap: wrap; gap: 0.3rem;
+}
+.nav-versions .version { font-size: 0.7rem; padding: 0.05rem 0.5rem; }
+/* A version that does not have this page still switches, but lands on that
+   version rather than on nothing. */
+.nav-versions .version.is-elsewhere { opacity: 0.62; border-style: dashed; }
+.nav-versions .version.is-here {
+  border-color: var(--brand); color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  font-weight: 600;
+}
+.nav-list { list-style: none; margin: 0; padding: 0 0 0 0.75rem; }
+.nav > .nav-panel-menu > .nav-list { padding-left: 0; }
+.nav-item { margin: 0; }
+.nav-link, .nav-text {
+  display: block; padding: 0.25rem 1.25rem;
+  font-size: 0.875rem; line-height: 1.35;
+}
+.nav-link { color: var(--doc-color); }
+.nav-link:hover { color: var(--link); text-decoration: none; background: var(--smoke-50); }
+.nav-text { color: var(--muted); font-weight: 600; }
+.nav-item.is-current > .nav-link {
+  color: var(--brand); font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--brand);
+}
+
+.doc-shell { flex: 1; min-width: 0; }
+
+.toolbar {
+  display: flex; align-items: center; gap: 1rem;
+  height: var(--toolbar-height);
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 0.8125rem; color: var(--muted);
+  position: sticky; top: var(--navbar-height); z-index: 5;
+  background: var(--body-bg);
+}
+.breadcrumbs ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0; padding: 0; }
+.breadcrumbs li + li::before { content: "/"; margin-right: 0.35rem; color: var(--gray-30); }
+.breadcrumbs a { color: var(--muted); }
+.page-versions { margin-left: auto; }
+.page-versions { margin-left: auto; font-variant-numeric: tabular-nums; }
+.page-versions select {
+  font: inherit; font-size: 0.8125rem; padding: 0.15rem 1.4rem 0.15rem 0.5rem;
+  border: 1px solid var(--panel-border); border-radius: 0.25rem;
+  background: var(--panel-bg); color: var(--doc-color);
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: right 0.65rem center, right 0.4rem center;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.page-versions select:hover { border-color: var(--brand); }
+
+.doc-columns { display: flex; align-items: flex-start; gap: 2rem; padding: 0 1.5rem; }
+.doc {
+  flex: 1; min-width: 0;
+  max-width: var(--doc-max-width);
+  padding: 1.5rem 0 4rem;
+  font-size: 1.0625rem; line-height: var(--doc-line-height);
+}
+.body--plain .doc { margin: 0 auto; }
+/* Pages without a document of their own -- the catalogue, search, a bare
+   404 -- still sit beside the navigation, and get the same measure. */
+.doc-shell > .doc { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+/* ---- document ---------------------------------------------------------- */
+
+.doc h1, .doc h2, .doc h3, .doc h4 {
+  font-weight: 600; line-height: 1.25; letter-spacing: -0.015em;
+  margin: 1.8rem 0 0.75rem; scroll-margin-top: calc(var(--navbar-height) + var(--toolbar-height) + 1rem);
+}
+.doc > h1:first-child, .doc > *:first-child { margin-top: 0.5rem; }
+.doc h1 { font-size: 1.9rem; }
+.doc h2 { font-size: 1.45rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--panel-border); }
+.doc h3 { font-size: 1.2rem; }
+.doc p, .doc ul, .doc ol, .doc dl { margin: 0 0 1rem; }
+.doc img { max-width: 100%; height: auto; }
+
+/* A page can open with its logo above the heading -- the manual does. It is
+   centred and given room to breathe, and the quote that usually follows it
+   loses its rule so the pair reads as a masthead rather than as two blocks. */
+.doc .imageblock.logo { margin: 0.5rem 0 1.5rem; text-align: center; }
+.doc .imageblock.logo img { max-width: min(260px, 60%); }
+.doc .imageblock.logo + .quoteblock blockquote {
+  border-left: 0; padding-left: 0; text-align: center; font-style: italic;
+}
+.doc .imageblock.logo + .quoteblock .attribution { text-align: center; }
+.doc pre, .doc table { overflow-x: auto; max-width: 100%; }
+.doc pre {
+  background: var(--code-bg); border: 1px solid var(--panel-border);
+  border-radius: 0.3rem; padding: 0.85rem 1rem; font-size: 0.9rem;
+}
+.doc code {
+  background: var(--code-bg); border-radius: 0.2rem;
+  padding: 0.1em 0.35em; font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+.doc pre code { background: none; padding: 0; }
+.doc table { border-collapse: collapse; margin: 0 0 1rem; }
+.doc th, .doc td { border: 1px solid var(--panel-border); padding: 0.4rem 0.7rem; text-align: left; }
+.doc th { background: var(--panel-bg); }
+.doc hr { border: 0; border-top: 1px solid var(--panel-border); margin: 2rem 0; }
+.doc blockquote {
+  margin: 0 0 1rem; padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid var(--gray-10); color: var(--muted);
+}
+.doc .attribution { margin: -0.5rem 0 1rem; color: var(--muted); font-size: 0.9rem; }
+
+/* ---- on this page ------------------------------------------------------ */
+
+.toc {
+  flex: none; width: var(--toc-width);
+  position: sticky; top: calc(var(--navbar-height) + var(--toolbar-height));
+  max-height: calc(100vh - var(--navbar-height) - var(--toolbar-height) - 2rem);
+  overflow-y: auto;
+  padding: 1.5rem 0;
+}
+@media (max-width: 75rem) { .toc { display: none; } }
+.toc h3 {
+  margin: 0 0 0.5rem; font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); font-weight: 600;
+}
+.toc ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--panel-border); }
+.toc li a {
+  display: block; padding: 0.15rem 0 0.15rem 0.75rem;
+  font-size: 0.8125rem; line-height: 1.3; color: var(--muted);
+}
+.toc li a:hover { color: var(--link); text-decoration: none; }
+.toc li.level-2 a { padding-left: 0.75rem; }
+.toc li.level-3 a { padding-left: 1.5rem; }
+
+/* ---- catalogue and search ---------------------------------------------- */
+
+.components { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.component {
+  border: 1px solid var(--panel-border); border-radius: 0.4rem;
+  padding: 0.9rem 1.1rem; display: flex; gap: 1rem;
+  align-items: baseline; flex-wrap: wrap;
+}
+.component .title { font-weight: 600; font-size: 1.05rem; margin-right: auto; }
+.versions { list-style: none; display: flex; gap: 0.4rem; margin: 0; padding: 0; flex-wrap: wrap; }
+.version {
+  display: block; font-size: 0.75rem; color: var(--muted);
+  border: 1px solid var(--panel-border); border-radius: 999px; padding: 0.1rem 0.6rem;
+}
+.version.is-latest { border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) .version.is-latest { color: var(--brand); } }
+:root[data-theme="dark"] .version.is-latest { color: var(--brand); }
+
+.results { padding-left: 1.2rem; display: grid; gap: 1.2rem; }
+.results > li > a { font-weight: 600; }
+.where { color: var(--muted); font-size: 0.78rem; margin-left: 0.5rem; }
+.snippet { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+mark { background: var(--mark-bg); color: inherit; padding: 0 0.15em; border-radius: 0.15rem; }
+.count, .empty { color: var(--muted); }
+
+/* ---- footer ------------------------------------------------------------ */
+
+/* Two strips, because the two notices are not the same kind of thing.
+   The documentation's own notice belongs with the documentation, so it sits
+   on the page, closed off by a blue rule. Under it, the far bank of the same
+   river: the banner is the spring and this is the water further down -- the
+   same current, running the same way, but wider and slower. It is kept to a
+   single line at 60% of the banner's height, so the two blue bars bracket the
+   page without the bottom one competing with the top. */
+.footer { margin-top: auto; }
+.footer p { margin: 0; }
+
+.footer-content {
+  display: flex; align-items: center;
+  /* 40% here and 60% below: unless the notice is long enough to wrap, the
+     whole footer comes to exactly the height of the banner. */
+  min-height: calc(var(--navbar-height) * 0.4);
+  border-top: 2px solid var(--navbar-bg);
+  padding: 0 1.5rem;
+  font-size: 0.8125rem; color: var(--muted);
+  background: var(--body-bg);
+}
+
+.footer-app {
+  display: flex; align-items: center;
+  min-height: calc(var(--navbar-height) * 0.6);
+  padding: 0 1.5rem;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--white) 72%, transparent);
+  background:
+    var(--river) repeat-x center / 240px 100%,
+    linear-gradient(180deg,
+      var(--navbar-deep) 0%,
+      color-mix(in srgb, var(--navbar-deep) 80%, black) 100%);
+  background-color: var(--navbar-deep);
+}
+.footer-app a { color: color-mix(in srgb, var(--white) 88%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .footer-app { animation: upstream 140s linear infinite; }
+}
+
+@media (max-width: 62rem) {
+  /* Stacked, so there is no column to paint. */
+  .body { flex-direction: column; background: none; }
+  .nav {
+    width: 100%; position: static; height: auto;
+    border-right: 0; border-bottom: 1px solid var(--panel-border);
+  }
+  .toolbar { position: static; }
+}
+
+/* ---- pagination -------------------------------------------------------- */
+
+.pagination {
+  display: flex; gap: 1rem; margin-top: 2.5rem;
+  border-top: 1px solid var(--panel-border); padding-top: 1rem;
+}
+.pagination__prev { flex: 1; }
+.pagination__next { flex: 1; text-align: right; }
+.pagination a { display: inline-block; font-weight: 600; }
+/* Scoped to the label inside the link: a bare ".pagination span" also
+   matches the flex wrappers, which carry the page title. */
+.pagination a > span {
+  display: block; font-size: 0.75rem; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+}
+
+.elsewhere { list-style: none; margin: 0 0 1rem; padding: 0; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.elsewhere a {
+  display: block; font-size: 0.8rem; border: 1px solid var(--brand);
+  border-radius: 999px; padding: 0.1rem 0.7rem; color: var(--brand-ink);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) .elsewhere a { color: var(--brand); } }
+:root[data-theme="dark"] .elsewhere a { color: var(--brand); }
+
+.find--page { margin: 0 0 1rem; display: flex; gap: 0.4rem; }
+.find--page input {
+  font: inherit; font-size: 0.95rem; padding: 0.45rem 0.75rem; min-width: 20rem;
+  border: 1px solid var(--panel-border); border-radius: 0.25rem;
+  background: var(--body-bg); color: var(--doc-color);
+}
+.find--page button {
+  border: 0; border-radius: 0.25rem; padding: 0.45rem 1rem; font: inherit;
+  font-size: 0.95rem; background: var(--brand); color: #fff; cursor: pointer;
+}
+[aria-busy="true"] { opacity: 0.6; transition: opacity 120ms ease-in; }

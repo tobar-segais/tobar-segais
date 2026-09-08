@@ -1,0 +1,72 @@
+= Quick start
+
+== Run the server
+
+[source,console]
+----
+$ tobar-segais serve --content ./content
+----
+
+The server listens on `:8080` and serves whatever archives are in `./content`.
+It creates nothing: if the directory does not exist, the server exits rather
+than silently serving an empty catalogue.
+
+== Publish an archive
+
+Point the tool at a directory of documentation source.
+Markdown needs nothing installed, so it is the shortest path from nothing to a
+published manual:
+
+[source,console]
+----
+$ cat docs/nav.md
+---
+slug: handbook
+version: 1.0.0
+title: The Handbook
+---
+
+- [Introduction](index.md)
+
+$ tobar-segais bundle ./docs --out ./content
+  detected markdown source
+  converted 1 pages
+content/handbook-1.0.0.zip (handbook 1.0.0, from nav, 1204 bytes)
+----
+
+The catalogue picks it up within moments, without a restart.
+Removing the file removes the documentation just as quickly.
+
+== Or publish without a server
+
+Nothing above has to stay running. The same archives can be written out as a
+static site and hosted anywhere that serves files:
+
+[source,console]
+----
+$ tobar-segais build --content ./content --out ./site
+level=INFO msg="site generated" out=./site pages=1 assets=7 documents=1
+----
+
+The pages are rendered with the same templates the server uses, and search
+still works -- the index ships alongside them and is queried in the browser.
+See xref:static.adoc[Static sites].
+
+== Check it worked
+
+[source,console]
+----
+$ curl -s localhost:8080/healthz
+ok
+----
+
+The server logs one line per archive as it loads, naming the slug, the version
+and where the identity came from:
+
+[source,log]
+----
+level=INFO msg="loaded bundle" slug=handbook version=1.0.0 identity=metadata
+----
+
+If a slug or version is not what you expected, that `identity` field tells you
+which rule produced it. See xref:bundles.adoc[Bundle format].
