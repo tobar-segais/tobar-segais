@@ -356,8 +356,14 @@ jobs:
           ref: ${{ needs.decide.outputs.tag }}
           fetch-depth: 0
 
+      # The pattern matters. `build-push-action` uploads a build record of its
+      # own -- `<owner>~<repo>~XXXXXX.dockerbuild` -- so a download with no
+      # pattern asks for that as well: it fails to download, and if it did
+      # download it would be attached to the release beside the binaries.
+      # Name what the release is made of, and nothing else can arrive in it.
       - uses: actions/download-artifact@v5
         with:
+          pattern: tobar-segais-*
           path: files
           merge-multiple: true
 
@@ -388,6 +394,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # files/ holds the binaries and their checksums, and nothing else:
+          # the download above is filtered by name.
           gh release create "${{ needs.decide.outputs.tag }}" \
             --title "tobar-segais ${{ needs.decide.outputs.version }}" \
             --notes-file notes.md \
