@@ -24,6 +24,7 @@ func TestIndexerIndexesRealBundle(t *testing.T) {
 	}
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	l := bundle.NewLibrary(dir, log)
+	t.Cleanup(l.Close) // Windows will not remove a file this still holds open
 	if err := l.Reload(); err != nil {
 		t.Fatal(err)
 	}

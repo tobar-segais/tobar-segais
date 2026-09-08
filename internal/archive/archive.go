@@ -54,7 +54,7 @@ type Archive struct {
 // Open reads the central directory and resolves every entry's data offset.
 // This is one pass at startup; nothing here scales with archive content size.
 func Open(name string) (*Archive, error) {
-	f, err := os.Open(name)
+	f, err := openShared(name)
 	if err != nil {
 		return nil, err
 	}

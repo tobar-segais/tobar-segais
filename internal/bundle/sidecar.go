@@ -27,6 +27,7 @@ type sidecar struct {
 	Title     string   `toml:"title"`
 	Aliases   []string `toml:"aliases"`
 	Hidden    *bool    `toml:"hidden"`
+	Priority  *int     `toml:"priority"`
 	Copyright string   `toml:"copyright"`
 }
 
@@ -42,17 +43,18 @@ type sidecar struct {
 // A malformed file is an error rather than a shrug: someone wrote it meaning
 // to change something, and quietly serving the archive's own identity instead
 // would hide that it did nothing.
-// hidden is returned separately because it is the one field where "not said"
-// and "said false" differ: a metadata file must be able to unhide a bundle
-// that hid itself, and a zero bool cannot say that.
-func sidecarIdentity(archivePath string) (id Identity, hidden *bool, ok bool, err error) {
+// hidden and priority are returned separately because they are the fields
+// where "not said" and "said the zero value" differ: a metadata file must be
+// able to unhide a bundle that hid itself, and to put a bundle that raised
+// itself back among the rest.
+func sidecarIdentity(archivePath string) (id Identity, hidden *bool, priority *int, ok bool, err error) {
 	raw, err := os.ReadFile(SidecarPath(archivePath))
 	if err != nil {
-		return Identity{}, nil, false, nil // no metadata file is the normal case
+		return Identity{}, nil, nil, false, nil // no metadata file is the normal case
 	}
 	var s sidecar
 	if err := toml.Unmarshal(raw, &s); err != nil {
-		return Identity{}, nil, false, err
+		return Identity{}, nil, nil, false, err
 	}
 	id = Identity{
 		Slug:      normalise(s.Slug),
@@ -69,7 +71,10 @@ func sidecarIdentity(archivePath string) (id Identity, hidden *bool, ok bool, er
 	if s.Hidden != nil {
 		id.Hidden = *s.Hidden
 	}
+	if s.Priority != nil {
+		id.Priority = *s.Priority
+	}
 	empty := id.Slug == "" && id.Version == "" && id.Title == "" &&
-		id.Copyright == "" && len(id.Aliases) == 0 && s.Hidden == nil
-	return id, s.Hidden, !empty, nil
+		id.Copyright == "" && len(id.Aliases) == 0 && s.Hidden == nil && s.Priority == nil
+	return id, s.Hidden, s.Priority, !empty, nil
 }

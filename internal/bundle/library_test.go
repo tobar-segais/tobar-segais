@@ -6,8 +6,12 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
+	"strconv"
 	"testing"
 	"time"
+
+	"github.com/tobar-segais/tobar-segais/internal/archive"
 )
 
 func quiet() *slog.Logger { return slog.New(slog.NewTextHandler(io.Discard, nil)) }
@@ -29,6 +33,7 @@ func TestLibraryGroupsVersionsNewestFirst(t *testing.T) {
 	copyTo(t, "../../demo/content/manual-1.16.jar", filepath.Join(dir, "manual-1.16.jar"))
 
 	l := NewLibrary(dir, quiet())
+	t.Cleanup(l.Close) // Windows will not remove a file this still holds open
 	if err := l.Reload(); err != nil {
 		t.Fatal(err)
 	}
@@ -58,6 +63,7 @@ func TestLibraryGroupsVersionsNewestFirst(t *testing.T) {
 func TestWatchPicksUpAddAndRemove(t *testing.T) {
 	dir := t.TempDir()
 	l := NewLibrary(dir, quiet())
+	t.Cleanup(l.Close) // Windows will not remove a file this still holds open
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go Watch(ctx, l, 100*time.Millisecond, quiet())
@@ -93,4 +99,79 @@ func eventually(t *testing.T, limit time.Duration, cond func() bool) bool {
 		time.Sleep(20 * time.Millisecond)
 	}
 	return false
+}
+
+// The catalogue is ordered by priority, and alphabetically within a priority.
+// A landing page is the reason this exists: it has to come first, and its
+// title rarely puts it there.
+func TestCatalogueOrdersByPriorityThenTitle(t *testing.T) {
+	dir := t.TempDir()
+	write := func(slug, title string, priority int) {
+		nav := "<!DOCTYPE html><html><head><title>" + title + "</title>" +
+			`<meta name="tobar-segais.slug" content="` + slug + `">` +
+			`<meta name="tobar-segais.version" content="1.0.0">` +
+			`<meta name="tobar-segais.priority" content="` + strconv.Itoa(priority) + `">` +
+			`</head><body><ul><li><a href="index.html">Introduction</a></li></ul></body></html>`
+		p := filepath.Join(dir, slug+"-1.0.0.zip")
+		if err := os.WriteFile(p, zipWith(t, map[string]string{"nav.html": nav}), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Alphabetically this is apples, welcome, zebra. By priority it is not.
+	write("zebra", "Zebra", 0)
+	write("apples", "Apples", 0)
+	write("welcome", "Welcome", 100)
+	write("attic", "Attic", -10)
+
+	l := NewLibrary(dir, quiet())
+	t.Cleanup(l.Close)
+	if err := l.Reload(); err != nil {
+		t.Fatal(err)
+	}
+
+	var got []string
+	for _, p := range l.Catalogue().Products {
+		got = append(got, p.Slug)
+	}
+	want := []string{"welcome", "apples", "zebra", "attic"}
+	if !slices.Equal(got, want) {
+		t.Errorf("order is %v, want %v", got, want)
+	}
+}
+
+// A metadata file beside an archive can order a bundle that says nothing about
+// where it belongs -- and can move one that does.
+func TestSidecarSetsPriority(t *testing.T) {
+	dir := t.TempDir()
+	nav := `<!DOCTYPE html><html><head><title>Handbook</title>` +
+		`<meta name="tobar-segais.slug" content="handbook">` +
+		`<meta name="tobar-segais.version" content="1.0.0">` +
+		`<meta name="tobar-segais.priority" content="50">` +
+		`</head><body><ul><li><a href="index.html">Introduction</a></li></ul></body></html>`
+	p := filepath.Join(dir, "handbook-1.0.0.zip")
+	if err := os.WriteFile(p, zipWith(t, map[string]string{"nav.html": nav}), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	a, err := archive.Open(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer a.Close()
+	if id, _ := Identify(a, p); id.Priority != 50 {
+		t.Fatalf("priority from the bundle is %d", id.Priority)
+	}
+
+	// Zero has to mean zero here, or a bundle that raised itself could never
+	// be put back among the rest.
+	if err := os.WriteFile(SidecarPath(p), []byte("priority = 0\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	id, err := Identify(a, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if id.Priority != 0 {
+		t.Errorf("the metadata file did not put it back: priority %d", id.Priority)
+	}
 }

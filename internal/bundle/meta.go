@@ -4,7 +4,7 @@ package bundle
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -32,6 +32,11 @@ type Identity struct {
 	Title   string
 	Aliases []string
 	Hidden  bool
+	// Priority orders the catalogue. Higher comes first, and bundles that
+	// share a priority are ordered by title. It is unbounded and may be
+	// negative: an archive nobody should land on first can sink itself
+	// without every other archive having to be raised above it.
+	Priority int
 	// Copyright is a notice about this bundle's content. It comes from the
 	// bundle itself, so it travels with the documentation rather than with
 	// whoever happens to be hosting it, and it overrides the server-wide
@@ -80,7 +85,10 @@ var jarVersionRE = regexp.MustCompile(`^(.*?)[-_][vV]?(\d+(?:\.\d+)*(?:[-.+][0-9
 // wins. That is the point of it: it is how an archive you cannot rebuild gets
 // the identity you need it to have.
 func Identify(a *archive.Archive, filename string) (Identity, error) {
-	base := strings.TrimSuffix(path.Base(filename), path.Ext(filename))
+	// filepath, not path: this is a name on disk. On Windows path.Base
+	// leaves the whole "C:\\dir\\foo-1.0.0.zip" intact, and the slug then
+	// becomes the entire path with the separators mangled into hyphens.
+	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 
 	var id Identity
 	var from []string
@@ -104,14 +112,17 @@ func Identify(a *archive.Archive, filename string) (Identity, error) {
 		if id.Copyright == "" && c.Copyright != "" {
 			id.Copyright = c.Copyright
 		}
+		if id.Priority == 0 && c.Priority != 0 {
+			id.Priority = c.Priority
+		}
 		if used {
 			from = append(from, src)
 		}
 	}
 
-	side, hidden, ok, err := sidecarIdentity(filename)
+	side, hidden, priority, ok, err := sidecarIdentity(filename)
 	if err != nil {
-		return Identity{}, fmt.Errorf("%s: %w", path.Base(SidecarPath(filename)), err)
+		return Identity{}, fmt.Errorf("%s: %w", filepath.Base(SidecarPath(filename)), err)
 	}
 	if ok {
 		take("sidecar", side)
@@ -138,7 +149,7 @@ func Identify(a *archive.Archive, filename string) (Identity, error) {
 	}
 
 	if id.Slug == "" {
-		return Identity{}, fmt.Errorf("cannot determine a slug for %s", path.Base(filename))
+		return Identity{}, fmt.Errorf("cannot determine a slug for %s", filepath.Base(filename))
 	}
 	// An archive that carries no version at all is still perfectly servable;
 	// it just has one version, and "latest" is what to call it. Leaving this
@@ -152,9 +163,13 @@ func Identify(a *archive.Archive, filename string) (Identity, error) {
 		return Identity{}, fmt.Errorf("%q is not a valid slug", id.Slug)
 	}
 	// The metadata file has the last word here as well as the first: it is
-	// the only source that can say "no, show this one".
+	// the only source that can say "no, show this one", or return a bundle
+	// that raised itself to the ordinary order of things.
 	if hidden != nil {
 		id.Hidden = *hidden
+	}
+	if priority != nil {
+		id.Priority = *priority
 	}
 	id.Source = strings.Join(from, "+")
 	return id, nil

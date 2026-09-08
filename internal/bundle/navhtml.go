@@ -2,6 +2,7 @@ package bundle
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -210,6 +211,17 @@ func navMeta(raw []byte) (map[string]string, string) {
 	return out, strings.TrimSpace(titleOf(doc))
 }
 
+// atoi reads a whole number and gives 0 for anything else, which is the same
+// answer as saying nothing: a priority that does not parse orders the bundle
+// with everything that named no priority at all.
+func atoi(s string) int {
+	n, err := strconv.Atoi(strings.TrimSpace(s))
+	if err != nil {
+		return 0
+	}
+	return n
+}
+
 // unresolved reports a leftover attribute reference such as "{copyright}".
 // Asciidoctor leaves these in place when the attribute is not set, which is
 // what makes an optional line in a shared docinfo file possible: the meta is
@@ -243,6 +255,7 @@ func navIdentity(a *archive.Archive) (Identity, bool) {
 			Title:     title,
 			Hidden:    strings.EqualFold(meta["hidden"], "true"),
 			Copyright: meta["copyright"],
+			Priority:  atoi(meta["priority"]),
 			Source:    "nav",
 		}
 		if al := meta["aliases"]; al != "" {
@@ -252,7 +265,8 @@ func navIdentity(a *archive.Archive) (Identity, bool) {
 				}
 			}
 		}
-		if id.Slug == "" && id.Version == "" && id.Title == "" && id.Copyright == "" && len(id.Aliases) == 0 {
+		if id.Slug == "" && id.Version == "" && id.Title == "" && id.Copyright == "" &&
+			id.Priority == 0 && len(id.Aliases) == 0 {
 			continue // a navigation document that says nothing about identity
 		}
 		return id, true

@@ -32,10 +32,55 @@ func (b *Bundle) Title() string {
 	return b.Slug
 }
 
+// Close releases every archive the library holds open.
+//
+// A server holds them for its lifetime and never calls this; a program that
+// builds a site and stops should, and a test must -- on Windows an open file
+// cannot be removed, so a library left open fails the cleanup of the very
+// directory the test made.
+func (l *Library) Close() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	for key, b := range l.loaded {
+		b.Archive.Close()
+		delete(l.loaded, key)
+	}
+	l.cat.Store(&Catalogue{bySlug: map[string]*Product{}})
+}
+
 // Product is every version of one slug, newest first.
 type Product struct {
 	Slug     string
 	Versions []*Bundle
+}
+
+// Priority orders this product in the catalogue, and comes from its newest
+// version: where a product sits is a property of what it is now, not of what
+// it was three releases ago. A hidden-only product still has to sort, so it
+// falls back to the newest version it has.
+func (p *Product) Priority() int {
+	if b := p.newest(); b != nil {
+		return b.Priority
+	}
+	return 0
+}
+
+// Title is the newest version's title, for the same reason.
+func (p *Product) Title() string {
+	if b := p.newest(); b != nil {
+		return b.Title()
+	}
+	return p.Slug
+}
+
+func (p *Product) newest() *Bundle {
+	if b := p.Latest(); b != nil {
+		return b
+	}
+	if len(p.Versions) > 0 {
+		return p.Versions[0]
+	}
+	return nil
 }
 
 // Latest is the newest version that is not hidden.
@@ -232,7 +277,21 @@ func (l *Library) build() *Catalogue {
 			products = append(products, p)
 		}
 	}
-	sort.Slice(products, func(i, j int) bool { return products[i].Slug < products[j].Slug })
+	// Priority first, then title, then slug. Alphabetical order is a fine
+	// default and a poor answer for a site with a landing page: the page a
+	// reader should meet first is rarely the one whose title starts with A.
+	// The priority of a product is the priority of its newest version, so
+	// raising a manual is done by the release that raises it.
+	sort.Slice(products, func(i, j int) bool {
+		a, b := products[i], products[j]
+		if pa, pb := a.Priority(), b.Priority(); pa != pb {
+			return pa > pb
+		}
+		if ta, tb := a.Title(), b.Title(); ta != tb {
+			return ta < tb
+		}
+		return a.Slug < b.Slug
+	})
 	return &Catalogue{Products: products, bySlug: bySlug}
 }
 

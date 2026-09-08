@@ -118,7 +118,7 @@ func renderMarkdownNav(src, dst string) error {
 	if t := get("title"); t != "" {
 		fmt.Fprintf(&head, "<title>%s</title>\n", html.EscapeString(t))
 	}
-	for _, k := range []string{"slug", "version", "title", "hidden", "copyright"} {
+	for _, k := range []string{"slug", "version", "title", "hidden", "copyright", "priority"} {
 		if v := get(k); v != "" {
 			fmt.Fprintf(&head, `<meta name="tobar-segais.%s" content="%s">`+"\n",
 				k, html.EscapeString(v))

@@ -171,6 +171,7 @@ func TestEditingSidecarReloads(t *testing.T) {
 	}
 
 	l := NewLibrary(dir, quiet())
+	t.Cleanup(l.Close) // Windows will not remove a file this still holds open
 	if err := l.Reload(); err != nil {
 		t.Fatal(err)
 	}

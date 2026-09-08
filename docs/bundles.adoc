@@ -68,6 +68,12 @@ real slug.
 |Optional. `true` keeps the version reachable by direct link but leaves it out
 of the catalogue and out of `latest`.
 
+|`tobar-segais.priority`
+|Optional, a whole number, `0` by default. Orders the catalogue and the
+sidebar: higher comes first, and bundles sharing a priority are ordered by
+title. It may be negative, so an archive that should not be met first can sink
+itself without every other archive having to be raised above it.
+
 |`tobar-segais.copyright`
 |Optional. A notice about this documentation, shown in the footer of its
 pages. It overrides the server's `--copyright`, so a bundle carrying its own
@@ -179,13 +185,15 @@ version = "2.1.0"
 title = "The Handbook"
 aliases = ["old-handbook"]
 hidden = false
+priority = 100
 copyright = "Copyright © 2026 Example Ltd."
 ----
 
 Every key is optional and states only itself: a file setting `copyright` alone
 leaves the slug, version and title exactly as the archive gives them.
-`hidden = false` is worth having explicitly -- it is the only way to show a
-version that hid itself.
+`hidden = false` and `priority = 0` are worth having explicitly: they are the
+only way to show a version that hid itself, and to put back a bundle that
+raised itself above the rest.
 
 This is the one source that can contradict a bundle rather than fill gaps in
 it, and that is the point. A vendor's jar that names itself badly, a version
